@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>BBC Auditorías</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0e0e0f;--surface:#1a1a1c;--surface2:#242427;--border:#2e2e32;
+  --text:#f0f0f0;--muted:#888;--accent:#f5a623;--green:#22c55e;
+  --radius:14px;--font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;min-height:100vh}
+.app-header{position:sticky;top:0;z-index:100;background:rgba(14,14,15,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between}
+.app-logo{display:flex;align-items:center;gap:10px}
+.logo-dot{width:28px;height:28px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.logo-dot svg{width:16px;height:16px;fill:#000}
+.app-title{font-size:15px;font-weight:600;letter-spacing:-0.01em}
+.app-subtitle{font-size:11px;color:var(--muted)}
+.score-chip{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-family:var(--mono);font-size:14px;font-weight:500;color:var(--text)}
+.progress-bar{height:3px;background:var(--border)}
+.progress-fill{height:100%;background:var(--accent);transition:width 0.4s ease;width:0%}
+.container{padding:20px 16px 100px;max-width:520px;margin:0 auto}
+
+/* GPS Banner */
+.gps-banner{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;gap:12px}
+.gps-dot{width:10px;height:10px;border-radius:50%;background:#888;flex-shrink:0;transition:background 0.3s}
+.gps-dot.ok{background:var(--green)}
+.gps-dot.error{background:#ef4444}
+.gps-dot.loading{background:var(--accent);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.gps-info{flex:1}
+.gps-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px}
+.gps-value{font-size:13px;color:var(--text);font-family:var(--mono)}
+
+/* Timestamp strip */
+.ts-strip{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.ts-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em}
+.ts-value{font-size:13px;font-family:var(--mono);color:var(--accent);font-weight:500}
+.ts-lock{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px}
+
+/* PDV card */
+.pdv-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:12px}
+.pdv-card h2{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:14px}
+
+/* Sections */
+.section{margin-bottom:12px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);background:var(--surface)}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;cursor:pointer;user-select:none;transition:background 0.15s}
+.section-header:active{background:var(--surface2)}
+.section-left{display:flex;align-items:center;gap:12px}
+.section-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.ic1{background:#1e2a1a}.ic2{background:#1a1e2e}.ic3{background:#2a1e1a}.ic4{background:#1e1a2a}.ic5{background:#1a2a28}.ic6{background:#2a1a22}.ic0{background:#2a2a1a}.icf{background:#1a2020}
+.section-name{font-size:14px;font-weight:600}
+.section-max{font-size:11px;color:var(--muted);margin-top:1px}
+.section-pts{font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:500}
+.chevron{color:var(--muted);font-size:18px;transition:transform 0.25s}
+.chevron.open{transform:rotate(180deg)}
+.section-body{display:none;padding:0 18px 18px;border-top:1px solid var(--border)}
+.section-body.open{display:block}
+
+/* Fields */
+.field{margin-top:14px}
+.field label{display:block;font-size:12px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 13px;font-size:15px;font-family:var(--font);color:var(--text);outline:none;appearance:none;-webkit-appearance:none;transition:border-color 0.15s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
+.field textarea{resize:none;height:80px;line-height:1.5}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:36px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.score-field{margin-top:16px;padding-top:14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.score-field label{font-size:13px;font-weight:600;flex:1}
+.score-field input{width:72px;text-align:center;font-family:var(--mono);font-size:16px;font-weight:500}
+.score-max{font-size:13px;color:var(--muted);white-space:nowrap}
+
+/* Photos */
+.photo-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:8px}
+.photo-slot{aspect-ratio:1;border-radius:10px;border:1.5px dashed var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;transition:border-color 0.15s}
+.photo-slot:active{border-color:var(--accent)}
+.photo-slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:9px}
+.photo-slot .add-icon{font-size:22px;color:var(--muted)}
+.photo-slot .remove-btn{position:absolute;top:3px;right:3px;width:20px;height:20px;background:rgba(0,0,0,0.7);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;z-index:2;cursor:pointer}
+.photo-input{display:none}
+.photo-count{font-size:11px;color:var(--muted);margin-top:6px}
+
+/* Total */
+.total-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 18px;margin-bottom:16px;display:none}
+.total-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.total-num{font-family:var(--mono);font-size:40px;font-weight:500;line-height:1}
+.estado-badge{padding:8px 16px;border-radius:20px;font-size:13px;font-weight:600}
+.verde{background:#14532d;color:#86efac}.amarillo{background:#713f12;color:#fde68a}.rojo{background:#7f1d1d;color:#fca5a5}
+.module-scores{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mod-score-item{background:var(--surface2);border-radius:10px;padding:10px 12px}
+.mod-score-label{font-size:11px;color:var(--muted)}
+.mod-score-val{font-family:var(--mono);font-size:15px;font-weight:500;margin-top:2px}
+
+/* Tasks */
+.tasks-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;display:none}
+.tasks-header{padding:14px 18px;font-size:13px;font-weight:600;border-bottom:1px solid var(--border)}
+.task-item{padding:12px 18px;border-bottom:1px solid var(--border)}
+.task-item:last-child{border-bottom:none}
+.task-hallazgo{font-size:13px;line-height:1.4;margin-bottom:6px}
+.task-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tag{font-size:11px;padding:3px 9px;border-radius:6px;font-weight:500}
+.tag-resp{background:var(--surface2);color:var(--muted)}.tag-alta{background:#7f1d1d;color:#fca5a5}.tag-media{background:#713f12;color:#fde68a}
+.tag-fecha{color:var(--muted);font-size:11px}
+
+/* Buttons */
+.btn{flex:1;padding:14px;border-radius:12px;font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all 0.15s}
+.btn:active{transform:scale(0.97)}
+.btn-calc{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.btn-send{background:var(--accent);color:#000}
+.btn-send:disabled{opacity:0.4;cursor:not-allowed}
+
+/* Toast */
+.toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--green);color:#000;padding:12px 20px;border-radius:12px;font-size:14px;font-weight:600;opacity:0;transition:all 0.3s;pointer-events:none;z-index:200;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* Upload progress */
+.upload-progress{background:var(--surface2);border-radius:10px;padding:12px 14px;margin-top:10px;display:none}
+.upload-bar-wrap{background:var(--border);border-radius:4px;height:4px;margin-top:8px;overflow:hidden}
+.upload-bar{height:100%;background:var(--accent);width:0%;transition:width 0.3s}
+.upload-label{font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="app-logo">
+    <div class="logo-dot"><svg viewBox="0 0 16 16"><path d="M8 2l1.5 4.5H14l-3.7 2.7 1.4 4.3L8 11l-3.7 2.5 1.4-4.3L2 6.5h4.5z"/></svg></div>
+    <div><div class="app-title">BBC Auditorías</div><div class="app-subtitle">Colombia · 6 módulos · 100 pts</div></div>
+  </div>
+  <div class="score-chip" id="header-score">0 / 100</div>
+</div>
+<div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+<div class="container">
+
+  <!-- GPS + Timestamp -->
+  <div class="gps-banner">
+    <div class="gps-dot loading" id="gps-dot"></div>
+    <div class="gps-info">
+      <div class="gps-label">Ubicación GPS</div>
+      <div class="gps-value" id="gps-value">Obteniendo ubicación…</div>
+    </div>
+  </div>
+
+  <div class="ts-strip">
+    <div>
+      <div class="ts-label">Fecha y hora de inicio</div>
+      <div class="ts-value" id="ts-value">—</div>
+    </div>
+    <div class="ts-lock">🔒 No editable</div>
+  </div>
+
+  <!-- PDV -->
+  <div class="pdv-card">
+    <h2>Datos del punto</h2>
+    <div class="row2" style="margin-bottom:10px;">
+      <div class="field" style="margin-top:0;"><label>Código PDV</label><input type="text" id="f_cod" placeholder="AR1" autocomplete="off"></div>
+      <div class="field" style="margin-top:0;"><label>Nombre PDV</label><input type="text" id="f_nombre" placeholder="Pub Andino"></div>
+    </div>
+    <div class="row2">
+      <div class="field" style="margin-top:0;"><label>Zona</label>
+        <select id="f_zona"><option value="">— Zona —</option><option>Centro</option><option>Norte</option><option>Sur</option></select>
+      </div>
+      <div class="field" style="margin-top:0;"><label>Tipo</label>
+        <select id="f_tipo"><option value="">— Tipo —</option><option>PUB</option><option>BODEGA</option></select>
+      </div>
+    </div>
+  </div>
+
+  <!-- M1 Experiencia · 20 pts -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSec(1)">
+      <div class="section-left"><div class="section-icon ic1">🍺</div><div><div class="section-name">Experiencia</div><div class="section-max">Módulo 1 · máx 20</div></div></div>
+      <div style="display:flex;align-items:center;gap:10px;"><span class="section-pts" id="pts1">—</span><span class="chevron" id="ch1">⌄</span></div>
+    </div>
+    <div class="section-body" id="body1">
+      <div class="row3">
+        <div class="field"><label>Menú %</label><input type="number" id="m1_menu" min="0" max="100" placeholder="100"></div>
+        <div class="field"><label>Precios</label><select id="m1_precios"><option value="">—</option><option>sí</option><option>no</option></select></div>
+        <div class="field"><label>Categorías</label><select id="m1_cat"><option value="">—</option><option>completas</option><option>incompletas</option></select></div>
+      </div>
+      <div class="field"><label>Categorías faltantes</label><input type="text" id="m1_cat_det" placeholder="cuáles faltan"></div>
+      <div class="row2">
+        <div class="field"><label>Cristalería</label><select id="m1_cristal"><option value="">—</option><option>completa</option><option>incompleta</option></select></div>
+        <div class="field"><label>Menaje cocina</label><select id="m1_menaje"><option value="">—</option><option>completo</option><option>incompleto</option></select></div>
+      </div>
+      <div class="score-field"><label>Puntaje módulo 1</label><input type="number" id="s1" min="0" max="20" placeholder="0" oninput="actualizar()"><span class="score-max">/ 20</span></div>
+    </div>
+  </div>
+
+  <!-- M2 Marketing · 15 pts -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSec(2)">
+      <div class="section-left"><div class="section-icon ic2">👕</div><div><div class="section-name">Marketing & Uniformes</div><div class="section-max">Módulo 2 · máx 15</div></div></div>
+      <div style="display:flex;align-items:center;gap:10px;"><span class="section-pts" id="pts2">—</span><span class="chevron" id="ch2">⌄</span></div>
+    </div>
+    <div class="section-body" id="body2">
+      <div class="row2">
+        <div class="field"><label>Avisos entrada</label><select id="m2_av_ent"><option value="">—</option><option>sí</option><option>no</option></select></div>
+        <div class="field"><label>Avisos interior</label><select id="m2_av_int"><option value="">—</option><option>sí</option><option>no</option></select></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Uniforme barra</label><select id="m2_unif_b"><option value="">—</option><option>ok</option><option>con fallas</option></select></div>
+        <div class="field"><label>Detalle barra</label><input type="text" id="m2_unif_b_det" placeholder="qué falta"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Uniforme cocina</label><select id="m2_unif_c"><option value="">—</option><option>ok</option><option>con fallas</option></select></div>
+        <div class="field"><label>Detalle cocina</label><input type="text" id="m2_unif_c_det" placeholder="qué falta"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Aseo / Accesorios</label><select id="m2_aseo"><option value="">—</option><option>ok</option><option>problemas</option></select></div>
+        <div class="field"><label>Personal suficiente</label><select id="m2_personal"><option value="">—</option><option>sí</option><option>no</option></select></div>
+      </div>
+      <div class="score-field"><label>Puntaje módulo 2</label><input type="number" id="s2" min="0" max="15" placeholder="0" oninput="actualizar()"><span class="score-max">/ 15</span></div>
+    </div>
+  </div>
+
+  <!-- M3 Finanzas · 20 pts -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSec(3)">
+      <div class="section-left"><div class="section-icon ic3">💰</div><div><div class="section-name">Finanzas & Caja</div><div class="section-max">Módulo 3 · máx 20</div></div></div>
+      <div style="display:flex;align-items:center;gap:10px;"><span class="section-pts" id="pts3">—</span><span class="chevron" id="ch3">⌄</span></div>
+    </div>
+    <div class="section-body" id="body3">
+      <div class="row3">
+        <div class="field"><label>Caja cuadra</label><select id="m3_caja"><option value="">—</option><option>sí</option><option>no</option></select></div>
+        <div class="field"><label>Diferencia %</label><input type="number" id="m3_dif" min="0" step="0.1" placeholder="0.0"></div>
+        <div class="field"><label>Consignaciones</label><select id="m3_cons"><option value="">—</option><option>al día</option><option>retrasadas</option></select></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Comprobantes</label><select id="m3_comp"><option value="">—</option><option>organizados</option><option>desorden</option></select></div>
+        <div class="field"><label>POS</label><select id="m3_pos"><option value="">—</option><option>funciona</option><option>no funciona</option></select></div>
+      </div>
+      <div class="score-field"><label>Puntaje módulo 3</label><input type="number" id="s3" min="0" max="20" placeholder="0" oninput="actualizar()"><span class="score-max">/ 20</span></div>
+    </div>
+  </div>
+
+  <!-- M4 Inventario · 15 pts -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSec(4)">
+      <div class="section-left"><div class="section-icon ic4">📦</div><div><div class="section-name">Inventario</div><div class="section-max">Módulo 4 · máx 15</div></div></div>
+      <div style="display:flex;align-items:center;gap:10px;"><span class="section-pts" id="pts4">—</span><span class="chevron" id="ch4">⌄</span></div>
+    </div>
+    <div class="section-body" id="body4">
+      <div class="row3">
+        <div class="field"><label>Cervezas BBC %</label><input type="number" id="m4_cerv" min="0" max="100" placeholder="100"></div>
+        <div class="field"><label>Licores %</label><input type="number" id="m4_lic" min="0" max="100" placeholder="100"></div>
+        <div class="field"><label>Alimentos %</label><input type="number" id="m4_alim" min="0" max="100" placeholder="100"></div>
+      </div>
+      <div class="field"><label>Productos vencidos</label><select id="m4_venc"><option value="">—</option><option>ninguno</option><option>sí hay</option></select></div>
+      <div class="score-field"><label>Puntaje módulo 4</label><input type="number" id="s4" min="0" max="15" placeholder="0" oninput="actualizar()"><span class="score-max">/ 15</span></div>
+    </div>
+  </div>
+
+  <!-- M5 Operaciones · 15 pts -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSec(5)">
+      <div class="section-left"><div class="section-icon ic5">🧹</div><div><div class="section-name">Operaciones</div><div class="section-max">Módulo 5 · máx 15</div></div></div>
+      <div style="display:flex;align-items:center;gap:10px;"><span class="section-pts" id="pts5">—</span><span class="chevron" id="ch5">⌄</span></div>
+    </div>
+    <div class="section-body" id="body5">
+      <div class="row2">
+        <div class="field"><label>Limpieza cocina</label><select id="m5_l_coc"><option value="">—</option><option>ok</option><option>deficiente</option></select></div>
+        <div class="field"><label>Limpieza barra</label><select id="m5_l_bar"><option value="">—</option><option>ok</option><option>deficiente</option></select></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Limpieza baños</label><select id="m5_l_ban"><option value="">—</option><option>ok</option><option>deficiente</option></select></div>
+        <div class="field"><label>Limpieza mesas</label><select id="m5_l_mes"><option value="">—</option><option>ok</option><option>deficiente</option></select></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Impresora bebidas</label><select id="m5_imp_b"><option value="">—</option><option>funciona</option><option>no funciona</option></select></div>
+        <div class="field"><label>Impresora cocina</label><select id="m5_imp_c"><option value="">—</option><option>funciona</option><option>no funciona</option></select></div>
+      </div>
+      <div class="row3">
+        <div class="field"><label>Frigorífico</label><select id="m5_frio"><option value="">—</option><option>funciona</option><option>no funciona</option></select></div>
+        <div class="field"><label>Iluminación</label><select id="m5_luz"><option value="">—</option><option>ok</option><option>deficiente</option></select></div>
+        <div class="field"><label>Aire acond.</label><select id="m5_ac"><option value="">—</option><option>funciona</option><option>no funciona</option></select></div>
+      </div>
+      <div class="score-field"><label>Puntaje módulo 5</label><input type="number" id="s5" min="0" max="15" placeholder="0" oninput="actualizar()"><span class="score-max">/ 15</span></div>
+    </div>
+  </div>
+
+  <!-- M6 Mantenimiento · 15 pts -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSec(6)">
+      <div class="section-left"><div class="section-icon ic6">🔩</div><div><div class="section-name">Mantenimiento</div><div class="section-max">Módulo 6 · máx 15</div></div></div>
+      <div style="display:flex;align-items:center;gap:10px;"><span class="section-pts" id="pts6">—</span><span class="chevron" id="ch6">⌄</span></div>
+    </div>
+    <div class="section-body" id="body6">
+      <div class="row2">
+        <div class="field"><label>Sillas</label><select id="m6_sillas"><option value="">—</option><option>completas y en buen estado</option><option>faltantes o dañadas</option></select></div>
+        <div class="field"><label>Mesas</label><select id="m6_mesas"><option value="">—</option><option>completas y en buen estado</option><option>faltantes o dañadas</option></select></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Pisos y paredes</label><select id="m6_pisos"><option value="">—</option><option>en buen estado</option><option>con daños</option></select></div>
+        <div class="field"><label>Luces</label><select id="m6_luces"><option value="">—</option><option>completas y funcionando</option><option>faltantes o dañadas</option></select></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Sistema POS</label><select id="m6_pos"><option value="">—</option><option>completo y funcionando</option><option>con fallas</option></select></div>
+        <div class="field"><label>Equipos cocina</label><select id="m6_eq_coc"><option value="">—</option><option>completos y funcionando</option><option>con fallas</option></select></div>
+      </div>
+      <div class="field"><label>Equipos barra</label><select id="m6_eq_bar"><option value="">—</option><option>completos y funcionando</option><option>con fallas</option></select></div>
+      <div class="field"><label>Observaciones mantenimiento</label><input type="text" id="m6_obs" placeholder="Detallar equipos o áreas con fallas"></div>
+      <div class="score-field"><label>Puntaje módulo 6</label><input type="number" id="s6" min="0" max="15" placeholder="0" oninput="actualizar()"><span class="score-max">/ 15</span></div>
+    </div>
+  </div>
+
+  <!-- Fotos -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSec(8)">
+      <div class="section-left"><div class="section-icon icf">📸</div><div><div class="section-name">Fotos del punto</div><div class="section-max">Máximo 5 fotos · evidencia visual</div></div></div>
+      <span class="chevron" id="ch8">⌄</span>
+    </div>
+    <div class="section-body" id="body8">
+      <div style="font-size:12px;color:var(--muted);margin-top:4px;margin-bottom:10px;">Toca cada cuadro para agregar una foto. Las fotos se suben a Google Drive automáticamente.</div>
+      <div class="photo-grid" id="photo-grid">
+        <div class="photo-slot" onclick="abrirFoto(0)" id="slot0"><span class="add-icon">+</span></div>
+        <div class="photo-slot" onclick="abrirFoto(1)" id="slot1"><span class="add-icon">+</span></div>
+        <div class="photo-slot" onclick="abrirFoto(2)" id="slot2"><span class="add-icon">+</span></div>
+        <div class="photo-slot" onclick="abrirFoto(3)" id="slot3"><span class="add-icon">+</span></div>
+        <div class="photo-slot" onclick="abrirFoto(4)" id="slot4"><span class="add-icon">+</span></div>
+      </div>
+      <input type="file" accept="image/*" capture="environment" class="photo-input" id="photo-input-0" onchange="procesarFoto(0,this)">
+      <input type="file" accept="image/*" capture="environment" class="photo-input" id="photo-input-1" onchange="procesarFoto(1,this)">
+      <input type="file" accept="image/*" capture="environment" class="photo-input" id="photo-input-2" onchange="procesarFoto(2,this)">
+      <input type="file" accept="image/*" capture="environment" class="photo-input" id="photo-input-3" onchange="procesarFoto(3,this)">
+      <input type="file" accept="image/*" capture="environment" class="photo-input" id="photo-input-4" onchange="procesarFoto(4,this)">
+      <div class="photo-count" id="photo-count">0 / 5 fotos agregadas</div>
+    </div>
+  </div>
+
+  <!-- Hallazgos -->
+  <div class="section">
+    <div class="section-header" onclick="toggleSec(7)">
+      <div class="section-left"><div class="section-icon ic0">⚠️</div><div><div class="section-name">Hallazgos & notas</div><div class="section-max">Observaciones críticas</div></div></div>
+      <span class="chevron" id="ch7">⌄</span>
+    </div>
+    <div class="section-body" id="body7">
+      <div class="field"><label>Hallazgos críticos (uno por línea)</label>
+        <textarea id="hallazgos" placeholder="ej: Frigorífico sin funcionar&#10;Diferencia en caja del 8%&#10;Sillas dañadas en zona de mesas"></textarea>
+      </div>
+      <div class="field"><label>Notas adicionales</label>
+        <textarea id="notas" placeholder="Contexto del PDV, observaciones generales..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Total -->
+  <div class="total-section" id="total-section">
+    <div class="total-row">
+      <div>
+        <div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Puntaje total</div>
+        <div class="total-num" id="total-num">0</div>
+      </div>
+      <div class="estado-badge" id="estado-badge">—</div>
+    </div>
+    <div class="module-scores">
+      <div class="mod-score-item"><div class="mod-score-label">M1 Experiencia /20</div><div class="mod-score-val" id="r1">—</div></div>
+      <div class="mod-score-item"><div class="mod-score-label">M2 Marketing /15</div><div class="mod-score-val" id="r2">—</div></div>
+      <div class="mod-score-item"><div class="mod-score-label">M3 Finanzas /20</div><div class="mod-score-val" id="r3">—</div></div>
+      <div class="mod-score-item"><div class="mod-score-label">M4 Inventario /15</div><div class="mod-score-val" id="r4">—</div></div>
+      <div class="mod-score-item"><div class="mod-score-label">M5 Operaciones /15</div><div class="mod-score-val" id="r5">—</div></div>
+      <div class="mod-score-item"><div class="mod-score-label">M6 Mantenimiento /15</div><div class="mod-score-val" id="r6">—</div></div>
+    </div>
+  </div>
+
+  <div class="tasks-section" id="tasks-section">
+    <div class="tasks-header">📋 Tareas de mejora</div>
+    <div id="tasks-body"></div>
+  </div>
+
+  <div class="upload-progress" id="upload-progress">
+    <div class="upload-label" id="upload-label">Subiendo fotos…</div>
+    <div class="upload-bar-wrap"><div class="upload-bar" id="upload-bar"></div></div>
+  </div>
+
+</div>
+
+<div style="position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(14,14,15,0.95);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:12px 16px;display:flex;gap:10px;">
+  <button class="btn btn-calc" onclick="calcular()">Calcular</button>
+  <button class="btn btn-send" id="btn-enviar" onclick="enviar()">Guardar en Sheets →</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SCRIPT_URL = 'https://script.google.com/a/macros/templecolombia.com/s/AKfycby9e0zwswKBWhs8UKRc6hSMg7EUyoHhkq_SdlUoFMmVhJZemImvf7oUUkgZvKMG9L6y/exec';
+
+// State
+let gpsData = { lat: null, lng: null, address: 'No disponible' };
+let tsInicio = null;
+let fotos = [null, null, null, null, null]; // base64
+
+// ── GPS + Timestamp ──
+window.onload = function() {
+  tsInicio = new Date();
+  document.getElementById('ts-value').textContent = formatTs(tsInicio);
+  obtenerGPS();
+};
+
+function formatTs(d) {
+  return d.toLocaleDateString('es-CO', { day:'2-digit', month:'2-digit', year:'numeric' }) +
+    ' ' + d.toLocaleTimeString('es-CO', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+}
+
+function obtenerGPS() {
+  if (!navigator.geolocation) {
+    setGPS('GPS no disponible en este dispositivo', 'error');
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      gpsData.lat = pos.coords.latitude.toFixed(6);
+      gpsData.lng = pos.coords.longitude.toFixed(6);
+      gpsData.address = gpsData.lat + ', ' + gpsData.lng;
+      document.getElementById('gps-value').textContent = '📍 ' + gpsData.lat + ', ' + gpsData.lng;
+      document.getElementById('gps-dot').className = 'gps-dot ok';
+      // Try reverse geocode via open API
+      fetch(`https://nominatim.openstreetmap.org/reverse?lat=${gpsData.lat}&lon=${gpsData.lng}&format=json`)
+        .then(r => r.json())
+        .then(d => {
+          const addr = d.address;
+          const readable = [addr.road, addr.neighbourhood, addr.city || addr.town].filter(Boolean).join(', ');
+          if (readable) {
+            gpsData.address = readable + ' (' + gpsData.lat + ', ' + gpsData.lng + ')';
+            document.getElementById('gps-value').textContent = '📍 ' + readable;
+          }
+        }).catch(() => {});
+    },
+    err => {
+      const msgs = { 1:'Permiso denegado — activa el GPS', 2:'Señal GPS no encontrada', 3:'Tiempo de espera agotado' };
+      setGPS(msgs[err.code] || 'Error de GPS', 'error');
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+  );
+}
+
+function setGPS(msg, state) {
+  document.getElementById('gps-value').textContent = msg;
+  document.getElementById('gps-dot').className = 'gps-dot ' + state;
+}
+
+// ── Sections ──
+function toggleSec(n) {
+  const body = document.getElementById('body' + n);
+  const ch = document.getElementById('ch' + n);
+  const open = body.classList.toggle('open');
+  if (ch) ch.classList.toggle('open', open);
+}
+
+function v(id) { return document.getElementById(id); }
+function val(id) { return parseFloat(v(id).value) || 0; }
+function txt(id) { const el = v(id); return el ? el.value || '' : ''; }
+
+// ── Score ──
+function actualizar() {
+  const s = [val('s1'),val('s2'),val('s3'),val('s4'),val('s5'),val('s6')];
+  const total = s.reduce((a,b) => a+b, 0);
+  v('header-score').textContent = total + ' / 100';
+  v('progress').style.width = Math.min(total, 100) + '%';
+  s.forEach((sc, i) => { v('pts'+(i+1)).textContent = sc || '—'; });
+}
+
+function calcular() {
+  const s = [val('s1'),val('s2'),val('s3'),val('s4'),val('s5'),val('s6')];
+  const total = s.reduce((a,b) => a+b, 0);
+  v('total-section').style.display = 'block';
+  v('total-num').textContent = total;
+  s.forEach((sc, i) => { v('r'+(i+1)).textContent = sc; });
+  const badge = v('estado-badge');
+  if (total >= 85) { badge.textContent = '🟢 VERDE'; badge.className = 'estado-badge verde'; }
+  else if (total >= 70) { badge.textContent = '🟡 AMARILLO'; badge.className = 'estado-badge amarillo'; }
+  else { badge.textContent = '🔴 ROJO'; badge.className = 'estado-badge rojo'; }
+  generarTareas();
+  v('total-section').scrollIntoView({ behavior:'smooth', block:'center' });
+}
+
+// ── Tasks ──
+function generarTareas() {
+  const hallazgos = txt('hallazgos').split('\n').filter(h => h.trim());
+  if (!hallazgos.length) { v('tasks-section').style.display = 'none'; return; }
+  const mapa = {
+    'caja':'Gte Ops','diferencia':'Gte Ops','consignac':'Gte Ops','comprobante':'Gte Ops',
+    'frigor':'Mantenimiento','impresora':'Mantenimiento','iluminac':'Mantenimiento','ac':'Mantenimiento','aire':'Mantenimiento',
+    'silla':'Mantenimiento','piso':'Mantenimiento','pared':'Mantenimiento','luz':'Mantenimiento','equipo':'Mantenimiento','pos':'Mantenimiento',
+    'uniforme':'Coordinador','aseo':'Coordinador','accesorio':'Coordinador','aviso':'Coordinador',
+    'vencido':'Compras','cerveza':'Compras','licor':'Compras','alimento':'Compras',
+    'menú':'Coordinador','cristal':'Coordinador','limpieza':'Coordinador'
+  };
+  v('tasks-section').style.display = 'block';
+  const today = new Date();
+  v('tasks-body').innerHTML = hallazgos.map(h => {
+    const hl = h.toLowerCase();
+    let resp = 'Coordinador', dias = 7;
+    for (const [k, r] of Object.entries(mapa)) { if (hl.includes(k)) { resp = r; break; } }
+    if (hl.includes('no funciona') || hl.includes('vencido') || hl.includes('diferencia') || hl.includes('dañad')) dias = 3;
+    const fecha = new Date(today); fecha.setDate(fecha.getDate() + dias);
+    const fStr = fecha.toLocaleDateString('es-CO', { day:'2-digit', month:'2-digit', year:'numeric' });
+    return `<div class="task-item">
+      <div class="task-hallazgo">${h}</div>
+      <div class="task-meta">
+        <span class="tag tag-resp">${resp}</span>
+        <span class="tag ${dias===3?'tag-alta':'tag-media'}">${dias===3?'Alta — 3d':'Media — 7d'}</span>
+        <span class="tag-fecha">→ ${fStr}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Photos ──
+function abrirFoto(i) {
+  document.getElementById('photo-input-' + i).click();
+}
+
+function procesarFoto(i, input) {
+  const file = input.files[0];
+  if (!file) return;
+  // Compress to max 800px
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const max = 800;
+      let w = img.width, h = img.height;
+      if (w > max) { h = h * max / w; w = max; }
+      if (h > max) { w = w * max / h; h = max; }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      const b64 = canvas.toDataURL('image/jpeg', 0.7);
+      fotos[i] = b64;
+      // Show preview
+      const slot = document.getElementById('slot' + i);
+      slot.innerHTML = `<img src="${b64}"><div class="remove-btn" onclick="event.stopPropagation();eliminarFoto(${i})">✕</div>`;
+      actualizarConteoFotos();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function eliminarFoto(i) {
+  fotos[i] = null;
+  const slot = document.getElementById('slot' + i);
+  slot.innerHTML = '<span class="add-icon">+</span>';
+  slot.onclick = () => abrirFoto(i);
+  document.getElementById('photo-input-' + i).value = '';
+  actualizarConteoFotos();
+}
+
+function actualizarConteoFotos() {
+  const n = fotos.filter(f => f !== null).length;
+  v('photo-count').textContent = n + ' / 5 fotos agregadas';
+}
+
+// ── Toast ──
+function mostrarToast(msg, color) {
+  const t = v('toast');
+  t.textContent = msg; t.style.background = color || 'var(--green)';
+  t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ── Send ──
+async function enviar() {
+  const s = [val('s1'),val('s2'),val('s3'),val('s4'),val('s5'),val('s6')];
+  const total = s.reduce((a,b) => a+b, 0);
+  if (total === 0) { mostrarToast('Primero llena los puntajes', '#ef4444'); return; }
+  if (!txt('f_cod')) { mostrarToast('Falta el código del PDV', '#ef4444'); return; }
+
+  const estado = total >= 85 ? 'VERDE' : total >= 70 ? 'AMARILLO' : 'ROJO';
+  const tsEnvio = formatTs(new Date());
+  const fotosActivas = fotos.filter(f => f !== null);
+
+  const payload = {
+    row: [
+      formatTs(tsInicio),           // Timestamp inicio (no editable)
+      tsEnvio,                       // Timestamp envío
+      gpsData.lat || 'N/D',         // GPS Lat
+      gpsData.lng || 'N/D',         // GPS Lng
+      gpsData.address,               // Dirección GPS
+      txt('f_cod'), txt('f_nombre'), txt('f_zona'), txt('f_tipo'),
+      txt('m1_menu'), txt('m1_precios'), txt('m1_cat'), txt('m1_cat_det'), txt('m1_cristal'), txt('m1_menaje'), s[0],
+      txt('m2_av_ent'), txt('m2_av_int'), txt('m2_unif_b'), txt('m2_unif_b_det'), txt('m2_unif_c'), txt('m2_unif_c_det'), txt('m2_aseo'), txt('m2_personal'), s[1],
+      txt('m3_caja'), txt('m3_dif'), txt('m3_cons'), txt('m3_comp'), txt('m3_pos'), s[2],
+      txt('m4_cerv'), txt('m4_lic'), txt('m4_alim'), txt('m4_venc'), s[3],
+      txt('m5_l_coc'), txt('m5_l_bar'), txt('m5_l_ban'), txt('m5_l_mes'), txt('m5_imp_b'), txt('m5_imp_c'), txt('m5_frio'), txt('m5_luz'), txt('m5_ac'), s[4],
+      txt('m6_sillas'), txt('m6_mesas'), txt('m6_pisos'), txt('m6_luces'), txt('m6_pos'), txt('m6_eq_coc'), txt('m6_eq_bar'), txt('m6_obs'), s[5],
+      total, estado,
+      txt('hallazgos').replace(/\n/g, ' | '),
+      txt('notas'),
+      fotosActivas.length  // Número de fotos
+    ],
+    fotos: fotosActivas,             // Array de base64
+    pdv: txt('f_cod') + '_' + txt('f_nombre')
+  };
+
+  const btn = v('btn-enviar');
+  btn.disabled = true;
+  btn.textContent = fotosActivas.length > 0 ? 'Subiendo fotos…' : 'Guardando…';
+
+  if (fotosActivas.length > 0) {
+    v('upload-progress').style.display = 'block';
+    v('upload-bar').style.width = '30%';
+    v('upload-label').textContent = `Subiendo ${fotosActivas.length} foto(s) a Drive…`;
+  }
+
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    v('upload-bar').style.width = '100%';
+    setTimeout(() => {
+      v('upload-progress').style.display = 'none';
+      mostrarToast('✓ Guardado en Google Sheets' + (fotosActivas.length > 0 ? ' + Drive' : ''));
+      btn.textContent = '✓ Enviado';
+      setTimeout(() => { btn.disabled = false; btn.textContent = 'Guardar en Sheets →'; }, 3000);
+    }, 600);
+  } catch(e) {
+    v('upload-progress').style.display = 'none';
+    mostrarToast('Error al guardar — verifica conexión', '#ef4444');
+    btn.disabled = false; btn.textContent = 'Guardar en Sheets →';
+  }
+}
+</script>
+</body>
+</html>
