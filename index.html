@@ -6,625 +6,681 @@
 <title>BBC Auditorías</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:#0e0e0f;--surface:#1a1a1c;--surface2:#242427;--border:#2e2e32;
-  --text:#f0f0f0;--muted:#888;--accent:#f5a623;--green:#22c55e;
-  --radius:14px;--font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
-}
+:root{--bg:#0e0e0f;--surface:#1a1a1c;--surface2:#242427;--border:#2e2e32;--text:#f0f0f0;--muted:#888;--accent:#f5a623;--green:#22c55e;--radius:14px;--font:'DM Sans',sans-serif;--mono:'DM Mono',monospace}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;min-height:100vh}
-.app-header{position:sticky;top:0;z-index:100;background:rgba(14,14,15,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between}
-.app-logo{display:flex;align-items:center;gap:10px}
-.logo-dot{width:28px;height:28px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center}
-.logo-dot svg{width:16px;height:16px;fill:#000}
-.app-title{font-size:15px;font-weight:600;letter-spacing:-0.01em}
-.app-subtitle{font-size:11px;color:var(--muted)}
-.score-chip{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-family:var(--mono);font-size:14px;font-weight:500;color:var(--text)}
+.app-header{position:sticky;top:0;z-index:100;background:rgba(14,14,15,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
+.logo-row{display:flex;align-items:center;gap:10px}
+.logo-dot{width:26px;height:26px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center}
+.logo-dot svg{width:14px;height:14px;fill:#000}
+.app-title{font-size:14px;font-weight:600}
+.app-sub{font-size:11px;color:var(--muted)}
+.score-chip{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-family:var(--mono);font-size:13px;font-weight:500}
 .progress-bar{height:3px;background:var(--border)}
-.progress-fill{height:100%;background:var(--accent);transition:width 0.4s ease;width:0%}
-.container{padding:20px 16px 100px;max-width:520px;margin:0 auto}
-
-/* GPS Banner */
-.gps-banner{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;gap:12px}
-.gps-dot{width:10px;height:10px;border-radius:50%;background:#888;flex-shrink:0;transition:background 0.3s}
-.gps-dot.ok{background:var(--green)}
-.gps-dot.error{background:#ef4444}
-.gps-dot.loading{background:var(--accent);animation:pulse 1s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
-.gps-info{flex:1}
-.gps-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px}
-.gps-value{font-size:13px;color:var(--text);font-family:var(--mono)}
-
-/* Timestamp strip */
-.ts-strip{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
-.ts-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em}
-.ts-value{font-size:13px;font-family:var(--mono);color:var(--accent);font-weight:500}
-.ts-lock{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px}
-
-/* PDV card */
-.pdv-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:12px}
-.pdv-card h2{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:14px}
-
-/* Sections */
-.section{margin-bottom:12px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);background:var(--surface)}
-.section-header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;cursor:pointer;user-select:none;transition:background 0.15s}
-.section-header:active{background:var(--surface2)}
-.section-left{display:flex;align-items:center;gap:12px}
-.section-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-.ic1{background:#1e2a1a}.ic2{background:#1a1e2e}.ic3{background:#2a1e1a}.ic4{background:#1e1a2a}.ic5{background:#1a2a28}.ic6{background:#2a1a22}.ic0{background:#2a2a1a}.icf{background:#1a2020}
-.section-name{font-size:14px;font-weight:600}
-.section-max{font-size:11px;color:var(--muted);margin-top:1px}
-.section-pts{font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:500}
-.chevron{color:var(--muted);font-size:18px;transition:transform 0.25s}
-.chevron.open{transform:rotate(180deg)}
-.section-body{display:none;padding:0 18px 18px;border-top:1px solid var(--border)}
-.section-body.open{display:block}
-
-/* Fields */
-.field{margin-top:14px}
-.field label{display:block;font-size:12px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px}
-.field input,.field select,.field textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 13px;font-size:15px;font-family:var(--font);color:var(--text);outline:none;appearance:none;-webkit-appearance:none;transition:border-color 0.15s}
+.progress-fill{height:100%;background:var(--accent);transition:width 0.4s;width:0%}
+.draft-banner{background:#1a1f12;border:1px solid #2d3d1a;border-radius:10px;padding:10px 14px;margin:12px 16px 0;display:none;align-items:center;justify-content:space-between;gap:10px}
+.draft-banner.show{display:flex}
+.draft-text{font-size:12px;color:#a3c47a}
+.draft-clear{font-size:11px;color:var(--muted);cursor:pointer;text-decoration:underline;white-space:nowrap}
+.container{padding:12px 16px 100px;max-width:520px;margin:0 auto}
+.gps-banner{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+.gps-dot{width:9px;height:9px;border-radius:50%;background:#888;flex-shrink:0}
+.gps-dot.ok{background:var(--green)}.gps-dot.err{background:#ef4444}.gps-dot.loading{background:var(--accent);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.gps-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:1px}
+.gps-val{font-size:12px;color:var(--text);font-family:var(--mono)}
+.ts-strip{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:9px 13px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.ts-label{font-size:11px;color:var(--muted)}.ts-val{font-size:12px;font-family:var(--mono);color:var(--accent);font-weight:500}.ts-lock{font-size:11px;color:var(--muted)}
+.pdv-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:10px}
+.pdv-card h2{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px}
+.pdv-auto{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-top:10px;display:none}
+.pdv-auto-row{display:flex;gap:16px;flex-wrap:wrap}
+.pdv-auto-item{font-size:12px;color:var(--muted)}
+.pdv-auto-item span{color:var(--text);font-weight:500;display:block;margin-top:1px}
+.section{margin-bottom:10px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);background:var(--surface)}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none}
+.sec-hdr:active{background:var(--surface2)}
+.sec-left{display:flex;align-items:center;gap:10px}
+.sec-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.ic1{background:#1e2a1a}.ic2{background:#1a1e2e}.ic3{background:#2a1e1a}.ic4{background:#1e1a2a}.ic5{background:#1a2a28}.ic6{background:#2a1a22}.ic7{background:#1a2226}.ic0{background:#2a2a1a}.icf{background:#1a2020}
+.sec-name{font-size:14px;font-weight:600}.sec-max{font-size:11px;color:var(--muted);margin-top:1px}
+.sec-pts{font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:500}
+.chevron{color:var(--muted);font-size:16px;transition:transform .25s}.chevron.open{transform:rotate(180deg)}
+.sec-body{display:none;padding:0 16px 16px;border-top:1px solid var(--border)}.sec-body.open{display:block}
+.field{margin-top:12px}
+.field label{display:block;font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;font-size:14px;font-family:var(--font);color:var(--text);outline:none;appearance:none;-webkit-appearance:none;transition:border-color .15s}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
-.field textarea{resize:none;height:80px;line-height:1.5}
-.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:36px}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.score-field{margin-top:16px;padding-top:14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.field textarea{resize:none;height:64px;line-height:1.5;font-size:13px}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:34px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+/* Item block */
+.item-block{margin-top:12px;background:var(--surface2);border-radius:10px;padding:10px 12px}
+.item-block label{display:block;font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.item-block select,.item-block input[type=number],.item-block input[type=text]{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 11px;font-size:14px;font-family:var(--font);color:var(--text);outline:none;appearance:none;-webkit-appearance:none}
+.item-block select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;padding-right:32px}
+.item-block select:focus,.item-block input:focus{border-color:var(--accent);outline:none}
+.na-badge{display:none;font-size:10px;background:#2a2a1a;color:#888;padding:2px 8px;border-radius:5px;margin-left:6px;vertical-align:middle}
+.note-toggle{font-size:11px;color:var(--muted);cursor:pointer;margin-top:6px;display:inline-block;text-decoration:underline}
+.note-area{margin-top:6px;display:none}
+.note-area textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:13px;font-family:var(--font);color:var(--text);resize:none;height:56px;outline:none;line-height:1.5}
+.note-area textarea:focus{border-color:var(--accent)}
+.note-area.open{display:block}
+/* Score helper */
+.score-helper{margin-top:10px;padding:8px 10px;background:var(--bg);border-radius:8px;border:1px solid var(--border);font-size:11px;color:var(--muted);display:none}
+.score-helper.show{display:block}
+.score-field{margin-top:14px;padding-top:12px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px}
 .score-field label{font-size:13px;font-weight:600;flex:1}
-.score-field input{width:72px;text-align:center;font-family:var(--mono);font-size:16px;font-weight:500}
-.score-max{font-size:13px;color:var(--muted);white-space:nowrap}
-
+.score-field input{width:68px;text-align:center;font-family:var(--mono);font-size:15px;font-weight:500;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:8px;color:var(--text);outline:none}
+.score-field input:focus{border-color:var(--accent)}
+.score-max{font-size:12px;color:var(--muted);white-space:nowrap}
+/* Info fields (ventas) */
+.info-field{margin-top:10px}
+.info-field label{display:block;font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.info-field input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 11px;font-size:14px;font-family:var(--mono);color:var(--text);outline:none}
+.info-field input:focus{border-color:var(--accent)}
+.info-section-title{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:14px;margin-bottom:2px;padding-bottom:6px;border-bottom:1px solid var(--border)}
 /* Photos */
-.photo-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:8px}
-.photo-slot{aspect-ratio:1;border-radius:10px;border:1.5px dashed var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;transition:border-color 0.15s}
-.photo-slot:active{border-color:var(--accent)}
-.photo-slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:9px}
-.photo-slot .add-icon{font-size:22px;color:var(--muted)}
-.photo-slot .remove-btn{position:absolute;top:3px;right:3px;width:20px;height:20px;background:rgba(0,0,0,0.7);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;z-index:2;cursor:pointer}
+.photo-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px}
+.photo-slot{aspect-ratio:1;border-radius:9px;border:1.5px dashed var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden}
+.photo-slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:8px}
+.photo-slot .add-icon{font-size:20px;color:var(--muted)}
+.photo-slot .rm{position:absolute;top:2px;right:2px;width:18px;height:18px;background:rgba(0,0,0,.75);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;z-index:2;cursor:pointer}
 .photo-input{display:none}
-.photo-count{font-size:11px;color:var(--muted);margin-top:6px}
-
+.photo-count{font-size:11px;color:var(--muted);margin-top:5px}
 /* Total */
-.total-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 18px;margin-bottom:16px;display:none}
-.total-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.total-num{font-family:var(--mono);font-size:40px;font-weight:500;line-height:1}
-.estado-badge{padding:8px 16px;border-radius:20px;font-size:13px;font-weight:600}
+.total-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 16px;margin-bottom:14px;display:none}
+.total-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.total-num{font-family:var(--mono);font-size:38px;font-weight:500;line-height:1}
+.estado-badge{padding:7px 14px;border-radius:20px;font-size:12px;font-weight:600}
 .verde{background:#14532d;color:#86efac}.amarillo{background:#713f12;color:#fde68a}.rojo{background:#7f1d1d;color:#fca5a5}
-.module-scores{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.mod-score-item{background:var(--surface2);border-radius:10px;padding:10px 12px}
-.mod-score-label{font-size:11px;color:var(--muted)}
-.mod-score-val{font-family:var(--mono);font-size:15px;font-weight:500;margin-top:2px}
-
+.module-scores{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.mod-item{background:var(--surface2);border-radius:9px;padding:9px 11px}
+.mod-label{font-size:10px;color:var(--muted)}.mod-val{font-family:var(--mono);font-size:14px;font-weight:500;margin-top:1px}
 /* Tasks */
-.tasks-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;display:none}
-.tasks-header{padding:14px 18px;font-size:13px;font-weight:600;border-bottom:1px solid var(--border)}
-.task-item{padding:12px 18px;border-bottom:1px solid var(--border)}
-.task-item:last-child{border-bottom:none}
-.task-hallazgo{font-size:13px;line-height:1.4;margin-bottom:6px}
-.task-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.tag{font-size:11px;padding:3px 9px;border-radius:6px;font-weight:500}
-.tag-resp{background:var(--surface2);color:var(--muted)}.tag-alta{background:#7f1d1d;color:#fca5a5}.tag-media{background:#713f12;color:#fde68a}
-.tag-fecha{color:var(--muted);font-size:11px}
-
-/* Buttons */
-.btn{flex:1;padding:14px;border-radius:12px;font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all 0.15s}
-.btn:active{transform:scale(0.97)}
+.tasks-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:14px;display:none}
+.tasks-hdr{padding:12px 16px;font-size:13px;font-weight:600;border-bottom:1px solid var(--border)}
+.task-item{padding:11px 16px;border-bottom:1px solid var(--border)}.task-item:last-child{border-bottom:none}
+.task-h{font-size:13px;line-height:1.4;margin-bottom:5px}
+.task-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.tag{font-size:10px;padding:3px 8px;border-radius:5px;font-weight:500}
+.tag-r{background:var(--surface2);color:var(--muted)}.tag-a{background:#7f1d1d;color:#fca5a5}.tag-m{background:#713f12;color:#fde68a}.tag-f{color:var(--muted);font-size:10px}
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(14,14,15,.96);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:10px 16px;display:flex;gap:8px}
+.btn{flex:1;padding:13px;border-radius:11px;font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .15s}
+.btn:active{transform:scale(.97)}
 .btn-calc{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
-.btn-send{background:var(--accent);color:#000}
-.btn-send:disabled{opacity:0.4;cursor:not-allowed}
-
-/* Toast */
-.toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--green);color:#000;padding:12px 20px;border-radius:12px;font-size:14px;font-weight:600;opacity:0;transition:all 0.3s;pointer-events:none;z-index:200;white-space:nowrap}
+.btn-send{background:var(--accent);color:#000}.btn-send:disabled{opacity:.4;cursor:not-allowed}
+.toast{position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-16px);background:var(--green);color:#000;padding:10px 18px;border-radius:11px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;pointer-events:none;z-index:200;white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* Upload progress */
-.upload-progress{background:var(--surface2);border-radius:10px;padding:12px 14px;margin-top:10px;display:none}
-.upload-bar-wrap{background:var(--border);border-radius:4px;height:4px;margin-top:8px;overflow:hidden}
-.upload-bar{height:100%;background:var(--accent);width:0%;transition:width 0.3s}
-.upload-label{font-size:12px;color:var(--muted)}
 </style>
 </head>
 <body>
 
 <div class="app-header">
-  <div class="app-logo">
+  <div class="logo-row">
     <div class="logo-dot"><svg viewBox="0 0 16 16"><path d="M8 2l1.5 4.5H14l-3.7 2.7 1.4 4.3L8 11l-3.7 2.5 1.4-4.3L2 6.5h4.5z"/></svg></div>
-    <div><div class="app-title">BBC Auditorías</div><div class="app-subtitle">Colombia · 6 módulos · 100 pts</div></div>
+    <div><div class="app-title">BBC Auditorías</div><div class="app-sub">7 módulos · 100 pts</div></div>
   </div>
   <div class="score-chip" id="header-score">0 / 100</div>
 </div>
 <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
 
+<div class="draft-banner" id="draft-banner">
+  <span class="draft-text">📋 Borrador guardado — continuando donde lo dejaste</span>
+  <span class="draft-clear" onclick="limpiarBorrador()">Empezar nueva</span>
+</div>
+
 <div class="container">
 
-  <!-- GPS + Timestamp -->
   <div class="gps-banner">
     <div class="gps-dot loading" id="gps-dot"></div>
-    <div class="gps-info">
-      <div class="gps-label">Ubicación GPS</div>
-      <div class="gps-value" id="gps-value">Obteniendo ubicación…</div>
-    </div>
+    <div style="flex:1"><div class="gps-label">Ubicación GPS</div><div class="gps-val" id="gps-val">Obteniendo ubicación…</div></div>
   </div>
-
   <div class="ts-strip">
-    <div>
-      <div class="ts-label">Fecha y hora de inicio</div>
-      <div class="ts-value" id="ts-value">—</div>
-    </div>
+    <div><div class="ts-label">Inicio de auditoría</div><div class="ts-val" id="ts-val">—</div></div>
     <div class="ts-lock">🔒 No editable</div>
   </div>
 
   <!-- PDV -->
   <div class="pdv-card">
-    <h2>Datos del punto</h2>
-    <div class="row2" style="margin-bottom:10px;">
-      <div class="field" style="margin-top:0;"><label>Código PDV</label><input type="text" id="f_cod" placeholder="AR1" autocomplete="off"></div>
-      <div class="field" style="margin-top:0;"><label>Nombre PDV</label><input type="text" id="f_nombre" placeholder="Pub Andino"></div>
+    <h2>Punto de venta</h2>
+    <div class="field" style="margin-top:0">
+      <label>Selecciona el PDV</label>
+      <select id="f_pdv" onchange="autocompletar();guardar()">
+        <option value="">— Selecciona un PDV —</option>
+        <optgroup label="Centro FRQ — Harrison">
+          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">BEER PALS JAVERIANA</option>
+          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">BEER PALS SAS CL 109</option>
+          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">BODEGA KUZUDAMA MALL PLAZA</option>
+          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">DUYAN INVERSIONES SAS SOACHA TERREROS</option>
+          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">EL BREWER BODEGA BOGOTA COLINA 152</option>
+          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">GRUPO PROYECATRICO SAS - NUESTRO BOGOTA</option>
+          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">HARBOUR TOWN BOGOTA ALSACIA</option>
+          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">HARBOUR TOWN SAS HAYUELOS</option>
+          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">INDUSTRIAS VANDELAY S.A.S CHIA</option>
+          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">INDUSTRIAS VANDELAY UNICENTRO BOGOTA</option>
+          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">INVERSIONES AHG - GRAN ESTACION</option>
+          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">INVERSIONES AHG BOGOTÁ CALLE 165</option>
+          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="PUB">INVERSIONES AHG CENTRO EMPRESARIAL 127</option>
+          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">INVERSIONES AHG UNICENTRO OCCIDENTE</option>
+          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">OIKOS BODEGA BBC TOCANCIPA</option>
+          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">OLD STYLE BOGOTA TEQUENDAMA</option>
+          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">POLA INVESTMENT BODEGA CALLE 100 WTC</option>
+          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">POLA INVESTMENT BOGOTÁ SALITRE</option>
+          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">POLA INVESTMENT GROUP - BODEGA CALLE 90</option>
+          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="PUB">PUB CHAPINERO KUZUDAMA SAS</option>
+          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="PUB">PUB SANTAFE KUZUDAMA SAS</option>
+          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="PUB">PUB VILLA DEL RIO AHG</option>
+          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">VILLA DE LEYVA - POLA INVESTMENT GROUP</option>
+          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="PUB">VOLANDO ALTO SAS PUB CALLE 19</option>
+          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">ZONA BBC BOGOTA CALLE 140</option>
+          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">ZONA BBC BOGOTA PORTO ALEGRE</option>
+          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">ZONA BBC S.A.S. - GRANADA HILLS</option>
+          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">ZONA BBC SAS CALLE 150</option>
+        </optgroup>
+        <optgroup label="Sur Fraq — Milena">
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">ARTESANALES PREMIUM CALI CHIPICHAPE</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">ARTESANALES PREMIUM CALI GRANADA</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">ARTESANALES PREMIUM CALI RÍO CALI</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">ARTESANALES PREMIUM FLORA CALI</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">ARTESANALES PREMIUN CALI AEROPUERTO</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">BAP COMPANY FLORENCIA CUNDUY</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">BAP COMPANY ZOMAC S.A.S</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">BIRRAPEDIA SAS - TULUA</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">BREWERY BODEGA SEBASTIAN PASTO</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">BREWERY SAS PASTO ESTUDIANTES</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">GESSAG SAS PALMIRA LLANOGRANDE</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">GRUPO INGERLIN CALI PARQUE DEL PERRO</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">GRUPO INGERLIN JARDIN PLAZA</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">GRUPO INGERLIN PUERTO 125</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">GRUPO INGERLIN SAS - LAS PALMAS</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">GRUPO INGERLIN SAS - SAN FERNANDO</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">INVERSIONES AHG - CC ACQUA IBAGUE</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">INVERSIONES AHG IBAGUE VERGEL PLAZA</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">RESILIENCIA FC S.A.S. - POPAYAN</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">RESILIENCIA POPAYAN CENTRO HISTORICO</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">RESILIENCIA POPAYAN NORTE</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="PUB">SANTAMARTA</option>
+        </optgroup>
+        <optgroup label="Andes Fraq — Natalia">
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">AMANTA SAS - ARMENIA</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">AMANTA SAS ARMENIA PORTAL QUINDIO</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">AMANTA SAS PALO DE AGUA</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">AMANTA SAS PERIERA</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">BBC CARTAGO AMANTA SAS</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">BODEGA SABANETA MERA CERON</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">BODEGA VILLA DEL ROSARIO INV APONTE SAS</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">BURBANO CONTRERAS NAVAS - CUCUTA</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="PUB">INVERSIONES AHG - PUB BUCARAMANGA</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">INVERSIONES AHG LA FLORIDA</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">MALTAURBANA SAS MANIZALES</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">MERA CERON BODEGA MEDELLIN LA 70</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">PERLA DEL LUPULO BODEGA UNICENTRO PEREIRA</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="PUB">PUB BARRANQUILLA CANTOR COMPANY</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="PUB">PUB MANIZALES</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="PUB">PUB VALBUENA BROTHERS SAS - ESTRADA MED</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">VALBUENA BROTHERS - MEDELLIN AMSTERDAM</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">VALBUENA BROTHERS CIUDAD DE RIO</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">VALBUENA BROTHERS COMPANY CC LLANOGRANDE</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="PUB">VALBUENA BROTHERS PROVENZA</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">VALBUENA BROTHERS SAS - LAURELES MEDELLIN</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">VALBUENA BROTHERS SQUARE</option>
+        </optgroup>
+      </select>
     </div>
-    <div class="row2">
-      <div class="field" style="margin-top:0;"><label>Zona</label>
-        <select id="f_zona"><option value="">— Zona —</option><option>Centro</option><option>Norte</option><option>Sur</option></select>
+    <div class="pdv-auto" id="pdv-auto">
+      <div class="pdv-auto-row">
+        <div class="pdv-auto-item">Zona<span id="auto-zona">—</span></div>
+        <div class="pdv-auto-item">Coordinador<span id="auto-coord">—</span></div>
+        <div class="pdv-auto-item">Tipo<span id="auto-tipo">—</span></div>
       </div>
-      <div class="field" style="margin-top:0;"><label>Tipo</label>
-        <select id="f_tipo"><option value="">— Tipo —</option><option>PUB</option><option>BODEGA</option></select>
-      </div>
-    </div>
-  </div>
-
-  <!-- M1 Experiencia · 20 pts -->
-  <div class="section">
-    <div class="section-header" onclick="toggleSec(1)">
-      <div class="section-left"><div class="section-icon ic1">🍺</div><div><div class="section-name">Experiencia</div><div class="section-max">Módulo 1 · máx 20</div></div></div>
-      <div style="display:flex;align-items:center;gap:10px;"><span class="section-pts" id="pts1">—</span><span class="chevron" id="ch1">⌄</span></div>
-    </div>
-    <div class="section-body" id="body1">
-      <div class="row3">
-        <div class="field"><label>Menú %</label><input type="number" id="m1_menu" min="0" max="100" placeholder="100"></div>
-        <div class="field"><label>Precios</label><select id="m1_precios"><option value="">—</option><option>sí</option><option>no</option></select></div>
-        <div class="field"><label>Categorías</label><select id="m1_cat"><option value="">—</option><option>completas</option><option>incompletas</option></select></div>
-      </div>
-      <div class="field"><label>Categorías faltantes</label><input type="text" id="m1_cat_det" placeholder="cuáles faltan"></div>
-      <div class="row2">
-        <div class="field"><label>Cristalería</label><select id="m1_cristal"><option value="">—</option><option>completa</option><option>incompleta</option></select></div>
-        <div class="field"><label>Menaje cocina</label><select id="m1_menaje"><option value="">—</option><option>completo</option><option>incompleto</option></select></div>
-      </div>
-      <div class="score-field"><label>Puntaje módulo 1</label><input type="number" id="s1" min="0" max="20" placeholder="0" oninput="actualizar()"><span class="score-max">/ 20</span></div>
-    </div>
-  </div>
-
-  <!-- M2 Marketing · 15 pts -->
-  <div class="section">
-    <div class="section-header" onclick="toggleSec(2)">
-      <div class="section-left"><div class="section-icon ic2">👕</div><div><div class="section-name">Marketing & Uniformes</div><div class="section-max">Módulo 2 · máx 15</div></div></div>
-      <div style="display:flex;align-items:center;gap:10px;"><span class="section-pts" id="pts2">—</span><span class="chevron" id="ch2">⌄</span></div>
-    </div>
-    <div class="section-body" id="body2">
-      <div class="row2">
-        <div class="field"><label>Avisos entrada</label><select id="m2_av_ent"><option value="">—</option><option>sí</option><option>no</option></select></div>
-        <div class="field"><label>Avisos interior</label><select id="m2_av_int"><option value="">—</option><option>sí</option><option>no</option></select></div>
-      </div>
-      <div class="row2">
-        <div class="field"><label>Uniforme barra</label><select id="m2_unif_b"><option value="">—</option><option>ok</option><option>con fallas</option></select></div>
-        <div class="field"><label>Detalle barra</label><input type="text" id="m2_unif_b_det" placeholder="qué falta"></div>
-      </div>
-      <div class="row2">
-        <div class="field"><label>Uniforme cocina</label><select id="m2_unif_c"><option value="">—</option><option>ok</option><option>con fallas</option></select></div>
-        <div class="field"><label>Detalle cocina</label><input type="text" id="m2_unif_c_det" placeholder="qué falta"></div>
-      </div>
-      <div class="row2">
-        <div class="field"><label>Aseo / Accesorios</label><select id="m2_aseo"><option value="">—</option><option>ok</option><option>problemas</option></select></div>
-        <div class="field"><label>Personal suficiente</label><select id="m2_personal"><option value="">—</option><option>sí</option><option>no</option></select></div>
-      </div>
-      <div class="score-field"><label>Puntaje módulo 2</label><input type="number" id="s2" min="0" max="15" placeholder="0" oninput="actualizar()"><span class="score-max">/ 15</span></div>
-    </div>
-  </div>
-
-  <!-- M3 Finanzas · 20 pts -->
-  <div class="section">
-    <div class="section-header" onclick="toggleSec(3)">
-      <div class="section-left"><div class="section-icon ic3">💰</div><div><div class="section-name">Finanzas & Caja</div><div class="section-max">Módulo 3 · máx 20</div></div></div>
-      <div style="display:flex;align-items:center;gap:10px;"><span class="section-pts" id="pts3">—</span><span class="chevron" id="ch3">⌄</span></div>
-    </div>
-    <div class="section-body" id="body3">
-      <div class="row3">
-        <div class="field"><label>Caja cuadra</label><select id="m3_caja"><option value="">—</option><option>sí</option><option>no</option></select></div>
-        <div class="field"><label>Diferencia %</label><input type="number" id="m3_dif" min="0" step="0.1" placeholder="0.0"></div>
-        <div class="field"><label>Consignaciones</label><select id="m3_cons"><option value="">—</option><option>al día</option><option>retrasadas</option></select></div>
-      </div>
-      <div class="row2">
-        <div class="field"><label>Comprobantes</label><select id="m3_comp"><option value="">—</option><option>organizados</option><option>desorden</option></select></div>
-        <div class="field"><label>POS</label><select id="m3_pos"><option value="">—</option><option>funciona</option><option>no funciona</option></select></div>
-      </div>
-      <div class="score-field"><label>Puntaje módulo 3</label><input type="number" id="s3" min="0" max="20" placeholder="0" oninput="actualizar()"><span class="score-max">/ 20</span></div>
-    </div>
-  </div>
-
-  <!-- M4 Inventario · 15 pts -->
-  <div class="section">
-    <div class="section-header" onclick="toggleSec(4)">
-      <div class="section-left"><div class="section-icon ic4">📦</div><div><div class="section-name">Inventario</div><div class="section-max">Módulo 4 · máx 15</div></div></div>
-      <div style="display:flex;align-items:center;gap:10px;"><span class="section-pts" id="pts4">—</span><span class="chevron" id="ch4">⌄</span></div>
-    </div>
-    <div class="section-body" id="body4">
-      <div class="row3">
-        <div class="field"><label>Cervezas BBC %</label><input type="number" id="m4_cerv" min="0" max="100" placeholder="100"></div>
-        <div class="field"><label>Licores %</label><input type="number" id="m4_lic" min="0" max="100" placeholder="100"></div>
-        <div class="field"><label>Alimentos %</label><input type="number" id="m4_alim" min="0" max="100" placeholder="100"></div>
-      </div>
-      <div class="field"><label>Productos vencidos</label><select id="m4_venc"><option value="">—</option><option>ninguno</option><option>sí hay</option></select></div>
-      <div class="score-field"><label>Puntaje módulo 4</label><input type="number" id="s4" min="0" max="15" placeholder="0" oninput="actualizar()"><span class="score-max">/ 15</span></div>
     </div>
   </div>
 
-  <!-- M5 Operaciones · 15 pts -->
+  <!-- M1 Experiencia · 15pts -->
   <div class="section">
-    <div class="section-header" onclick="toggleSec(5)">
-      <div class="section-left"><div class="section-icon ic5">🧹</div><div><div class="section-name">Operaciones</div><div class="section-max">Módulo 5 · máx 15</div></div></div>
-      <div style="display:flex;align-items:center;gap:10px;"><span class="section-pts" id="pts5">—</span><span class="chevron" id="ch5">⌄</span></div>
+    <div class="sec-hdr" onclick="toggleSec(1)">
+      <div class="sec-left"><div class="sec-icon ic1">🍺</div><div><div class="sec-name">Experiencia</div><div class="sec-max">Módulo 1 · máx 15</div></div></div>
+      <div style="display:flex;align-items:center;gap:8px"><span class="sec-pts" id="pts1">—</span><span class="chevron" id="ch1">⌄</span></div>
     </div>
-    <div class="section-body" id="body5">
-      <div class="row2">
-        <div class="field"><label>Limpieza cocina</label><select id="m5_l_coc"><option value="">—</option><option>ok</option><option>deficiente</option></select></div>
-        <div class="field"><label>Limpieza barra</label><select id="m5_l_bar"><option value="">—</option><option>ok</option><option>deficiente</option></select></div>
+    <div class="sec-body" id="body1">
+      <div class="item-block">
+        <label>Disponibilidad del menú (%)</label>
+        <input type="number" id="m1_menu" min="0" max="100" placeholder="100" oninput="guardar()">
+        <span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span>
+        <div class="note-area"><textarea id="n_m1_menu" placeholder="Observaciones..." oninput="guardar()"></textarea></div>
       </div>
-      <div class="row2">
-        <div class="field"><label>Limpieza baños</label><select id="m5_l_ban"><option value="">—</option><option>ok</option><option>deficiente</option></select></div>
-        <div class="field"><label>Limpieza mesas</label><select id="m5_l_mes"><option value="">—</option><option>ok</option><option>deficiente</option></select></div>
+      <div class="item-block">
+        <label>Precios actualizados</label>
+        <select id="m1_precios" onchange="guardar()"><option value="">—</option><option>sí</option><option>no</option><option>N/A</option></select>
+        <span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span>
+        <div class="note-area"><textarea id="n_m1_precios" placeholder="Observaciones..." oninput="guardar()"></textarea></div>
       </div>
-      <div class="row2">
-        <div class="field"><label>Impresora bebidas</label><select id="m5_imp_b"><option value="">—</option><option>funciona</option><option>no funciona</option></select></div>
-        <div class="field"><label>Impresora cocina</label><select id="m5_imp_c"><option value="">—</option><option>funciona</option><option>no funciona</option></select></div>
+      <div class="item-block">
+        <label>Categorías completas</label>
+        <select id="m1_cat" onchange="guardar()"><option value="">—</option><option>completas</option><option>incompletas</option><option>N/A</option></select>
+        <span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span>
+        <div class="note-area"><textarea id="n_m1_cat" placeholder="¿Cuáles faltan?..." oninput="guardar()"></textarea></div>
       </div>
-      <div class="row3">
-        <div class="field"><label>Frigorífico</label><select id="m5_frio"><option value="">—</option><option>funciona</option><option>no funciona</option></select></div>
-        <div class="field"><label>Iluminación</label><select id="m5_luz"><option value="">—</option><option>ok</option><option>deficiente</option></select></div>
-        <div class="field"><label>Aire acond.</label><select id="m5_ac"><option value="">—</option><option>funciona</option><option>no funciona</option></select></div>
+      <div class="item-block">
+        <label>Cristalería</label>
+        <select id="m1_cristal" onchange="guardar()"><option value="">—</option><option>completa</option><option>incompleta</option><option>N/A</option></select>
+        <span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span>
+        <div class="note-area"><textarea id="n_m1_cristal" placeholder="¿Qué falta?..." oninput="guardar()"></textarea></div>
       </div>
-      <div class="score-field"><label>Puntaje módulo 5</label><input type="number" id="s5" min="0" max="15" placeholder="0" oninput="actualizar()"><span class="score-max">/ 15</span></div>
+      <div class="item-block">
+        <label>Menaje cocina</label>
+        <select id="m1_menaje" onchange="guardar()"><option value="">—</option><option>completo</option><option>incompleto</option><option>N/A</option></select>
+        <span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span>
+        <div class="note-area"><textarea id="n_m1_menaje" placeholder="¿Qué falta?..." oninput="guardar()"></textarea></div>
+      </div>
+      <div class="score-helper show" id="helper1">Ítems N/A se excluyen del máximo</div>
+      <div class="score-field"><label>Puntaje módulo 1</label><input type="number" id="s1" min="0" max="15" placeholder="0" oninput="actualizar();guardar()"><span class="score-max" id="max1">/ 15</span></div>
     </div>
   </div>
 
-  <!-- M6 Mantenimiento · 15 pts -->
+  <!-- M2 Marketing · 15pts -->
   <div class="section">
-    <div class="section-header" onclick="toggleSec(6)">
-      <div class="section-left"><div class="section-icon ic6">🔩</div><div><div class="section-name">Mantenimiento</div><div class="section-max">Módulo 6 · máx 15</div></div></div>
-      <div style="display:flex;align-items:center;gap:10px;"><span class="section-pts" id="pts6">—</span><span class="chevron" id="ch6">⌄</span></div>
+    <div class="sec-hdr" onclick="toggleSec(2)">
+      <div class="sec-left"><div class="sec-icon ic2">👕</div><div><div class="sec-name">Marketing & Uniformes</div><div class="sec-max">Módulo 2 · máx 15</div></div></div>
+      <div style="display:flex;align-items:center;gap:8px"><span class="sec-pts" id="pts2">—</span><span class="chevron" id="ch2">⌄</span></div>
     </div>
-    <div class="section-body" id="body6">
+    <div class="sec-body" id="body2">
+      <div class="item-block"><label>Avisos BBC entrada</label><select id="m2_av_ent" onchange="guardar()"><option value="">—</option><option>sí</option><option>no</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m2_av_ent" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
+      <div class="item-block"><label>Avisos BBC interior</label><select id="m2_av_int" onchange="guardar()"><option value="">—</option><option>sí</option><option>no</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m2_av_int" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
+      <div class="item-block"><label>Uniforme barra</label><select id="m2_unif_b" onchange="guardar()"><option value="">—</option><option>ok</option><option>con fallas</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m2_unif_b" placeholder="¿Qué falla?..." oninput="guardar()"></textarea></div></div>
+      <div class="item-block"><label>Uniforme cocina</label><select id="m2_unif_c" onchange="guardar()"><option value="">—</option><option>ok</option><option>con fallas</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m2_unif_c" placeholder="¿Qué falla?..." oninput="guardar()"></textarea></div></div>
+      <div class="item-block"><label>Aseo y accesorios</label><select id="m2_aseo" onchange="guardar()"><option value="">—</option><option>ok</option><option>problemas</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m2_aseo" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
+      <div class="score-helper show">Ítems N/A se excluyen del máximo</div>
+      <div class="score-field"><label>Puntaje módulo 2</label><input type="number" id="s2" min="0" max="15" placeholder="0" oninput="actualizar();guardar()"><span class="score-max">/ 15</span></div>
+    </div>
+  </div>
+
+  <!-- M3 Finanzas · 15pts -->
+  <div class="section">
+    <div class="sec-hdr" onclick="toggleSec(3)">
+      <div class="sec-left"><div class="sec-icon ic3">💰</div><div><div class="sec-name">Finanzas & Caja</div><div class="sec-max">Módulo 3 · máx 15</div></div></div>
+      <div style="display:flex;align-items:center;gap:8px"><span class="sec-pts" id="pts3">—</span><span class="chevron" id="ch3">⌄</span></div>
+    </div>
+    <div class="sec-body" id="body3">
+      <div class="item-block"><label>Caja cuadra</label><select id="m3_caja" onchange="guardar()"><option value="">—</option><option>sí</option><option>no</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m3_caja" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
+      <div class="item-block"><label>Diferencia en caja (%)</label><input type="number" id="m3_dif" min="0" step="0.1" placeholder="0.0" oninput="guardar()"><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m3_dif" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
+      <div class="item-block"><label>Consignaciones</label><select id="m3_cons" onchange="guardar()"><option value="">—</option><option>al día</option><option>retrasadas</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m3_cons" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
+      <div class="item-block"><label>Comprobantes</label><select id="m3_comp" onchange="guardar()"><option value="">—</option><option>organizados</option><option>desorden</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m3_comp" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
+      <div class="item-block"><label>POS</label><select id="m3_pos" onchange="guardar()"><option value="">—</option><option>funciona</option><option>no funciona</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m3_pos" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
+      <div class="score-helper show">Ítems N/A se excluyen del máximo</div>
+      <div class="score-field"><label>Puntaje módulo 3</label><input type="number" id="s3" min="0" max="15" placeholder="0" oninput="actualizar();guardar()"><span class="score-max">/ 15</span></div>
+    </div>
+  </div>
+
+  <!-- M4 Inventario · 15pts -->
+  <div class="section">
+    <div class="sec-hdr" onclick="toggleSec(4)">
+      <div class="sec-left"><div class="sec-icon ic4">📦</div><div><div class="sec-name">Inventario</div><div class="sec-max">Módulo 4 · máx 15</div></div></div>
+      <div style="display:flex;align-items:center;gap:8px"><span class="sec-pts" id="pts4">—</span><span class="chevron" id="ch4">⌄</span></div>
+    </div>
+    <div class="sec-body" id="body4">
+      <div class="item-block"><label>Cervezas BBC (%)</label><input type="number" id="m4_cerv" min="0" max="100" placeholder="100" oninput="guardar()"><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m4_cerv" placeholder="¿Qué falta?..." oninput="guardar()"></textarea></div></div>
+      <div class="item-block"><label>Licores (%)</label><input type="number" id="m4_lic" min="0" max="100" placeholder="100" oninput="guardar()"><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m4_lic" placeholder="¿Qué falta?..." oninput="guardar()"></textarea></div></div>
+      <div class="item-block"><label>Bebidas sin alcohol (%)</label><input type="number" id="m4_bsa" min="0" max="100" placeholder="100" oninput="guardar()"><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m4_bsa" placeholder="¿Qué falta?..." oninput="guardar()"></textarea></div></div>
+      <div class="item-block"><label>Alimentos (%)</label><input type="number" id="m4_alim" min="0" max="100" placeholder="100" oninput="guardar()"><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m4_alim" placeholder="¿Qué falta?..." oninput="guardar()"></textarea></div></div>
+      <div class="item-block"><label>Merchandising</label><select id="m4_merch" onchange="guardar()"><option value="">—</option><option>completo</option><option>incompleto</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m4_merch" placeholder="¿Qué falta?..." oninput="guardar()"></textarea></div></div>
+      <div class="item-block"><label>Productos vencidos</label><select id="m4_venc" onchange="guardar()"><option value="">—</option><option>ninguno</option><option>sí hay</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m4_venc" placeholder="¿Cuáles?..." oninput="guardar()"></textarea></div></div>
+      <div class="score-helper show">Ítems N/A se excluyen del máximo</div>
+      <div class="score-field"><label>Puntaje módulo 4</label><input type="number" id="s4" min="0" max="15" placeholder="0" oninput="actualizar();guardar()"><span class="score-max">/ 15</span></div>
+    </div>
+  </div>
+
+  <!-- M5 Operaciones + Personal · 15pts -->
+  <div class="section">
+    <div class="sec-hdr" onclick="toggleSec(5)">
+      <div class="sec-left"><div class="sec-icon ic5">🧹</div><div><div class="sec-name">Operaciones & Personal</div><div class="sec-max">Módulo 5 · máx 15</div></div></div>
+      <div style="display:flex;align-items:center;gap:8px"><span class="sec-pts" id="pts5">—</span><span class="chevron" id="ch5">⌄</span></div>
+    </div>
+    <div class="sec-body" id="body5">
+      <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:12px;margin-bottom:4px;padding-bottom:6px;border-bottom:1px solid var(--border)">Limpieza</div>
+      <div class="item-block"><label>Cocina</label><select id="m5_l_coc" onchange="guardar()"><option value="">—</option><option>ok</option><option>deficiente</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m5_l_coc" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
+      <div class="item-block"><label>Barra</label><select id="m5_l_bar" onchange="guardar()"><option value="">—</option><option>ok</option><option>deficiente</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m5_l_bar" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
+      <div class="item-block"><label>Baños</label><select id="m5_l_ban" onchange="guardar()"><option value="">—</option><option>ok</option><option>deficiente</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m5_l_ban" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
+      <div class="item-block"><label>Mesas</label><select id="m5_l_mes" onchange="guardar()"><option value="">—</option><option>ok</option><option>deficiente</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m5_l_mes" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
+      <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:14px;margin-bottom:4px;padding-bottom:6px;border-bottom:1px solid var(--border)">Equipos</div>
+      <div class="item-block"><label>Impresora barra</label><select id="m5_imp_b" onchange="guardar()"><option value="">—</option><option>funciona</option><option>no funciona</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m5_imp_b" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
+      <div class="item-block"><label>Impresora cocina</label><select id="m5_imp_c" onchange="guardar()"><option value="">—</option><option>funciona</option><option>no funciona</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m5_imp_c" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
+      <div class="item-block"><label>Nevera</label><select id="m5_frio" onchange="guardar()"><option value="">—</option><option>funciona</option><option>no funciona</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m5_frio" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
+      <div class="item-block"><label>Iluminación</label><select id="m5_luz" onchange="guardar()"><option value="">—</option><option>ok</option><option>deficiente</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m5_luz" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
+      <div class="item-block"><label>Aire acondicionado</label><select id="m5_ac" onchange="guardar()"><option value="">—</option><option>funciona</option><option>no funciona</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m5_ac" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
+      <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:14px;margin-bottom:4px;padding-bottom:6px;border-bottom:1px solid var(--border)">Personal</div>
+      <div class="item-block"><label>¿Equipo completo?</label><select id="m5_equipo" onchange="guardar()"><option value="">—</option><option>sí</option><option>no</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m5_equipo" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
+      <div class="row2" style="margin-top:10px">
+        <div class="item-block" style="margin-top:0"><label>Personas en cocina</label><input type="number" id="m5_p_coc" min="0" placeholder="0" oninput="guardar()"></div>
+        <div class="item-block" style="margin-top:0"><label>Personas en servicio</label><input type="number" id="m5_p_ser" min="0" placeholder="0" oninput="guardar()"></div>
+      </div>
+      <div class="score-helper show">Ítems N/A se excluyen del máximo</div>
+      <div class="score-field"><label>Puntaje módulo 5</label><input type="number" id="s5" min="0" max="15" placeholder="0" oninput="actualizar();guardar()"><span class="score-max">/ 15</span></div>
+    </div>
+  </div>
+
+  <!-- M6 Mantenimiento · 15pts -->
+  <div class="section">
+    <div class="sec-hdr" onclick="toggleSec(6)">
+      <div class="sec-left"><div class="sec-icon ic6">🔩</div><div><div class="sec-name">Mantenimiento</div><div class="sec-max">Módulo 6 · máx 15</div></div></div>
+      <div style="display:flex;align-items:center;gap:8px"><span class="sec-pts" id="pts6">—</span><span class="chevron" id="ch6">⌄</span></div>
+    </div>
+    <div class="sec-body" id="body6">
+      <div class="item-block"><label>Sillas</label><select id="m6_sillas" onchange="guardar()"><option value="">—</option><option>completas y en buen estado</option><option>faltantes o dañadas</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m6_sillas" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
+      <div class="item-block"><label>Mesas</label><select id="m6_mesas" onchange="guardar()"><option value="">—</option><option>completas y en buen estado</option><option>faltantes o dañadas</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m6_mesas" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
+      <div class="item-block"><label>Pisos y paredes</label><select id="m6_pisos" onchange="guardar()"><option value="">—</option><option>en buen estado</option><option>con daños</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m6_pisos" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
+      <div class="item-block"><label>Luces</label><select id="m6_luces" onchange="guardar()"><option value="">—</option><option>completas y funcionando</option><option>faltantes o dañadas</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m6_luces" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
+      <div class="item-block"><label>Sistema POS</label><select id="m6_pos" onchange="guardar()"><option value="">—</option><option>completo y funcionando</option><option>con fallas</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m6_pos" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
+      <div class="item-block"><label>Equipos cocina</label><select id="m6_eq_coc" onchange="guardar()"><option value="">—</option><option>completos y funcionando</option><option>con fallas</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m6_eq_coc" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
+      <div class="item-block"><label>Equipos barra</label><select id="m6_eq_bar" onchange="guardar()"><option value="">—</option><option>completos y funcionando</option><option>con fallas</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m6_eq_bar" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
+      <div class="score-helper show">Ítems N/A se excluyen del máximo</div>
+      <div class="score-field"><label>Puntaje módulo 6</label><input type="number" id="s6" min="0" max="15" placeholder="0" oninput="actualizar();guardar()"><span class="score-max">/ 15</span></div>
+    </div>
+  </div>
+
+  <!-- M7 Ventas · 10pts -->
+  <div class="section">
+    <div class="sec-hdr" onclick="toggleSec(7)">
+      <div class="sec-left"><div class="sec-icon ic7">📈</div><div><div class="sec-name">Ventas</div><div class="sec-max">Módulo 7 · máx 10</div></div></div>
+      <div style="display:flex;align-items:center;gap:8px"><span class="sec-pts" id="pts7">—</span><span class="chevron" id="ch7">⌄</span></div>
+    </div>
+    <div class="sec-body" id="body7">
+      <div style="font-size:12px;color:var(--muted);margin-top:8px;margin-bottom:4px">Cifras del mes en curso. Campos informativos + evaluación de conocimiento.</div>
+      <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:10px;margin-bottom:4px;padding-bottom:6px;border-bottom:1px solid var(--border)">Cifras del mes</div>
       <div class="row2">
-        <div class="field"><label>Sillas</label><select id="m6_sillas"><option value="">—</option><option>completas y en buen estado</option><option>faltantes o dañadas</option></select></div>
-        <div class="field"><label>Mesas</label><select id="m6_mesas"><option value="">—</option><option>completas y en buen estado</option><option>faltantes o dañadas</option></select></div>
+        <div class="info-field"><label>Venta general ($)</label><input type="text" id="v_venta" placeholder="0" oninput="guardar()"></div>
+        <div class="info-field"><label>Número de tickets</label><input type="number" id="v_tickets" placeholder="0" oninput="guardar()"></div>
       </div>
       <div class="row2">
-        <div class="field"><label>Pisos y paredes</label><select id="m6_pisos"><option value="">—</option><option>en buen estado</option><option>con daños</option></select></div>
-        <div class="field"><label>Luces</label><select id="m6_luces"><option value="">—</option><option>completas y funcionando</option><option>faltantes o dañadas</option></select></div>
+        <div class="info-field"><label>Ticket promedio ($)</label><input type="text" id="v_tkt_prom" placeholder="0" oninput="guardar()"></div>
+        <div class="info-field"><label>Volumen (HL)</label><input type="text" id="v_vol" placeholder="0.0" oninput="guardar()"></div>
       </div>
       <div class="row2">
-        <div class="field"><label>Sistema POS</label><select id="m6_pos"><option value="">—</option><option>completo y funcionando</option><option>con fallas</option></select></div>
-        <div class="field"><label>Equipos cocina</label><select id="m6_eq_coc"><option value="">—</option><option>completos y funcionando</option><option>con fallas</option></select></div>
+        <div class="info-field"><label>Share comida (%)</label><input type="number" id="v_sh_comida" min="0" max="100" placeholder="0" oninput="guardar()"></div>
+        <div class="info-field"><label>Share licores (%)</label><input type="number" id="v_sh_lic" min="0" max="100" placeholder="0" oninput="guardar()"></div>
       </div>
-      <div class="field"><label>Equipos barra</label><select id="m6_eq_bar"><option value="">—</option><option>completos y funcionando</option><option>con fallas</option></select></div>
-      <div class="field"><label>Observaciones mantenimiento</label><input type="text" id="m6_obs" placeholder="Detallar equipos o áreas con fallas"></div>
-      <div class="score-field"><label>Puntaje módulo 6</label><input type="number" id="s6" min="0" max="15" placeholder="0" oninput="actualizar()"><span class="score-max">/ 15</span></div>
+      <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:14px;margin-bottom:4px;padding-bottom:6px;border-bottom:1px solid var(--border)">Evaluación de conocimiento</div>
+      <div class="item-block"><label>¿Tiene claras las ventas del mes?</label><select id="m7_conoce_ventas" onchange="guardar()"><option value="">—</option><option>sí, las conoce</option><option>parcialmente</option><option>no las conoce</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m7_ventas" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
+      <div class="item-block"><label>¿Conoce sus tickets y ticket promedio?</label><select id="m7_conoce_tkt" onchange="guardar()"><option value="">—</option><option>sí</option><option>parcialmente</option><option>no</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m7_tkt" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
+      <div class="item-block"><label>¿Conoce su volumen y shares?</label><select id="m7_conoce_vol" onchange="guardar()"><option value="">—</option><option>sí</option><option>parcialmente</option><option>no</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m7_vol" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
+      <div class="score-helper show">Ítems N/A se excluyen del máximo</div>
+      <div class="score-field"><label>Puntaje módulo 7</label><input type="number" id="s7" min="0" max="10" placeholder="0" oninput="actualizar();guardar()"><span class="score-max">/ 10</span></div>
     </div>
   </div>
 
   <!-- Fotos -->
   <div class="section">
-    <div class="section-header" onclick="toggleSec(8)">
-      <div class="section-left"><div class="section-icon icf">📸</div><div><div class="section-name">Fotos del punto</div><div class="section-max">Máximo 5 fotos · evidencia visual</div></div></div>
-      <span class="chevron" id="ch8">⌄</span>
+    <div class="sec-hdr" onclick="toggleSec(9)">
+      <div class="sec-left"><div class="sec-icon icf">📸</div><div><div class="sec-name">Fotos del punto</div><div class="sec-max">Máximo 5 fotos</div></div></div>
+      <span class="chevron" id="ch9">⌄</span>
     </div>
-    <div class="section-body" id="body8">
-      <div style="font-size:12px;color:var(--muted);margin-top:4px;margin-bottom:10px;">Toca cada cuadro para agregar una foto. Las fotos se suben a Google Drive automáticamente.</div>
-      <div class="photo-grid" id="photo-grid">
+    <div class="sec-body" id="body9">
+      <div style="font-size:12px;color:var(--muted);margin-top:4px;margin-bottom:8px">Toca cada cuadro para abrir la cámara.</div>
+      <div class="photo-grid">
         <div class="photo-slot" onclick="abrirFoto(0)" id="slot0"><span class="add-icon">+</span></div>
         <div class="photo-slot" onclick="abrirFoto(1)" id="slot1"><span class="add-icon">+</span></div>
         <div class="photo-slot" onclick="abrirFoto(2)" id="slot2"><span class="add-icon">+</span></div>
         <div class="photo-slot" onclick="abrirFoto(3)" id="slot3"><span class="add-icon">+</span></div>
         <div class="photo-slot" onclick="abrirFoto(4)" id="slot4"><span class="add-icon">+</span></div>
       </div>
-      <input type="file" accept="image/*" capture="environment" class="photo-input" id="photo-input-0" onchange="procesarFoto(0,this)">
-      <input type="file" accept="image/*" capture="environment" class="photo-input" id="photo-input-1" onchange="procesarFoto(1,this)">
-      <input type="file" accept="image/*" capture="environment" class="photo-input" id="photo-input-2" onchange="procesarFoto(2,this)">
-      <input type="file" accept="image/*" capture="environment" class="photo-input" id="photo-input-3" onchange="procesarFoto(3,this)">
-      <input type="file" accept="image/*" capture="environment" class="photo-input" id="photo-input-4" onchange="procesarFoto(4,this)">
-      <div class="photo-count" id="photo-count">0 / 5 fotos agregadas</div>
+      <input type="file" accept="image/*" capture="environment" class="photo-input" id="pi0" onchange="procesarFoto(0,this)">
+      <input type="file" accept="image/*" capture="environment" class="photo-input" id="pi1" onchange="procesarFoto(1,this)">
+      <input type="file" accept="image/*" capture="environment" class="photo-input" id="pi2" onchange="procesarFoto(2,this)">
+      <input type="file" accept="image/*" capture="environment" class="photo-input" id="pi3" onchange="procesarFoto(3,this)">
+      <input type="file" accept="image/*" capture="environment" class="photo-input" id="pi4" onchange="procesarFoto(4,this)">
+      <div class="photo-count" id="photo-count">0 / 5 fotos</div>
     </div>
   </div>
 
   <!-- Hallazgos -->
   <div class="section">
-    <div class="section-header" onclick="toggleSec(7)">
-      <div class="section-left"><div class="section-icon ic0">⚠️</div><div><div class="section-name">Hallazgos & notas</div><div class="section-max">Observaciones críticas</div></div></div>
-      <span class="chevron" id="ch7">⌄</span>
+    <div class="sec-hdr" onclick="toggleSec(8)">
+      <div class="sec-left"><div class="sec-icon ic0">⚠️</div><div><div class="sec-name">Hallazgos & notas generales</div><div class="sec-max">Observaciones críticas</div></div></div>
+      <span class="chevron" id="ch8">⌄</span>
     </div>
-    <div class="section-body" id="body7">
-      <div class="field"><label>Hallazgos críticos (uno por línea)</label>
-        <textarea id="hallazgos" placeholder="ej: Frigorífico sin funcionar&#10;Diferencia en caja del 8%&#10;Sillas dañadas en zona de mesas"></textarea>
-      </div>
-      <div class="field"><label>Notas adicionales</label>
-        <textarea id="notas" placeholder="Contexto del PDV, observaciones generales..."></textarea>
-      </div>
+    <div class="sec-body" id="body8">
+      <div class="field"><label>Hallazgos críticos (uno por línea)</label><textarea id="hallazgos" placeholder="ej: Nevera sin funcionar&#10;Diferencia en caja del 8%&#10;Sillas dañadas" style="height:90px" oninput="guardar()"></textarea></div>
+      <div class="field"><label>Notas adicionales</label><textarea id="notas" placeholder="Contexto del PDV, observaciones generales..." style="height:72px" oninput="guardar()"></textarea></div>
     </div>
   </div>
 
   <!-- Total -->
   <div class="total-section" id="total-section">
     <div class="total-row">
-      <div>
-        <div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Puntaje total</div>
-        <div class="total-num" id="total-num">0</div>
-      </div>
+      <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Puntaje total</div><div class="total-num" id="total-num">0</div></div>
       <div class="estado-badge" id="estado-badge">—</div>
     </div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:8px" id="total-detail">—</div>
     <div class="module-scores">
-      <div class="mod-score-item"><div class="mod-score-label">M1 Experiencia /20</div><div class="mod-score-val" id="r1">—</div></div>
-      <div class="mod-score-item"><div class="mod-score-label">M2 Marketing /15</div><div class="mod-score-val" id="r2">—</div></div>
-      <div class="mod-score-item"><div class="mod-score-label">M3 Finanzas /20</div><div class="mod-score-val" id="r3">—</div></div>
-      <div class="mod-score-item"><div class="mod-score-label">M4 Inventario /15</div><div class="mod-score-val" id="r4">—</div></div>
-      <div class="mod-score-item"><div class="mod-score-label">M5 Operaciones /15</div><div class="mod-score-val" id="r5">—</div></div>
-      <div class="mod-score-item"><div class="mod-score-label">M6 Mantenimiento /15</div><div class="mod-score-val" id="r6">—</div></div>
+      <div class="mod-item"><div class="mod-label">M1 Experiencia</div><div class="mod-val" id="r1">—</div></div>
+      <div class="mod-item"><div class="mod-label">M2 Marketing</div><div class="mod-val" id="r2">—</div></div>
+      <div class="mod-item"><div class="mod-label">M3 Finanzas</div><div class="mod-val" id="r3">—</div></div>
+      <div class="mod-item"><div class="mod-label">M4 Inventario</div><div class="mod-val" id="r4">—</div></div>
+      <div class="mod-item"><div class="mod-label">M5 Operaciones</div><div class="mod-val" id="r5">—</div></div>
+      <div class="mod-item"><div class="mod-label">M6 Mantenimiento</div><div class="mod-val" id="r6">—</div></div>
+      <div class="mod-item"><div class="mod-label">M7 Ventas</div><div class="mod-val" id="r7">—</div></div>
     </div>
   </div>
 
   <div class="tasks-section" id="tasks-section">
-    <div class="tasks-header">📋 Tareas de mejora</div>
+    <div class="tasks-hdr">📋 Tareas de mejora</div>
     <div id="tasks-body"></div>
   </div>
-
-  <div class="upload-progress" id="upload-progress">
-    <div class="upload-label" id="upload-label">Subiendo fotos…</div>
-    <div class="upload-bar-wrap"><div class="upload-bar" id="upload-bar"></div></div>
-  </div>
-
 </div>
 
-<div style="position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(14,14,15,0.95);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:12px 16px;display:flex;gap:10px;">
+<div class="bottom-bar">
   <button class="btn btn-calc" onclick="calcular()">Calcular</button>
   <button class="btn btn-send" id="btn-enviar" onclick="enviar()">Guardar en Sheets →</button>
 </div>
-
 <div class="toast" id="toast"></div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/a/macros/templecolombia.com/s/AKfycby9e0zwswKBWhs8UKRc6hSMg7EUyoHhkq_SdlUoFMmVhJZemImvf7oUUkgZvKMG9L6y/exec';
+const SCRIPT_URL='https://script.google.com/a/macros/templecolombia.com/s/AKfycby9e0zwswKBWhs8UKRc6hSMg7EUyoHhkq_SdlUoFMmVhJZemImvf7oUUkgZvKMG9L6y/exec';
+const DRAFT_KEY='bbc_auditoria_v5';
+const MAXIMOS=[15,15,15,15,15,15,10]; // máximos por módulo
+let gpsData={lat:null,lng:null,address:'No disponible'};
+let tsInicio=null;
+let fotos=[null,null,null,null,null];
 
-// State
-let gpsData = { lat: null, lng: null, address: 'No disponible' };
-let tsInicio = null;
-let fotos = [null, null, null, null, null]; // base64
-
-// ── GPS + Timestamp ──
-window.onload = function() {
-  tsInicio = new Date();
-  document.getElementById('ts-value').textContent = formatTs(tsInicio);
+window.onload=function(){
+  tsInicio=new Date();
+  v('ts-val').textContent=formatTs(tsInicio);
   obtenerGPS();
+  cargarBorrador();
 };
 
-function formatTs(d) {
-  return d.toLocaleDateString('es-CO', { day:'2-digit', month:'2-digit', year:'numeric' }) +
-    ' ' + d.toLocaleTimeString('es-CO', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+function formatTs(d){return d.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+d.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+
+function obtenerGPS(){
+  if(!navigator.geolocation){setGPS('GPS no disponible','err');return;}
+  navigator.geolocation.getCurrentPosition(pos=>{
+    gpsData.lat=pos.coords.latitude.toFixed(6);gpsData.lng=pos.coords.longitude.toFixed(6);
+    gpsData.address=gpsData.lat+', '+gpsData.lng;
+    v('gps-val').textContent='📍 '+gpsData.lat+', '+gpsData.lng;
+    v('gps-dot').className='gps-dot ok';
+    fetch('https://nominatim.openstreetmap.org/reverse?lat='+gpsData.lat+'&lon='+gpsData.lng+'&format=json')
+      .then(r=>r.json()).then(d=>{const a=d.address;const r=[a.road,a.neighbourhood,a.city||a.town].filter(Boolean).join(', ');if(r){gpsData.address=r+' ('+gpsData.lat+', '+gpsData.lng+')';v('gps-val').textContent='📍 '+r;}}).catch(()=>{});
+  },err=>{const m={1:'Permiso GPS denegado',2:'Señal no encontrada',3:'Tiempo agotado'};setGPS(m[err.code]||'Error GPS','err');},{enableHighAccuracy:true,timeout:10000,maximumAge:0});
+}
+function setGPS(msg,state){v('gps-val').textContent=msg;v('gps-dot').className='gps-dot '+state;}
+
+function autocompletar(){
+  const sel=v('f_pdv');const opt=sel.options[sel.selectedIndex];
+  const zona=opt.dataset.zona||'',coord=opt.dataset.coord||'',tipo=opt.dataset.tipo||'';
+  if(zona){v('auto-zona').textContent=zona;v('auto-coord').textContent=coord;v('auto-tipo').textContent=tipo;v('pdv-auto').style.display='block';}
+  else{v('pdv-auto').style.display='none';}
 }
 
-function obtenerGPS() {
-  if (!navigator.geolocation) {
-    setGPS('GPS no disponible en este dispositivo', 'error');
-    return;
-  }
-  navigator.geolocation.getCurrentPosition(
-    pos => {
-      gpsData.lat = pos.coords.latitude.toFixed(6);
-      gpsData.lng = pos.coords.longitude.toFixed(6);
-      gpsData.address = gpsData.lat + ', ' + gpsData.lng;
-      document.getElementById('gps-value').textContent = '📍 ' + gpsData.lat + ', ' + gpsData.lng;
-      document.getElementById('gps-dot').className = 'gps-dot ok';
-      // Try reverse geocode via open API
-      fetch(`https://nominatim.openstreetmap.org/reverse?lat=${gpsData.lat}&lon=${gpsData.lng}&format=json`)
-        .then(r => r.json())
-        .then(d => {
-          const addr = d.address;
-          const readable = [addr.road, addr.neighbourhood, addr.city || addr.town].filter(Boolean).join(', ');
-          if (readable) {
-            gpsData.address = readable + ' (' + gpsData.lat + ', ' + gpsData.lng + ')';
-            document.getElementById('gps-value').textContent = '📍 ' + readable;
-          }
-        }).catch(() => {});
-    },
-    err => {
-      const msgs = { 1:'Permiso denegado — activa el GPS', 2:'Señal GPS no encontrada', 3:'Tiempo de espera agotado' };
-      setGPS(msgs[err.code] || 'Error de GPS', 'error');
-    },
-    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-  );
+function toggleSec(n){const b=v('body'+n),ch=v('ch'+n);const open=b.classList.toggle('open');if(ch)ch.classList.toggle('open',open);}
+function toggleNota(el){const area=el.nextElementSibling;area.classList.toggle('open');el.textContent=area.classList.contains('open')?'− Ocultar observación':'+ Agregar observación';}
+
+function v(id){return document.getElementById(id);}
+function val(id){return parseFloat(v(id).value)||0;}
+function txt(id){const el=v(id);return el?el.value||'':""}
+
+// ── SCORE ENGINE con N/A ──
+// Calcula puntaje proporcional cuando hay N/A
+// Si el auditor pone 12/15 pero 2 ítems son N/A, el máximo real es 13/15 → se escala a 100
+function calcularProporcional(score, max){
+  if(max===0)return 0;
+  return Math.round((score/max)*100)/100;
 }
 
-function setGPS(msg, state) {
-  document.getElementById('gps-value').textContent = msg;
-  document.getElementById('gps-dot').className = 'gps-dot ' + state;
+function actualizar(){
+  const s=[val('s1'),val('s2'),val('s3'),val('s4'),val('s5'),val('s6'),val('s7')];
+  const total=s.reduce((a,b)=>a+b,0);
+  v('header-score').textContent=total+' / 100';
+  v('progress').style.width=Math.min(total,100)+'%';
+  s.forEach((sc,i)=>{v('pts'+(i+1)).textContent=sc||'—';});
 }
 
-// ── Sections ──
-function toggleSec(n) {
-  const body = document.getElementById('body' + n);
-  const ch = document.getElementById('ch' + n);
-  const open = body.classList.toggle('open');
-  if (ch) ch.classList.toggle('open', open);
-}
+function calcular(){
+  const s=[val('s1'),val('s2'),val('s3'),val('s4'),val('s5'),val('s6'),val('s7')];
+  const total=s.reduce((a,b)=>a+b,0);
 
-function v(id) { return document.getElementById(id); }
-function val(id) { return parseFloat(v(id).value) || 0; }
-function txt(id) { const el = v(id); return el ? el.value || '' : ''; }
+  // Validar que ningún módulo supere su máximo
+  let warnings=[];
+  s.forEach((sc,i)=>{if(sc>MAXIMOS[i])warnings.push('M'+(i+1)+' supera el máximo ('+MAXIMOS[i]+')');});
+  if(warnings.length){mostrarToast('⚠️ '+warnings[0],'#eab308');return;}
 
-// ── Score ──
-function actualizar() {
-  const s = [val('s1'),val('s2'),val('s3'),val('s4'),val('s5'),val('s6')];
-  const total = s.reduce((a,b) => a+b, 0);
-  v('header-score').textContent = total + ' / 100';
-  v('progress').style.width = Math.min(total, 100) + '%';
-  s.forEach((sc, i) => { v('pts'+(i+1)).textContent = sc || '—'; });
-}
+  v('total-section').style.display='block';
+  v('total-num').textContent=total;
+  v('total-detail').textContent='Suma directa: '+s.join(' + ')+' = '+total+' / 100';
+  s.forEach((sc,i)=>{v('r'+(i+1)).textContent=sc+'/'+MAXIMOS[i];});
 
-function calcular() {
-  const s = [val('s1'),val('s2'),val('s3'),val('s4'),val('s5'),val('s6')];
-  const total = s.reduce((a,b) => a+b, 0);
-  v('total-section').style.display = 'block';
-  v('total-num').textContent = total;
-  s.forEach((sc, i) => { v('r'+(i+1)).textContent = sc; });
-  const badge = v('estado-badge');
-  if (total >= 85) { badge.textContent = '🟢 VERDE'; badge.className = 'estado-badge verde'; }
-  else if (total >= 70) { badge.textContent = '🟡 AMARILLO'; badge.className = 'estado-badge amarillo'; }
-  else { badge.textContent = '🔴 ROJO'; badge.className = 'estado-badge rojo'; }
+  const badge=v('estado-badge');
+  if(total>=85){badge.textContent='🟢 VERDE';badge.className='estado-badge verde';}
+  else if(total>=70){badge.textContent='🟡 AMARILLO';badge.className='estado-badge amarillo';}
+  else{badge.textContent='🔴 ROJO';badge.className='estado-badge rojo';}
   generarTareas();
-  v('total-section').scrollIntoView({ behavior:'smooth', block:'center' });
+  v('total-section').scrollIntoView({behavior:'smooth',block:'center'});
 }
 
-// ── Tasks ──
-function generarTareas() {
-  const hallazgos = txt('hallazgos').split('\n').filter(h => h.trim());
-  if (!hallazgos.length) { v('tasks-section').style.display = 'none'; return; }
-  const mapa = {
-    'caja':'Gte Ops','diferencia':'Gte Ops','consignac':'Gte Ops','comprobante':'Gte Ops',
-    'frigor':'Mantenimiento','impresora':'Mantenimiento','iluminac':'Mantenimiento','ac':'Mantenimiento','aire':'Mantenimiento',
-    'silla':'Mantenimiento','piso':'Mantenimiento','pared':'Mantenimiento','luz':'Mantenimiento','equipo':'Mantenimiento','pos':'Mantenimiento',
-    'uniforme':'Coordinador','aseo':'Coordinador','accesorio':'Coordinador','aviso':'Coordinador',
-    'vencido':'Compras','cerveza':'Compras','licor':'Compras','alimento':'Compras',
-    'menú':'Coordinador','cristal':'Coordinador','limpieza':'Coordinador'
-  };
-  v('tasks-section').style.display = 'block';
-  const today = new Date();
-  v('tasks-body').innerHTML = hallazgos.map(h => {
-    const hl = h.toLowerCase();
-    let resp = 'Coordinador', dias = 7;
-    for (const [k, r] of Object.entries(mapa)) { if (hl.includes(k)) { resp = r; break; } }
-    if (hl.includes('no funciona') || hl.includes('vencido') || hl.includes('diferencia') || hl.includes('dañad')) dias = 3;
-    const fecha = new Date(today); fecha.setDate(fecha.getDate() + dias);
-    const fStr = fecha.toLocaleDateString('es-CO', { day:'2-digit', month:'2-digit', year:'numeric' });
-    return `<div class="task-item">
-      <div class="task-hallazgo">${h}</div>
-      <div class="task-meta">
-        <span class="tag tag-resp">${resp}</span>
-        <span class="tag ${dias===3?'tag-alta':'tag-media'}">${dias===3?'Alta — 3d':'Media — 7d'}</span>
-        <span class="tag-fecha">→ ${fStr}</span>
-      </div>
-    </div>`;
+function generarTareas(){
+  const hallazgos=txt('hallazgos').split('\n').filter(h=>h.trim());
+  if(!hallazgos.length){v('tasks-section').style.display='none';return;}
+  const mapa={'caja':'Gte Ops','diferencia':'Gte Ops','consignac':'Gte Ops','comprobante':'Gte Ops','nevera':'Mantenimiento','impresora':'Mantenimiento','iluminac':'Mantenimiento','ac':'Mantenimiento','aire':'Mantenimiento','silla':'Mantenimiento','piso':'Mantenimiento','pared':'Mantenimiento','luz':'Mantenimiento','equipo':'Mantenimiento','pos':'Mantenimiento','uniforme':'Coordinador','aseo':'Coordinador','accesorio':'Coordinador','aviso':'Coordinador','vencido':'Compras','cerveza':'Compras','licor':'Compras','alimento':'Compras','merchandising':'Compras','menú':'Coordinador','cristal':'Coordinador','limpieza':'Coordinador','venta':'Coordinador','personal':'Coordinador'};
+  v('tasks-section').style.display='block';
+  const today=new Date();
+  v('tasks-body').innerHTML=hallazgos.map(h=>{
+    const hl=h.toLowerCase();let resp='Coordinador',dias=7;
+    for(const[k,r] of Object.entries(mapa)){if(hl.includes(k)){resp=r;break;}}
+    if(hl.includes('no funciona')||hl.includes('vencido')||hl.includes('diferencia')||hl.includes('dañad'))dias=3;
+    const fecha=new Date(today);fecha.setDate(fecha.getDate()+dias);
+    const fStr=fecha.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'});
+    return `<div class="task-item"><div class="task-h">${h}</div><div class="task-meta"><span class="tag tag-r">${resp}</span><span class="tag ${dias===3?'tag-a':'tag-m'}">${dias===3?'Alta — 3d':'Media — 7d'}</span><span class="tag-f">→ ${fStr}</span></div></div>`;
   }).join('');
 }
 
-// ── Photos ──
-function abrirFoto(i) {
-  document.getElementById('photo-input-' + i).click();
+// Photos
+function abrirFoto(i){v('pi'+i).click();}
+function procesarFoto(i,input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const img=new Image();
+    img.onload=()=>{
+      const canvas=document.createElement('canvas');const max=800;let w=img.width,h=img.height;
+      if(w>max){h=h*max/w;w=max;}if(h>max){w=w*max/h;h=max;}
+      canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);
+      const b64=canvas.toDataURL('image/jpeg',0.7);fotos[i]=b64;
+      const slot=v('slot'+i);slot.innerHTML=`<img src="${b64}"><div class="rm" onclick="event.stopPropagation();eliminarFoto(${i})">✕</div>`;
+      conteoFotos();
+    };img.src=e.target.result;
+  };reader.readAsDataURL(file);
+}
+function eliminarFoto(i){fotos[i]=null;const s=v('slot'+i);s.innerHTML='<span class="add-icon">+</span>';s.onclick=()=>abrirFoto(i);v('pi'+i).value='';conteoFotos();}
+function conteoFotos(){v('photo-count').textContent=fotos.filter(f=>f!==null).length+' / 5 fotos';}
+
+// Draft
+const CAMPOS=['f_pdv','m1_menu','m1_precios','n_m1_precios','m1_cat','n_m1_cat','m1_cristal','n_m1_cristal','m1_menaje','n_m1_menaje','n_m1_menu','s1','m2_av_ent','n_m2_av_ent','m2_av_int','n_m2_av_int','m2_unif_b','n_m2_unif_b','m2_unif_c','n_m2_unif_c','m2_aseo','n_m2_aseo','s2','m3_caja','n_m3_caja','m3_dif','n_m3_dif','m3_cons','n_m3_cons','m3_comp','n_m3_comp','m3_pos','n_m3_pos','s3','m4_cerv','n_m4_cerv','m4_lic','n_m4_lic','m4_bsa','n_m4_bsa','m4_alim','n_m4_alim','m4_merch','n_m4_merch','m4_venc','n_m4_venc','s4','m5_l_coc','n_m5_l_coc','m5_l_bar','n_m5_l_bar','m5_l_ban','n_m5_l_ban','m5_l_mes','n_m5_l_mes','m5_imp_b','n_m5_imp_b','m5_imp_c','n_m5_imp_c','m5_frio','n_m5_frio','m5_luz','n_m5_luz','m5_ac','n_m5_ac','m5_equipo','n_m5_equipo','m5_p_coc','m5_p_ser','s5','m6_sillas','n_m6_sillas','m6_mesas','n_m6_mesas','m6_pisos','n_m6_pisos','m6_luces','n_m6_luces','m6_pos','n_m6_pos','m6_eq_coc','n_m6_eq_coc','m6_eq_bar','n_m6_eq_bar','s6','v_venta','v_tickets','v_tkt_prom','v_vol','v_sh_comida','v_sh_lic','m7_conoce_ventas','n_m7_ventas','m7_conoce_tkt','n_m7_tkt','m7_conoce_vol','n_m7_vol','s7','hallazgos','notas'];
+
+function guardar(){
+  const data={};CAMPOS.forEach(id=>{const el=v(id);if(el)data[id]=el.value;});
+  data._ts=tsInicio?tsInicio.toISOString():'';
+  try{localStorage.setItem(DRAFT_KEY,JSON.stringify(data));}catch(e){}
 }
 
-function procesarFoto(i, input) {
-  const file = input.files[0];
-  if (!file) return;
-  // Compress to max 800px
-  const reader = new FileReader();
-  reader.onload = e => {
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      const max = 800;
-      let w = img.width, h = img.height;
-      if (w > max) { h = h * max / w; w = max; }
-      if (h > max) { w = w * max / h; h = max; }
-      canvas.width = w; canvas.height = h;
-      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      const b64 = canvas.toDataURL('image/jpeg', 0.7);
-      fotos[i] = b64;
-      // Show preview
-      const slot = document.getElementById('slot' + i);
-      slot.innerHTML = `<img src="${b64}"><div class="remove-btn" onclick="event.stopPropagation();eliminarFoto(${i})">✕</div>`;
-      actualizarConteoFotos();
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
+function cargarBorrador(){
+  try{
+    const raw=localStorage.getItem(DRAFT_KEY);if(!raw)return;
+    const data=JSON.parse(raw);let tieneData=false;
+    CAMPOS.forEach(id=>{const el=v(id);if(el&&data[id]!==undefined&&data[id]!==''){el.value=data[id];tieneData=true;}});
+    if(tieneData){
+      v('draft-banner').classList.add('show');
+      if(data._ts){tsInicio=new Date(data._ts);v('ts-val').textContent=formatTs(tsInicio);}
+      autocompletar();actualizar();
+      CAMPOS.filter(id=>id.startsWith('n_')).forEach(id=>{
+        const el=v(id);if(el&&el.value){const area=el.closest('.note-area');const tog=area?area.previousElementSibling:null;if(area&&tog){area.classList.add('open');tog.textContent='− Ocultar observación';}}
+      });
+    }
+  }catch(e){}
 }
 
-function eliminarFoto(i) {
-  fotos[i] = null;
-  const slot = document.getElementById('slot' + i);
-  slot.innerHTML = '<span class="add-icon">+</span>';
-  slot.onclick = () => abrirFoto(i);
-  document.getElementById('photo-input-' + i).value = '';
-  actualizarConteoFotos();
+function limpiarBorrador(){
+  try{localStorage.removeItem(DRAFT_KEY);}catch(e){}
+  v('draft-banner').classList.remove('show');
+  CAMPOS.forEach(id=>{const el=v(id);if(el)el.value='';});
+  fotos=[null,null,null,null,null];
+  [0,1,2,3,4].forEach(i=>{const s=v('slot'+i);s.innerHTML='<span class="add-icon">+</span>';s.onclick=()=>abrirFoto(i);});
+  conteoFotos();actualizar();v('pdv-auto').style.display='none';
+  tsInicio=new Date();v('ts-val').textContent=formatTs(tsInicio);
+  mostrarToast('Nueva auditoría lista','#888');
 }
 
-function actualizarConteoFotos() {
-  const n = fotos.filter(f => f !== null).length;
-  v('photo-count').textContent = n + ' / 5 fotos agregadas';
-}
+function mostrarToast(msg,color){const t=v('toast');t.textContent=msg;t.style.background=color||'var(--green)';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
 
-// ── Toast ──
-function mostrarToast(msg, color) {
-  const t = v('toast');
-  t.textContent = msg; t.style.background = color || 'var(--green)';
-  t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3500);
-}
+async function enviar(){
+  const s=[val('s1'),val('s2'),val('s3'),val('s4'),val('s5'),val('s6'),val('s7')];
+  const total=s.reduce((a,b)=>a+b,0);
+  if(total===0){mostrarToast('Primero llena los puntajes','#ef4444');return;}
+  if(!txt('f_pdv')){mostrarToast('Selecciona el PDV','#ef4444');return;}
+  let overMax=false;
+  s.forEach((sc,i)=>{if(sc>MAXIMOS[i]){mostrarToast('M'+(i+1)+' supera el máximo permitido','#ef4444');overMax=true;}});
+  if(overMax)return;
 
-// ── Send ──
-async function enviar() {
-  const s = [val('s1'),val('s2'),val('s3'),val('s4'),val('s5'),val('s6')];
-  const total = s.reduce((a,b) => a+b, 0);
-  if (total === 0) { mostrarToast('Primero llena los puntajes', '#ef4444'); return; }
-  if (!txt('f_cod')) { mostrarToast('Falta el código del PDV', '#ef4444'); return; }
+  const sel=v('f_pdv');const opt=sel.options[sel.selectedIndex];
+  const zona=opt.dataset.zona||'',coord=opt.dataset.coord||'',tipo=opt.dataset.tipo||'';
+  const estado=total>=85?'VERDE':total>=70?'AMARILLO':'ROJO';
+  const fotosActivas=fotos.filter(f=>f!==null);
 
-  const estado = total >= 85 ? 'VERDE' : total >= 70 ? 'AMARILLO' : 'ROJO';
-  const tsEnvio = formatTs(new Date());
-  const fotosActivas = fotos.filter(f => f !== null);
+  const fila=[
+    formatTs(tsInicio),formatTs(new Date()),
+    gpsData.lat||'N/D',gpsData.lng||'N/D',gpsData.address,
+    txt('f_pdv'),zona,coord,tipo,
+    // M1
+    txt('m1_menu'),txt('m1_precios'),txt('n_m1_precios'),txt('m1_cat'),txt('n_m1_cat'),txt('m1_cristal'),txt('n_m1_cristal'),txt('m1_menaje'),txt('n_m1_menaje'),s[0],
+    // M2
+    txt('m2_av_ent'),txt('n_m2_av_ent'),txt('m2_av_int'),txt('n_m2_av_int'),txt('m2_unif_b'),txt('n_m2_unif_b'),txt('m2_unif_c'),txt('n_m2_unif_c'),txt('m2_aseo'),txt('n_m2_aseo'),s[1],
+    // M3
+    txt('m3_caja'),txt('n_m3_caja'),txt('m3_dif'),txt('n_m3_dif'),txt('m3_cons'),txt('n_m3_cons'),txt('m3_comp'),txt('n_m3_comp'),txt('m3_pos'),txt('n_m3_pos'),s[2],
+    // M4
+    txt('m4_cerv'),txt('n_m4_cerv'),txt('m4_lic'),txt('n_m4_lic'),txt('m4_bsa'),txt('n_m4_bsa'),txt('m4_alim'),txt('n_m4_alim'),txt('m4_merch'),txt('n_m4_merch'),txt('m4_venc'),txt('n_m4_venc'),s[3],
+    // M5
+    txt('m5_l_coc'),txt('n_m5_l_coc'),txt('m5_l_bar'),txt('n_m5_l_bar'),txt('m5_l_ban'),txt('n_m5_l_ban'),txt('m5_l_mes'),txt('n_m5_l_mes'),txt('m5_imp_b'),txt('n_m5_imp_b'),txt('m5_imp_c'),txt('n_m5_imp_c'),txt('m5_frio'),txt('n_m5_frio'),txt('m5_luz'),txt('n_m5_luz'),txt('m5_ac'),txt('n_m5_ac'),txt('m5_equipo'),txt('n_m5_equipo'),txt('m5_p_coc'),txt('m5_p_ser'),s[4],
+    // M6
+    txt('m6_sillas'),txt('n_m6_sillas'),txt('m6_mesas'),txt('n_m6_mesas'),txt('m6_pisos'),txt('n_m6_pisos'),txt('m6_luces'),txt('n_m6_luces'),txt('m6_pos'),txt('n_m6_pos'),txt('m6_eq_coc'),txt('n_m6_eq_coc'),txt('m6_eq_bar'),txt('n_m6_eq_bar'),s[5],
+    // M7 Ventas
+    txt('v_venta'),txt('v_tickets'),txt('v_tkt_prom'),txt('v_vol'),txt('v_sh_comida'),txt('v_sh_lic'),txt('m7_conoce_ventas'),txt('n_m7_ventas'),txt('m7_conoce_tkt'),txt('n_m7_tkt'),txt('m7_conoce_vol'),txt('n_m7_vol'),s[6],
+    // Total
+    total,estado,
+    txt('hallazgos').replace(/\n/g,' | '),txt('notas'),
+    fotosActivas.length
+  ];
 
-  const payload = {
-    row: [
-      formatTs(tsInicio),           // Timestamp inicio (no editable)
-      tsEnvio,                       // Timestamp envío
-      gpsData.lat || 'N/D',         // GPS Lat
-      gpsData.lng || 'N/D',         // GPS Lng
-      gpsData.address,               // Dirección GPS
-      txt('f_cod'), txt('f_nombre'), txt('f_zona'), txt('f_tipo'),
-      txt('m1_menu'), txt('m1_precios'), txt('m1_cat'), txt('m1_cat_det'), txt('m1_cristal'), txt('m1_menaje'), s[0],
-      txt('m2_av_ent'), txt('m2_av_int'), txt('m2_unif_b'), txt('m2_unif_b_det'), txt('m2_unif_c'), txt('m2_unif_c_det'), txt('m2_aseo'), txt('m2_personal'), s[1],
-      txt('m3_caja'), txt('m3_dif'), txt('m3_cons'), txt('m3_comp'), txt('m3_pos'), s[2],
-      txt('m4_cerv'), txt('m4_lic'), txt('m4_alim'), txt('m4_venc'), s[3],
-      txt('m5_l_coc'), txt('m5_l_bar'), txt('m5_l_ban'), txt('m5_l_mes'), txt('m5_imp_b'), txt('m5_imp_c'), txt('m5_frio'), txt('m5_luz'), txt('m5_ac'), s[4],
-      txt('m6_sillas'), txt('m6_mesas'), txt('m6_pisos'), txt('m6_luces'), txt('m6_pos'), txt('m6_eq_coc'), txt('m6_eq_bar'), txt('m6_obs'), s[5],
-      total, estado,
-      txt('hallazgos').replace(/\n/g, ' | '),
-      txt('notas'),
-      fotosActivas.length  // Número de fotos
-    ],
-    fotos: fotosActivas,             // Array de base64
-    pdv: txt('f_cod') + '_' + txt('f_nombre')
-  };
-
-  const btn = v('btn-enviar');
-  btn.disabled = true;
-  btn.textContent = fotosActivas.length > 0 ? 'Subiendo fotos…' : 'Guardando…';
-
-  if (fotosActivas.length > 0) {
-    v('upload-progress').style.display = 'block';
-    v('upload-bar').style.width = '30%';
-    v('upload-label').textContent = `Subiendo ${fotosActivas.length} foto(s) a Drive…`;
-  }
-
-  try {
-    await fetch(SCRIPT_URL, {
-      method: 'POST', mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    v('upload-bar').style.width = '100%';
-    setTimeout(() => {
-      v('upload-progress').style.display = 'none';
-      mostrarToast('✓ Guardado en Google Sheets' + (fotosActivas.length > 0 ? ' + Drive' : ''));
-      btn.textContent = '✓ Enviado';
-      setTimeout(() => { btn.disabled = false; btn.textContent = 'Guardar en Sheets →'; }, 3000);
-    }, 600);
-  } catch(e) {
-    v('upload-progress').style.display = 'none';
-    mostrarToast('Error al guardar — verifica conexión', '#ef4444');
-    btn.disabled = false; btn.textContent = 'Guardar en Sheets →';
+  const btn=v('btn-enviar');btn.disabled=true;btn.textContent='Guardando…';
+  try{
+    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({row:fila,fotos:fotosActivas,pdv:txt('f_pdv')})});
+    mostrarToast('✓ Guardado en Google Sheets');
+    try{localStorage.removeItem(DRAFT_KEY);}catch(e){}
+    v('draft-banner').classList.remove('show');
+    btn.textContent='✓ Enviado';
+    setTimeout(()=>{btn.disabled=false;btn.textContent='Guardar en Sheets →';},3000);
+  }catch(e){
+    mostrarToast('Error — verifica conexión','#ef4444');
+    btn.disabled=false;btn.textContent='Guardar en Sheets →';
   }
 }
 </script>
