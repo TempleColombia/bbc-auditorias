@@ -44,43 +44,43 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15
 .sec-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
 .ic1{background:#1e2a1a}.ic2{background:#1a1e2e}.ic3{background:#2a1e1a}.ic4{background:#1e1a2a}.ic5{background:#1a2a28}.ic6{background:#2a1a22}.ic7{background:#1a2226}.ic0{background:#2a2a1a}.icf{background:#1a2020}
 .sec-name{font-size:14px;font-weight:600}.sec-max{font-size:11px;color:var(--muted);margin-top:1px}
-.sec-pts{font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:500}
+.sec-score{font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:500;min-width:48px;text-align:right}
 .chevron{color:var(--muted);font-size:16px;transition:transform .25s}.chevron.open{transform:rotate(180deg)}
 .sec-body{display:none;padding:0 16px 16px;border-top:1px solid var(--border)}.sec-body.open{display:block}
-.field{margin-top:12px}
-.field label{display:block;font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
-.field input,.field select,.field textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;font-size:14px;font-family:var(--font);color:var(--text);outline:none;appearance:none;-webkit-appearance:none;transition:border-color .15s}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
-.field textarea{resize:none;height:64px;line-height:1.5;font-size:13px}
-.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:34px}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+ 
 /* Item block */
-.item-block{margin-top:12px;background:var(--surface2);border-radius:10px;padding:10px 12px}
-.item-block label{display:block;font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
-.item-block select,.item-block input[type=number],.item-block input[type=text]{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 11px;font-size:14px;font-family:var(--font);color:var(--text);outline:none;appearance:none;-webkit-appearance:none}
-.item-block select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;padding-right:32px}
-.item-block select:focus,.item-block input:focus{border-color:var(--accent);outline:none}
-.na-badge{display:none;font-size:10px;background:#2a2a1a;color:#888;padding:2px 8px;border-radius:5px;margin-left:6px;vertical-align:middle}
-.note-toggle{font-size:11px;color:var(--muted);cursor:pointer;margin-top:6px;display:inline-block;text-decoration:underline}
+.item-block{margin-top:10px;background:var(--surface2);border-radius:10px;padding:10px 12px}
+.item-label{font-size:12px;color:var(--text);font-weight:500;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.item-label span{font-size:10px;color:var(--muted)}
+/* Toggle buttons */
+.item-opts{display:flex;gap:6px;margin-bottom:6px}
+.opt-btn{flex:1;padding:8px 4px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-size:12px;font-family:var(--font);font-weight:500;cursor:pointer;transition:all .15s;text-align:center}
+.opt-btn:active{transform:scale(.97)}
+.opt-btn.sel-ok{background:#14532d;border-color:#22c55e;color:#86efac}
+.opt-btn.sel-no{background:#7f1d1d;border-color:#ef4444;color:#fca5a5}
+.opt-btn.sel-na{background:#2a2a1a;border-color:#555;color:#aaa}
+.note-toggle{font-size:11px;color:var(--muted);cursor:pointer;text-decoration:underline;display:inline-block}
 .note-area{margin-top:6px;display:none}
-.note-area textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:13px;font-family:var(--font);color:var(--text);resize:none;height:56px;outline:none;line-height:1.5}
+.note-area textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:13px;font-family:var(--font);color:var(--text);resize:none;height:52px;outline:none;line-height:1.5}
 .note-area textarea:focus{border-color:var(--accent)}
 .note-area.open{display:block}
-/* Score helper */
-.score-helper{margin-top:10px;padding:8px 10px;background:var(--bg);border-radius:8px;border:1px solid var(--border);font-size:11px;color:var(--muted);display:none}
-.score-helper.show{display:block}
-.score-field{margin-top:14px;padding-top:12px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px}
-.score-field label{font-size:13px;font-weight:600;flex:1}
-.score-field input{width:68px;text-align:center;font-family:var(--mono);font-size:15px;font-weight:500;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:8px;color:var(--text);outline:none}
-.score-field input:focus{border-color:var(--accent)}
-.score-max{font-size:12px;color:var(--muted);white-space:nowrap}
-/* Info fields (ventas) */
+ 
+/* Module score bar */
+.mod-score-bar{margin-top:14px;padding-top:12px;border-top:1px solid var(--border)}
+.mod-score-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.mod-score-label{font-size:12px;color:var(--muted)}
+.mod-score-val{font-family:var(--mono);font-size:16px;font-weight:500;color:var(--accent)}
+.score-bar-bg{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.score-bar-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .4s}
+ 
+/* Info fields */
 .info-field{margin-top:10px}
 .info-field label{display:block;font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
-.info-field input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 11px;font-size:14px;font-family:var(--mono);color:var(--text);outline:none}
+.info-field input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:9px 11px;font-size:14px;font-family:var(--mono);color:var(--text);outline:none}
 .info-field input:focus{border-color:var(--accent)}
-.info-section-title{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:14px;margin-bottom:2px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sec-divider{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:14px;margin-bottom:2px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+ 
 /* Photos */
 .photo-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px}
 .photo-slot{aspect-ratio:1;border-radius:9px;border:1.5px dashed var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden}
@@ -89,15 +89,23 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15
 .photo-slot .rm{position:absolute;top:2px;right:2px;width:18px;height:18px;background:rgba(0,0,0,.75);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;z-index:2;cursor:pointer}
 .photo-input{display:none}
 .photo-count{font-size:11px;color:var(--muted);margin-top:5px}
+.field{margin-top:12px}
+.field label{display:block;font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.field textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;font-size:13px;font-family:var(--font);color:var(--text);outline:none;resize:none;line-height:1.5}
+.field textarea:focus{border-color:var(--accent)}
+ 
 /* Total */
-.total-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 16px;margin-bottom:14px;display:none}
+.total-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 16px;margin-bottom:14px}
 .total-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.total-num{font-family:var(--mono);font-size:38px;font-weight:500;line-height:1}
-.estado-badge{padding:7px 14px;border-radius:20px;font-size:12px;font-weight:600}
+.total-num{font-family:var(--mono);font-size:48px;font-weight:500;line-height:1}
+.estado-badge{padding:8px 16px;border-radius:20px;font-size:13px;font-weight:600}
 .verde{background:#14532d;color:#86efac}.amarillo{background:#713f12;color:#fde68a}.rojo{background:#7f1d1d;color:#fca5a5}
-.module-scores{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.module-scores{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
 .mod-item{background:var(--surface2);border-radius:9px;padding:9px 11px}
 .mod-label{font-size:10px;color:var(--muted)}.mod-val{font-family:var(--mono);font-size:14px;font-weight:500;margin-top:1px}
+.total-bar-bg{height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+.total-bar-fill{height:100%;border-radius:4px;transition:width .5s;background:var(--accent)}
+ 
 /* Tasks */
 .tasks-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:14px;display:none}
 .tasks-hdr{padding:12px 16px;font-size:13px;font-weight:600;border-bottom:1px solid var(--border)}
@@ -109,30 +117,28 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15
 .bottom-bar{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(14,14,15,.96);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:10px 16px;display:flex;gap:8px}
 .btn{flex:1;padding:13px;border-radius:11px;font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .15s}
 .btn:active{transform:scale(.97)}
-.btn-calc{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
 .btn-send{background:var(--accent);color:#000}.btn-send:disabled{opacity:.4;cursor:not-allowed}
 .toast{position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-16px);background:var(--green);color:#000;padding:10px 18px;border-radius:11px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;pointer-events:none;z-index:200;white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
-
+ 
 <div class="app-header">
   <div class="logo-row">
     <div class="logo-dot"><svg viewBox="0 0 16 16"><path d="M8 2l1.5 4.5H14l-3.7 2.7 1.4 4.3L8 11l-3.7 2.5 1.4-4.3L2 6.5h4.5z"/></svg></div>
-    <div><div class="app-title">BBC Auditorías</div><div class="app-sub">7 módulos · 100 pts</div></div>
+    <div><div class="app-title">BBC Auditorías</div><div class="app-sub">7 módulos · 100 pts · automático</div></div>
   </div>
   <div class="score-chip" id="header-score">0 / 100</div>
 </div>
 <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
-
+ 
 <div class="draft-banner" id="draft-banner">
   <span class="draft-text">📋 Borrador guardado — continuando donde lo dejaste</span>
   <span class="draft-clear" onclick="limpiarBorrador()">Empezar nueva</span>
 </div>
-
+ 
 <div class="container">
-
   <div class="gps-banner">
     <div class="gps-dot loading" id="gps-dot"></div>
     <div style="flex:1"><div class="gps-label">Ubicación GPS</div><div class="gps-val" id="gps-val">Obteniendo ubicación…</div></div>
@@ -141,13 +147,13 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15
     <div><div class="ts-label">Inicio de auditoría</div><div class="ts-val" id="ts-val">—</div></div>
     <div class="ts-lock">🔒 No editable</div>
   </div>
-
+ 
   <!-- PDV -->
   <div class="pdv-card">
     <h2>Punto de venta</h2>
-    <div class="field" style="margin-top:0">
-      <label>Selecciona el PDV</label>
-      <select id="f_pdv" onchange="autocompletar();guardar()">
+    <div style="margin-top:0">
+      <div style="font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Selecciona el PDV</div>
+      <select id="f_pdv" onchange="autocompletar();guardar()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;font-size:14px;font-family:var(--font);color:var(--text);outline:none;appearance:none;-webkit-appearance:none;background-image:url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\' viewBox=\'0 0 12 8\'%3E%3Cpath d=\'M1 1l5 5 5-5\' stroke=\'%23888\' stroke-width=\'1.5\' fill=\'none\' stroke-linecap=\'round\'/%3E%3C/svg%3E');background-repeat:no-repeat;background-position:right 12px center;padding-right:34px">
         <option value="">— Selecciona un PDV —</option>
         <optgroup label="Centro FRQ — Harrison">
           <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">BEER PALS JAVERIANA</option>
@@ -237,187 +243,18 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15
       </div>
     </div>
   </div>
-
-  <!-- M1 Experiencia · 15pts -->
-  <div class="section">
-    <div class="sec-hdr" onclick="toggleSec(1)">
-      <div class="sec-left"><div class="sec-icon ic1">🍺</div><div><div class="sec-name">Experiencia</div><div class="sec-max">Módulo 1 · máx 15</div></div></div>
-      <div style="display:flex;align-items:center;gap:8px"><span class="sec-pts" id="pts1">—</span><span class="chevron" id="ch1">⌄</span></div>
-    </div>
-    <div class="sec-body" id="body1">
-      <div class="item-block">
-        <label>Disponibilidad del menú (%)</label>
-        <input type="number" id="m1_menu" min="0" max="100" placeholder="100" oninput="guardar()">
-        <span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span>
-        <div class="note-area"><textarea id="n_m1_menu" placeholder="Observaciones..." oninput="guardar()"></textarea></div>
-      </div>
-      <div class="item-block">
-        <label>Precios actualizados</label>
-        <select id="m1_precios" onchange="guardar()"><option value="">—</option><option>sí</option><option>no</option><option>N/A</option></select>
-        <span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span>
-        <div class="note-area"><textarea id="n_m1_precios" placeholder="Observaciones..." oninput="guardar()"></textarea></div>
-      </div>
-      <div class="item-block">
-        <label>Categorías completas</label>
-        <select id="m1_cat" onchange="guardar()"><option value="">—</option><option>completas</option><option>incompletas</option><option>N/A</option></select>
-        <span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span>
-        <div class="note-area"><textarea id="n_m1_cat" placeholder="¿Cuáles faltan?..." oninput="guardar()"></textarea></div>
-      </div>
-      <div class="item-block">
-        <label>Cristalería</label>
-        <select id="m1_cristal" onchange="guardar()"><option value="">—</option><option>completa</option><option>incompleta</option><option>N/A</option></select>
-        <span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span>
-        <div class="note-area"><textarea id="n_m1_cristal" placeholder="¿Qué falta?..." oninput="guardar()"></textarea></div>
-      </div>
-      <div class="item-block">
-        <label>Menaje cocina</label>
-        <select id="m1_menaje" onchange="guardar()"><option value="">—</option><option>completo</option><option>incompleto</option><option>N/A</option></select>
-        <span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span>
-        <div class="note-area"><textarea id="n_m1_menaje" placeholder="¿Qué falta?..." oninput="guardar()"></textarea></div>
-      </div>
-      <div class="score-helper show" id="helper1">Ítems N/A se excluyen del máximo</div>
-      <div class="score-field"><label>Puntaje módulo 1</label><input type="number" id="s1" min="0" max="15" placeholder="0" oninput="actualizar();guardar()"><span class="score-max" id="max1">/ 15</span></div>
-    </div>
-  </div>
-
-  <!-- M2 Marketing · 15pts -->
-  <div class="section">
-    <div class="sec-hdr" onclick="toggleSec(2)">
-      <div class="sec-left"><div class="sec-icon ic2">👕</div><div><div class="sec-name">Marketing & Uniformes</div><div class="sec-max">Módulo 2 · máx 15</div></div></div>
-      <div style="display:flex;align-items:center;gap:8px"><span class="sec-pts" id="pts2">—</span><span class="chevron" id="ch2">⌄</span></div>
-    </div>
-    <div class="sec-body" id="body2">
-      <div class="item-block"><label>Avisos BBC entrada</label><select id="m2_av_ent" onchange="guardar()"><option value="">—</option><option>sí</option><option>no</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m2_av_ent" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
-      <div class="item-block"><label>Avisos BBC interior</label><select id="m2_av_int" onchange="guardar()"><option value="">—</option><option>sí</option><option>no</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m2_av_int" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
-      <div class="item-block"><label>Uniforme barra</label><select id="m2_unif_b" onchange="guardar()"><option value="">—</option><option>ok</option><option>con fallas</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m2_unif_b" placeholder="¿Qué falla?..." oninput="guardar()"></textarea></div></div>
-      <div class="item-block"><label>Uniforme cocina</label><select id="m2_unif_c" onchange="guardar()"><option value="">—</option><option>ok</option><option>con fallas</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m2_unif_c" placeholder="¿Qué falla?..." oninput="guardar()"></textarea></div></div>
-      <div class="item-block"><label>Aseo y accesorios</label><select id="m2_aseo" onchange="guardar()"><option value="">—</option><option>ok</option><option>problemas</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m2_aseo" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
-      <div class="score-helper show">Ítems N/A se excluyen del máximo</div>
-      <div class="score-field"><label>Puntaje módulo 2</label><input type="number" id="s2" min="0" max="15" placeholder="0" oninput="actualizar();guardar()"><span class="score-max">/ 15</span></div>
-    </div>
-  </div>
-
-  <!-- M3 Finanzas · 15pts -->
-  <div class="section">
-    <div class="sec-hdr" onclick="toggleSec(3)">
-      <div class="sec-left"><div class="sec-icon ic3">💰</div><div><div class="sec-name">Finanzas & Caja</div><div class="sec-max">Módulo 3 · máx 15</div></div></div>
-      <div style="display:flex;align-items:center;gap:8px"><span class="sec-pts" id="pts3">—</span><span class="chevron" id="ch3">⌄</span></div>
-    </div>
-    <div class="sec-body" id="body3">
-      <div class="item-block"><label>Caja cuadra</label><select id="m3_caja" onchange="guardar()"><option value="">—</option><option>sí</option><option>no</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m3_caja" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
-      <div class="item-block"><label>Diferencia en caja (%)</label><input type="number" id="m3_dif" min="0" step="0.1" placeholder="0.0" oninput="guardar()"><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m3_dif" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
-      <div class="item-block"><label>Consignaciones</label><select id="m3_cons" onchange="guardar()"><option value="">—</option><option>al día</option><option>retrasadas</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m3_cons" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
-      <div class="item-block"><label>Comprobantes</label><select id="m3_comp" onchange="guardar()"><option value="">—</option><option>organizados</option><option>desorden</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m3_comp" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
-      <div class="item-block"><label>POS</label><select id="m3_pos" onchange="guardar()"><option value="">—</option><option>funciona</option><option>no funciona</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m3_pos" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
-      <div class="score-helper show">Ítems N/A se excluyen del máximo</div>
-      <div class="score-field"><label>Puntaje módulo 3</label><input type="number" id="s3" min="0" max="15" placeholder="0" oninput="actualizar();guardar()"><span class="score-max">/ 15</span></div>
-    </div>
-  </div>
-
-  <!-- M4 Inventario · 15pts -->
-  <div class="section">
-    <div class="sec-hdr" onclick="toggleSec(4)">
-      <div class="sec-left"><div class="sec-icon ic4">📦</div><div><div class="sec-name">Inventario</div><div class="sec-max">Módulo 4 · máx 15</div></div></div>
-      <div style="display:flex;align-items:center;gap:8px"><span class="sec-pts" id="pts4">—</span><span class="chevron" id="ch4">⌄</span></div>
-    </div>
-    <div class="sec-body" id="body4">
-      <div class="item-block"><label>Cervezas BBC (%)</label><input type="number" id="m4_cerv" min="0" max="100" placeholder="100" oninput="guardar()"><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m4_cerv" placeholder="¿Qué falta?..." oninput="guardar()"></textarea></div></div>
-      <div class="item-block"><label>Licores (%)</label><input type="number" id="m4_lic" min="0" max="100" placeholder="100" oninput="guardar()"><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m4_lic" placeholder="¿Qué falta?..." oninput="guardar()"></textarea></div></div>
-      <div class="item-block"><label>Bebidas sin alcohol (%)</label><input type="number" id="m4_bsa" min="0" max="100" placeholder="100" oninput="guardar()"><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m4_bsa" placeholder="¿Qué falta?..." oninput="guardar()"></textarea></div></div>
-      <div class="item-block"><label>Alimentos (%)</label><input type="number" id="m4_alim" min="0" max="100" placeholder="100" oninput="guardar()"><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m4_alim" placeholder="¿Qué falta?..." oninput="guardar()"></textarea></div></div>
-      <div class="item-block"><label>Merchandising</label><select id="m4_merch" onchange="guardar()"><option value="">—</option><option>completo</option><option>incompleto</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m4_merch" placeholder="¿Qué falta?..." oninput="guardar()"></textarea></div></div>
-      <div class="item-block"><label>Productos vencidos</label><select id="m4_venc" onchange="guardar()"><option value="">—</option><option>ninguno</option><option>sí hay</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m4_venc" placeholder="¿Cuáles?..." oninput="guardar()"></textarea></div></div>
-      <div class="score-helper show">Ítems N/A se excluyen del máximo</div>
-      <div class="score-field"><label>Puntaje módulo 4</label><input type="number" id="s4" min="0" max="15" placeholder="0" oninput="actualizar();guardar()"><span class="score-max">/ 15</span></div>
-    </div>
-  </div>
-
-  <!-- M5 Operaciones + Personal · 15pts -->
-  <div class="section">
-    <div class="sec-hdr" onclick="toggleSec(5)">
-      <div class="sec-left"><div class="sec-icon ic5">🧹</div><div><div class="sec-name">Operaciones & Personal</div><div class="sec-max">Módulo 5 · máx 15</div></div></div>
-      <div style="display:flex;align-items:center;gap:8px"><span class="sec-pts" id="pts5">—</span><span class="chevron" id="ch5">⌄</span></div>
-    </div>
-    <div class="sec-body" id="body5">
-      <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:12px;margin-bottom:4px;padding-bottom:6px;border-bottom:1px solid var(--border)">Limpieza</div>
-      <div class="item-block"><label>Cocina</label><select id="m5_l_coc" onchange="guardar()"><option value="">—</option><option>ok</option><option>deficiente</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m5_l_coc" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
-      <div class="item-block"><label>Barra</label><select id="m5_l_bar" onchange="guardar()"><option value="">—</option><option>ok</option><option>deficiente</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m5_l_bar" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
-      <div class="item-block"><label>Baños</label><select id="m5_l_ban" onchange="guardar()"><option value="">—</option><option>ok</option><option>deficiente</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m5_l_ban" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
-      <div class="item-block"><label>Mesas</label><select id="m5_l_mes" onchange="guardar()"><option value="">—</option><option>ok</option><option>deficiente</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m5_l_mes" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
-      <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:14px;margin-bottom:4px;padding-bottom:6px;border-bottom:1px solid var(--border)">Equipos</div>
-      <div class="item-block"><label>Impresora barra</label><select id="m5_imp_b" onchange="guardar()"><option value="">—</option><option>funciona</option><option>no funciona</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m5_imp_b" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
-      <div class="item-block"><label>Impresora cocina</label><select id="m5_imp_c" onchange="guardar()"><option value="">—</option><option>funciona</option><option>no funciona</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m5_imp_c" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
-      <div class="item-block"><label>Nevera</label><select id="m5_frio" onchange="guardar()"><option value="">—</option><option>funciona</option><option>no funciona</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m5_frio" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
-      <div class="item-block"><label>Iluminación</label><select id="m5_luz" onchange="guardar()"><option value="">—</option><option>ok</option><option>deficiente</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m5_luz" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
-      <div class="item-block"><label>Aire acondicionado</label><select id="m5_ac" onchange="guardar()"><option value="">—</option><option>funciona</option><option>no funciona</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m5_ac" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
-      <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:14px;margin-bottom:4px;padding-bottom:6px;border-bottom:1px solid var(--border)">Personal</div>
-      <div class="item-block"><label>¿Equipo completo?</label><select id="m5_equipo" onchange="guardar()"><option value="">—</option><option>sí</option><option>no</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m5_equipo" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
-      <div class="row2" style="margin-top:10px">
-        <div class="item-block" style="margin-top:0"><label>Personas en cocina</label><input type="number" id="m5_p_coc" min="0" placeholder="0" oninput="guardar()"></div>
-        <div class="item-block" style="margin-top:0"><label>Personas en servicio</label><input type="number" id="m5_p_ser" min="0" placeholder="0" oninput="guardar()"></div>
-      </div>
-      <div class="score-helper show">Ítems N/A se excluyen del máximo</div>
-      <div class="score-field"><label>Puntaje módulo 5</label><input type="number" id="s5" min="0" max="15" placeholder="0" oninput="actualizar();guardar()"><span class="score-max">/ 15</span></div>
-    </div>
-  </div>
-
-  <!-- M6 Mantenimiento · 15pts -->
-  <div class="section">
-    <div class="sec-hdr" onclick="toggleSec(6)">
-      <div class="sec-left"><div class="sec-icon ic6">🔩</div><div><div class="sec-name">Mantenimiento</div><div class="sec-max">Módulo 6 · máx 15</div></div></div>
-      <div style="display:flex;align-items:center;gap:8px"><span class="sec-pts" id="pts6">—</span><span class="chevron" id="ch6">⌄</span></div>
-    </div>
-    <div class="sec-body" id="body6">
-      <div class="item-block"><label>Sillas</label><select id="m6_sillas" onchange="guardar()"><option value="">—</option><option>completas y en buen estado</option><option>faltantes o dañadas</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m6_sillas" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
-      <div class="item-block"><label>Mesas</label><select id="m6_mesas" onchange="guardar()"><option value="">—</option><option>completas y en buen estado</option><option>faltantes o dañadas</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m6_mesas" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
-      <div class="item-block"><label>Pisos y paredes</label><select id="m6_pisos" onchange="guardar()"><option value="">—</option><option>en buen estado</option><option>con daños</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m6_pisos" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
-      <div class="item-block"><label>Luces</label><select id="m6_luces" onchange="guardar()"><option value="">—</option><option>completas y funcionando</option><option>faltantes o dañadas</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m6_luces" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
-      <div class="item-block"><label>Sistema POS</label><select id="m6_pos" onchange="guardar()"><option value="">—</option><option>completo y funcionando</option><option>con fallas</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m6_pos" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
-      <div class="item-block"><label>Equipos cocina</label><select id="m6_eq_coc" onchange="guardar()"><option value="">—</option><option>completos y funcionando</option><option>con fallas</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m6_eq_coc" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
-      <div class="item-block"><label>Equipos barra</label><select id="m6_eq_bar" onchange="guardar()"><option value="">—</option><option>completos y funcionando</option><option>con fallas</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m6_eq_bar" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
-      <div class="score-helper show">Ítems N/A se excluyen del máximo</div>
-      <div class="score-field"><label>Puntaje módulo 6</label><input type="number" id="s6" min="0" max="15" placeholder="0" oninput="actualizar();guardar()"><span class="score-max">/ 15</span></div>
-    </div>
-  </div>
-
-  <!-- M7 Ventas · 10pts -->
-  <div class="section">
-    <div class="sec-hdr" onclick="toggleSec(7)">
-      <div class="sec-left"><div class="sec-icon ic7">📈</div><div><div class="sec-name">Ventas</div><div class="sec-max">Módulo 7 · máx 10</div></div></div>
-      <div style="display:flex;align-items:center;gap:8px"><span class="sec-pts" id="pts7">—</span><span class="chevron" id="ch7">⌄</span></div>
-    </div>
-    <div class="sec-body" id="body7">
-      <div style="font-size:12px;color:var(--muted);margin-top:8px;margin-bottom:4px">Cifras del mes en curso. Campos informativos + evaluación de conocimiento.</div>
-      <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:10px;margin-bottom:4px;padding-bottom:6px;border-bottom:1px solid var(--border)">Cifras del mes</div>
-      <div class="row2">
-        <div class="info-field"><label>Venta general ($)</label><input type="text" id="v_venta" placeholder="0" oninput="guardar()"></div>
-        <div class="info-field"><label>Número de tickets</label><input type="number" id="v_tickets" placeholder="0" oninput="guardar()"></div>
-      </div>
-      <div class="row2">
-        <div class="info-field"><label>Ticket promedio ($)</label><input type="text" id="v_tkt_prom" placeholder="0" oninput="guardar()"></div>
-        <div class="info-field"><label>Volumen (HL)</label><input type="text" id="v_vol" placeholder="0.0" oninput="guardar()"></div>
-      </div>
-      <div class="row2">
-        <div class="info-field"><label>Share comida (%)</label><input type="number" id="v_sh_comida" min="0" max="100" placeholder="0" oninput="guardar()"></div>
-        <div class="info-field"><label>Share licores (%)</label><input type="number" id="v_sh_lic" min="0" max="100" placeholder="0" oninput="guardar()"></div>
-      </div>
-      <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:14px;margin-bottom:4px;padding-bottom:6px;border-bottom:1px solid var(--border)">Evaluación de conocimiento</div>
-      <div class="item-block"><label>¿Tiene claras las ventas del mes?</label><select id="m7_conoce_ventas" onchange="guardar()"><option value="">—</option><option>sí, las conoce</option><option>parcialmente</option><option>no las conoce</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m7_ventas" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
-      <div class="item-block"><label>¿Conoce sus tickets y ticket promedio?</label><select id="m7_conoce_tkt" onchange="guardar()"><option value="">—</option><option>sí</option><option>parcialmente</option><option>no</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m7_tkt" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
-      <div class="item-block"><label>¿Conoce su volumen y shares?</label><select id="m7_conoce_vol" onchange="guardar()"><option value="">—</option><option>sí</option><option>parcialmente</option><option>no</option><option>N/A</option></select><span class="note-toggle" onclick="toggleNota(this)">+ Agregar observación</span><div class="note-area"><textarea id="n_m7_vol" placeholder="Observaciones..." oninput="guardar()"></textarea></div></div>
-      <div class="score-helper show">Ítems N/A se excluyen del máximo</div>
-      <div class="score-field"><label>Puntaje módulo 7</label><input type="number" id="s7" min="0" max="10" placeholder="0" oninput="actualizar();guardar()"><span class="score-max">/ 10</span></div>
-    </div>
-  </div>
-
+ 
+  <!-- MÓDULOS generados dinámicamente -->
+  <div id="modulos-container"></div>
+ 
   <!-- Fotos -->
   <div class="section">
-    <div class="sec-hdr" onclick="toggleSec(9)">
-      <div class="sec-left"><div class="sec-icon icf">📸</div><div><div class="sec-name">Fotos del punto</div><div class="sec-max">Máximo 5 fotos</div></div></div>
-      <span class="chevron" id="ch9">⌄</span>
+    <div class="sec-hdr" onclick="toggleSec('f')">
+      <div class="sec-left"><div class="sec-icon icf">📸</div><div><div class="sec-name">Fotos del punto</div><div style="font-size:11px;color:var(--muted)">Máximo 5 fotos</div></div></div>
+      <span class="chevron" id="chf">⌄</span>
     </div>
-    <div class="sec-body" id="body9">
-      <div style="font-size:12px;color:var(--muted);margin-top:4px;margin-bottom:8px">Toca cada cuadro para abrir la cámara.</div>
+    <div class="sec-body" id="bodyf">
+      <div style="font-size:12px;color:var(--muted);margin-top:8px;margin-bottom:8px">Toca cada cuadro para abrir la cámara.</div>
       <div class="photo-grid">
         <div class="photo-slot" onclick="abrirFoto(0)" id="slot0"><span class="add-icon">+</span></div>
         <div class="photo-slot" onclick="abrirFoto(1)" id="slot1"><span class="add-icon">+</span></div>
@@ -433,149 +270,304 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15
       <div class="photo-count" id="photo-count">0 / 5 fotos</div>
     </div>
   </div>
-
+ 
   <!-- Hallazgos -->
   <div class="section">
-    <div class="sec-hdr" onclick="toggleSec(8)">
-      <div class="sec-left"><div class="sec-icon ic0">⚠️</div><div><div class="sec-name">Hallazgos & notas generales</div><div class="sec-max">Observaciones críticas</div></div></div>
-      <span class="chevron" id="ch8">⌄</span>
+    <div class="sec-hdr" onclick="toggleSec('h')">
+      <div class="sec-left"><div class="sec-icon ic0">⚠️</div><div><div class="sec-name">Hallazgos & notas</div><div style="font-size:11px;color:var(--muted)">Observaciones críticas</div></div></div>
+      <span class="chevron" id="chh">⌄</span>
     </div>
-    <div class="sec-body" id="body8">
-      <div class="field"><label>Hallazgos críticos (uno por línea)</label><textarea id="hallazgos" placeholder="ej: Nevera sin funcionar&#10;Diferencia en caja del 8%&#10;Sillas dañadas" style="height:90px" oninput="guardar()"></textarea></div>
+    <div class="sec-body" id="bodyh">
+      <div class="field"><label>Hallazgos críticos (uno por línea)</label><textarea id="hallazgos" placeholder="ej: Nevera sin funcionar&#10;Diferencia en caja del 8%" style="height:90px" oninput="guardar()"></textarea></div>
       <div class="field"><label>Notas adicionales</label><textarea id="notas" placeholder="Contexto del PDV, observaciones generales..." style="height:72px" oninput="guardar()"></textarea></div>
     </div>
   </div>
-
+ 
   <!-- Total -->
   <div class="total-section" id="total-section">
     <div class="total-row">
-      <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Puntaje total</div><div class="total-num" id="total-num">0</div></div>
+      <div>
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Puntaje total</div>
+        <div class="total-num" id="total-num">0</div>
+      </div>
       <div class="estado-badge" id="estado-badge">—</div>
     </div>
-    <div style="font-size:11px;color:var(--muted);margin-bottom:8px" id="total-detail">—</div>
-    <div class="module-scores">
-      <div class="mod-item"><div class="mod-label">M1 Experiencia</div><div class="mod-val" id="r1">—</div></div>
-      <div class="mod-item"><div class="mod-label">M2 Marketing</div><div class="mod-val" id="r2">—</div></div>
-      <div class="mod-item"><div class="mod-label">M3 Finanzas</div><div class="mod-val" id="r3">—</div></div>
-      <div class="mod-item"><div class="mod-label">M4 Inventario</div><div class="mod-val" id="r4">—</div></div>
-      <div class="mod-item"><div class="mod-label">M5 Operaciones</div><div class="mod-val" id="r5">—</div></div>
-      <div class="mod-item"><div class="mod-label">M6 Mantenimiento</div><div class="mod-val" id="r6">—</div></div>
-      <div class="mod-item"><div class="mod-label">M7 Ventas</div><div class="mod-val" id="r7">—</div></div>
-    </div>
+    <div class="total-bar-bg" style="margin-bottom:14px"><div class="total-bar-fill" id="total-bar" style="width:0%"></div></div>
+    <div class="module-scores" id="module-scores-grid"></div>
   </div>
-
+ 
   <div class="tasks-section" id="tasks-section">
     <div class="tasks-hdr">📋 Tareas de mejora</div>
     <div id="tasks-body"></div>
   </div>
 </div>
-
+ 
 <div class="bottom-bar">
-  <button class="btn btn-calc" onclick="calcular()">Calcular</button>
   <button class="btn btn-send" id="btn-enviar" onclick="enviar()">Guardar en Sheets →</button>
 </div>
 <div class="toast" id="toast"></div>
-
+ 
 <script>
 const SCRIPT_URL='https://script.google.com/a/macros/templecolombia.com/s/AKfycbyJDH95uutnkNmXzWprax1w3o5Elk5piRuGAzA9nZP6eKYwniswUcHvc4C-C-lepcxQMA/exec';
-const DRAFT_KEY='bbc_auditoria_v5';
-const MAXIMOS=[15,15,15,15,15,15,10]; // máximos por módulo
+const DRAFT_KEY='bbc_v6';
+ 
+// ── DEFINICIÓN DE MÓDULOS ──
+// tipo: 'yn' = sí/no, 'info' = campo informativo (no puntúa)
+const MODULOS = [
+  { id:1, nombre:'Experiencia', icon:'🍺', cls:'ic1', max:15, items:[
+    {id:'m1_menu_pct', label:'Menú disponible (%)', tipo:'pct'},
+    {id:'m1_precios', label:'Precios actualizados', tipo:'yn'},
+    {id:'m1_cat', label:'Categorías completas', tipo:'yn'},
+    {id:'m1_cristal', label:'Cristalería completa', tipo:'yn'},
+    {id:'m1_menaje', label:'Menaje cocina completo', tipo:'yn'},
+  ]},
+  { id:2, nombre:'Marketing & Uniformes', icon:'👕', cls:'ic2', max:15, items:[
+    {id:'m2_av_ent', label:'Avisos BBC entrada', tipo:'yn'},
+    {id:'m2_av_int', label:'Avisos BBC interior', tipo:'yn'},
+    {id:'m2_unif_b', label:'Uniforme barra correcto', tipo:'yn'},
+    {id:'m2_unif_c', label:'Uniforme cocina correcto', tipo:'yn'},
+    {id:'m2_aseo', label:'Aseo y accesorios ok', tipo:'yn'},
+  ]},
+  { id:3, nombre:'Finanzas & Caja', icon:'💰', cls:'ic3', max:15, items:[
+    {id:'m3_caja', label:'Caja cuadra', tipo:'yn'},
+    {id:'m3_dif', label:'Diferencia en caja (%)', tipo:'pct_neg'},
+    {id:'m3_cons', label:'Consignaciones al día', tipo:'yn'},
+    {id:'m3_comp', label:'Comprobantes organizados', tipo:'yn'},
+    {id:'m3_pos', label:'POS funcionando', tipo:'yn'},
+  ]},
+  { id:4, nombre:'Inventario', icon:'📦', cls:'ic4', max:15, items:[
+    {id:'m4_cerv', label:'Cervezas BBC (%)', tipo:'pct'},
+    {id:'m4_lic', label:'Licores (%)', tipo:'pct'},
+    {id:'m4_bsa', label:'Bebidas sin alcohol (%)', tipo:'pct'},
+    {id:'m4_alim', label:'Alimentos (%)', tipo:'pct'},
+    {id:'m4_merch', label:'Merchandising completo', tipo:'yn'},
+    {id:'m4_venc', label:'Sin productos vencidos', tipo:'yn'},
+  ]},
+  { id:5, nombre:'Operaciones & Personal', icon:'🧹', cls:'ic5', max:15, items:[
+    {id:'m5_l_coc', label:'Limpieza cocina', tipo:'yn', grupo:'Limpieza'},
+    {id:'m5_l_bar', label:'Limpieza barra', tipo:'yn'},
+    {id:'m5_l_ban', label:'Limpieza baños', tipo:'yn'},
+    {id:'m5_l_mes', label:'Limpieza mesas', tipo:'yn'},
+    {id:'m5_imp_b', label:'Impresora barra', tipo:'yn', grupo:'Equipos'},
+    {id:'m5_imp_c', label:'Impresora cocina', tipo:'yn'},
+    {id:'m5_frio', label:'Nevera funcionando', tipo:'yn'},
+    {id:'m5_luz', label:'Iluminación ok', tipo:'yn'},
+    {id:'m5_ac', label:'Aire acondicionado', tipo:'yn'},
+    {id:'m5_equipo', label:'Equipo completo', tipo:'yn', grupo:'Personal'},
+    {id:'m5_p_coc', label:'Personas en cocina', tipo:'info'},
+    {id:'m5_p_ser', label:'Personas en servicio', tipo:'info'},
+  ]},
+  { id:6, nombre:'Mantenimiento', icon:'🔩', cls:'ic6', max:15, items:[
+    {id:'m6_sillas', label:'Sillas en buen estado', tipo:'yn'},
+    {id:'m6_mesas', label:'Mesas en buen estado', tipo:'yn'},
+    {id:'m6_pisos', label:'Pisos y paredes ok', tipo:'yn'},
+    {id:'m6_luces', label:'Luces completas', tipo:'yn'},
+    {id:'m6_pos', label:'Sistema POS completo', tipo:'yn'},
+    {id:'m6_eq_coc', label:'Equipos cocina ok', tipo:'yn'},
+    {id:'m6_eq_bar', label:'Equipos barra ok', tipo:'yn'},
+  ]},
+  { id:7, nombre:'Ventas', icon:'📈', cls:'ic7', max:10, items:[
+    {id:'v_venta', label:'Venta general ($)', tipo:'info'},
+    {id:'v_tickets', label:'Número de tickets', tipo:'info'},
+    {id:'v_tkt_prom', label:'Ticket promedio ($)', tipo:'info'},
+    {id:'v_vol', label:'Volumen (HL)', tipo:'info'},
+    {id:'v_sh_comida', label:'Share comida (%)', tipo:'info'},
+    {id:'v_sh_lic', label:'Share licores (%)', tipo:'info'},
+    {id:'m7_conoce_ventas', label:'Conoce ventas del mes', tipo:'yn', grupo:'Evaluación'},
+    {id:'m7_conoce_tkt', label:'Conoce tickets y promedio', tipo:'yn'},
+    {id:'m7_conoce_vol', label:'Conoce volumen y shares', tipo:'yn'},
+  ]},
+];
+ 
+// Estado global
 let gpsData={lat:null,lng:null,address:'No disponible'};
 let tsInicio=null;
 let fotos=[null,null,null,null,null];
-
+// respuestas: {itemId: 'ok'|'no'|'na'|valor}
+let respuestas={};
+ 
+// ── BUILD UI ──
+function buildModulos(){
+  const cont=document.getElementById('modulos-container');
+  // Total card primero vacío
+  MODULOS.forEach(mod=>{
+    const sec=document.createElement('div');sec.className='section';
+    sec.innerHTML=`
+      <div class="sec-hdr" onclick="toggleSec(${mod.id})">
+        <div class="sec-left">
+          <div class="sec-icon ${mod.cls}">${mod.icon}</div>
+          <div><div class="sec-name">${mod.nombre}</div><div style="font-size:11px;color:var(--muted)">Módulo ${mod.id} · máx ${mod.max}</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="sec-score" id="score-chip-${mod.id}">—</span>
+          <span class="chevron" id="ch${mod.id}">⌄</span>
+        </div>
+      </div>
+      <div class="sec-body" id="body${mod.id}">
+        ${buildItems(mod)}
+        <div class="mod-score-bar">
+          <div class="mod-score-row">
+            <span class="mod-score-label">Puntaje automático</span>
+            <span class="mod-score-val" id="score-val-${mod.id}">0 / ${mod.max}</span>
+          </div>
+          <div class="score-bar-bg"><div class="score-bar-fill" id="score-bar-${mod.id}" style="width:0%"></div></div>
+        </div>
+      </div>`;
+    cont.appendChild(sec);
+  });
+  // Build total grid
+  const grid=document.getElementById('module-scores-grid');
+  MODULOS.forEach(mod=>{
+    const d=document.createElement('div');d.className='mod-item';
+    d.innerHTML=`<div class="mod-label">M${mod.id} ${mod.nombre}</div><div class="mod-val" id="r${mod.id}">—</div>`;
+    grid.appendChild(d);
+  });
+}
+ 
+function buildItems(mod){
+  let html='';
+  let grupoActual='';
+  mod.items.forEach(item=>{
+    if(item.grupo && item.grupo!==grupoActual){
+      grupoActual=item.grupo;
+      html+=`<div class="sec-divider">${item.grupo}</div>`;
+    }
+    if(item.tipo==='yn'){
+      html+=`<div class="item-block">
+        <div class="item-label">${item.label}</div>
+        <div class="item-opts">
+          <button class="opt-btn" id="btn-ok-${item.id}" onclick="setResp('${item.id}','ok','${mod.id}')">✓ Sí / Ok</button>
+          <button class="opt-btn" id="btn-no-${item.id}" onclick="setResp('${item.id}','no','${mod.id}')">✗ No</button>
+          <button class="opt-btn" id="btn-na-${item.id}" onclick="setResp('${item.id}','na','${mod.id}')">N/A</button>
+        </div>
+        <span class="note-toggle" onclick="toggleNota(this)">+ Observación</span>
+        <div class="note-area"><textarea id="n_${item.id}" placeholder="Observaciones..." oninput="guardar()"></textarea></div>
+      </div>`;
+    } else if(item.tipo==='pct'||item.tipo==='pct_neg'){
+      html+=`<div class="item-block">
+        <div class="item-label">${item.label} <span>0-100</span></div>
+        <input type="number" id="${item.id}" min="0" max="100" placeholder="—" oninput="setRespPct('${item.id}','${mod.id}')" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 11px;font-size:15px;font-family:var(--mono);color:var(--text);outline:none;margin-bottom:6px">
+        <span class="note-toggle" onclick="toggleNota(this)">+ Observación</span>
+        <div class="note-area"><textarea id="n_${item.id}" placeholder="Observaciones..." oninput="guardar()"></textarea></div>
+      </div>`;
+    } else {
+      // info field
+      html+=`<div class="info-field">
+        <label>${item.label}</label>
+        <input type="text" id="${item.id}" placeholder="—" oninput="guardar()">
+      </div>`;
+    }
+  });
+  return html;
+}
+ 
+// ── LOGIC ──
+function setResp(itemId, val, modId){
+  respuestas[itemId]=val;
+  ['ok','no','na'].forEach(t=>{
+    const btn=document.getElementById('btn-'+t+'-'+itemId);
+    if(btn){btn.className='opt-btn'+(val===t?' sel-'+t:'');}
+  });
+  calcMod(parseInt(modId));
+  guardar();
+}
+ 
+function setRespPct(itemId, modId){
+  const el=document.getElementById(itemId);
+  const v=parseFloat(el.value);
+  respuestas[itemId]=isNaN(v)?null:v;
+  calcMod(parseInt(modId));
+  guardar();
+}
+ 
+function calcMod(modId){
+  const mod=MODULOS.find(m=>m.id===modId);
+  const scorableItems=mod.items.filter(i=>i.tipo==='yn'||i.tipo==='pct'||i.tipo==='pct_neg');
+  let ok=0,total=0;
+  scorableItems.forEach(item=>{
+    const r=respuestas[item.id];
+    if(r===null||r===undefined||r==='')return; // no respondido → no cuenta aún
+    if(r==='na')return; // N/A → excluir
+    total++;
+    if(item.tipo==='yn'){if(r==='ok')ok++;}
+    else if(item.tipo==='pct'){const pct=parseFloat(r)||0;if(pct>=80)ok++;}
+    else if(item.tipo==='pct_neg'){const pct=parseFloat(r)||0;if(pct<5)ok++;} // diferencia de caja <5% = ok
+  });
+  const score=total>0?Math.round((ok/total)*mod.max):0;
+  // Update UI
+  const chip=document.getElementById('score-chip-'+modId);
+  const val=document.getElementById('score-val-'+modId);
+  const bar=document.getElementById('score-bar-'+modId);
+  const pct=total>0?(ok/total)*100:0;
+  if(chip)chip.textContent=score+'/'+mod.max;
+  if(val)val.textContent=score+' / '+mod.max+' ('+ok+'/'+total+' ok)';
+  if(bar)bar.style.width=pct+'%';
+  calcTotal();
+}
+ 
+function calcTotal(){
+  let total=0;
+  const scores=[];
+  MODULOS.forEach(mod=>{
+    const chip=document.getElementById('score-chip-'+mod.id);
+    const txt=chip?chip.textContent:'—';
+    const sc=parseInt(txt)||0;
+    scores.push(sc);
+    total+=sc;
+    const ri=document.getElementById('r'+mod.id);
+    if(ri)ri.textContent=sc+'/'+mod.max;
+  });
+  document.getElementById('total-num').textContent=total;
+  document.getElementById('total-bar').style.width=Math.min(total,100)+'%';
+  document.getElementById('header-score').textContent=total+' / 100';
+  document.getElementById('progress').style.width=Math.min(total,100)+'%';
+  const badge=document.getElementById('estado-badge');
+  if(total>=85){badge.textContent='🟢 VERDE';badge.className='estado-badge verde';}
+  else if(total>=70){badge.textContent='🟡 AMARILLO';badge.className='estado-badge amarillo';}
+  else{badge.textContent='🔴 ROJO';badge.className='estado-badge rojo';}
+  generarTareas();
+}
+ 
+function toggleSec(n){
+  const b=document.getElementById('body'+n),ch=document.getElementById('ch'+n);
+  if(!b)return;const open=b.classList.toggle('open');if(ch)ch.classList.toggle('open',open);
+}
+function toggleNota(el){
+  const area=el.nextElementSibling;area.classList.toggle('open');
+  el.textContent=area.classList.contains('open')?'− Ocultar':'+ Observación';
+}
+ 
+// GPS
 window.onload=function(){
   tsInicio=new Date();
-  v('ts-val').textContent=formatTs(tsInicio);
+  document.getElementById('ts-val').textContent=formatTs(tsInicio);
   obtenerGPS();
+  buildModulos();
   cargarBorrador();
 };
-
 function formatTs(d){return d.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+d.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
-
 function obtenerGPS(){
   if(!navigator.geolocation){setGPS('GPS no disponible','err');return;}
   navigator.geolocation.getCurrentPosition(pos=>{
     gpsData.lat=pos.coords.latitude.toFixed(6);gpsData.lng=pos.coords.longitude.toFixed(6);
     gpsData.address=gpsData.lat+', '+gpsData.lng;
-    v('gps-val').textContent='📍 '+gpsData.lat+', '+gpsData.lng;
-    v('gps-dot').className='gps-dot ok';
+    document.getElementById('gps-val').textContent='📍 '+gpsData.lat+', '+gpsData.lng;
+    document.getElementById('gps-dot').className='gps-dot ok';
     fetch('https://nominatim.openstreetmap.org/reverse?lat='+gpsData.lat+'&lon='+gpsData.lng+'&format=json')
-      .then(r=>r.json()).then(d=>{const a=d.address;const r=[a.road,a.neighbourhood,a.city||a.town].filter(Boolean).join(', ');if(r){gpsData.address=r+' ('+gpsData.lat+', '+gpsData.lng+')';v('gps-val').textContent='📍 '+r;}}).catch(()=>{});
+      .then(r=>r.json()).then(d=>{const a=d.address;const r=[a.road,a.neighbourhood,a.city||a.town].filter(Boolean).join(', ');if(r){gpsData.address=r+' ('+gpsData.lat+', '+gpsData.lng+')';document.getElementById('gps-val').textContent='📍 '+r;}}).catch(()=>{});
   },err=>{const m={1:'Permiso GPS denegado',2:'Señal no encontrada',3:'Tiempo agotado'};setGPS(m[err.code]||'Error GPS','err');},{enableHighAccuracy:true,timeout:10000,maximumAge:0});
 }
-function setGPS(msg,state){v('gps-val').textContent=msg;v('gps-dot').className='gps-dot '+state;}
-
+function setGPS(msg,state){document.getElementById('gps-val').textContent=msg;document.getElementById('gps-dot').className='gps-dot '+state;}
+ 
 function autocompletar(){
-  const sel=v('f_pdv');const opt=sel.options[sel.selectedIndex];
+  const sel=document.getElementById('f_pdv');const opt=sel.options[sel.selectedIndex];
   const zona=opt.dataset.zona||'',coord=opt.dataset.coord||'',tipo=opt.dataset.tipo||'';
-  if(zona){v('auto-zona').textContent=zona;v('auto-coord').textContent=coord;v('auto-tipo').textContent=tipo;v('pdv-auto').style.display='block';}
-  else{v('pdv-auto').style.display='none';}
+  if(zona){document.getElementById('auto-zona').textContent=zona;document.getElementById('auto-coord').textContent=coord;document.getElementById('auto-tipo').textContent=tipo;document.getElementById('pdv-auto').style.display='block';}
+  else{document.getElementById('pdv-auto').style.display='none';}
 }
-
-function toggleSec(n){const b=v('body'+n),ch=v('ch'+n);const open=b.classList.toggle('open');if(ch)ch.classList.toggle('open',open);}
-function toggleNota(el){const area=el.nextElementSibling;area.classList.toggle('open');el.textContent=area.classList.contains('open')?'− Ocultar observación':'+ Agregar observación';}
-
-function v(id){return document.getElementById(id);}
-function val(id){return parseFloat(v(id).value)||0;}
-function txt(id){const el=v(id);return el?el.value||'':""}
-
-// ── SCORE ENGINE con N/A ──
-// Calcula puntaje proporcional cuando hay N/A
-// Si el auditor pone 12/15 pero 2 ítems son N/A, el máximo real es 13/15 → se escala a 100
-function calcularProporcional(score, max){
-  if(max===0)return 0;
-  return Math.round((score/max)*100)/100;
-}
-
-function actualizar(){
-  const s=[val('s1'),val('s2'),val('s3'),val('s4'),val('s5'),val('s6'),val('s7')];
-  const total=s.reduce((a,b)=>a+b,0);
-  v('header-score').textContent=total+' / 100';
-  v('progress').style.width=Math.min(total,100)+'%';
-  s.forEach((sc,i)=>{v('pts'+(i+1)).textContent=sc||'—';});
-}
-
-function calcular(){
-  const s=[val('s1'),val('s2'),val('s3'),val('s4'),val('s5'),val('s6'),val('s7')];
-  const total=s.reduce((a,b)=>a+b,0);
-
-  // Validar que ningún módulo supere su máximo
-  let warnings=[];
-  s.forEach((sc,i)=>{if(sc>MAXIMOS[i])warnings.push('M'+(i+1)+' supera el máximo ('+MAXIMOS[i]+')');});
-  if(warnings.length){mostrarToast('⚠️ '+warnings[0],'#eab308');return;}
-
-  v('total-section').style.display='block';
-  v('total-num').textContent=total;
-  v('total-detail').textContent='Suma directa: '+s.join(' + ')+' = '+total+' / 100';
-  s.forEach((sc,i)=>{v('r'+(i+1)).textContent=sc+'/'+MAXIMOS[i];});
-
-  const badge=v('estado-badge');
-  if(total>=85){badge.textContent='🟢 VERDE';badge.className='estado-badge verde';}
-  else if(total>=70){badge.textContent='🟡 AMARILLO';badge.className='estado-badge amarillo';}
-  else{badge.textContent='🔴 ROJO';badge.className='estado-badge rojo';}
-  generarTareas();
-  v('total-section').scrollIntoView({behavior:'smooth',block:'center'});
-}
-
-function generarTareas(){
-  const hallazgos=txt('hallazgos').split('\n').filter(h=>h.trim());
-  if(!hallazgos.length){v('tasks-section').style.display='none';return;}
-  const mapa={'caja':'Gte Ops','diferencia':'Gte Ops','consignac':'Gte Ops','comprobante':'Gte Ops','nevera':'Mantenimiento','impresora':'Mantenimiento','iluminac':'Mantenimiento','ac':'Mantenimiento','aire':'Mantenimiento','silla':'Mantenimiento','piso':'Mantenimiento','pared':'Mantenimiento','luz':'Mantenimiento','equipo':'Mantenimiento','pos':'Mantenimiento','uniforme':'Coordinador','aseo':'Coordinador','accesorio':'Coordinador','aviso':'Coordinador','vencido':'Compras','cerveza':'Compras','licor':'Compras','alimento':'Compras','merchandising':'Compras','menú':'Coordinador','cristal':'Coordinador','limpieza':'Coordinador','venta':'Coordinador','personal':'Coordinador'};
-  v('tasks-section').style.display='block';
-  const today=new Date();
-  v('tasks-body').innerHTML=hallazgos.map(h=>{
-    const hl=h.toLowerCase();let resp='Coordinador',dias=7;
-    for(const[k,r] of Object.entries(mapa)){if(hl.includes(k)){resp=r;break;}}
-    if(hl.includes('no funciona')||hl.includes('vencido')||hl.includes('diferencia')||hl.includes('dañad'))dias=3;
-    const fecha=new Date(today);fecha.setDate(fecha.getDate()+dias);
-    const fStr=fecha.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'});
-    return `<div class="task-item"><div class="task-h">${h}</div><div class="task-meta"><span class="tag tag-r">${resp}</span><span class="tag ${dias===3?'tag-a':'tag-m'}">${dias===3?'Alta — 3d':'Media — 7d'}</span><span class="tag-f">→ ${fStr}</span></div></div>`;
-  }).join('');
-}
-
+ 
 // Photos
-function abrirFoto(i){v('pi'+i).click();}
+function abrirFoto(i){document.getElementById('pi'+i).click();}
 function procesarFoto(i,input){
   const file=input.files[0];if(!file)return;
   const reader=new FileReader();
@@ -586,96 +578,126 @@ function procesarFoto(i,input){
       if(w>max){h=h*max/w;w=max;}if(h>max){w=w*max/h;h=max;}
       canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);
       const b64=canvas.toDataURL('image/jpeg',0.7);fotos[i]=b64;
-      const slot=v('slot'+i);slot.innerHTML=`<img src="${b64}"><div class="rm" onclick="event.stopPropagation();eliminarFoto(${i})">✕</div>`;
+      const slot=document.getElementById('slot'+i);slot.innerHTML=`<img src="${b64}"><div class="rm" onclick="event.stopPropagation();eliminarFoto(${i})">✕</div>`;
       conteoFotos();
     };img.src=e.target.result;
   };reader.readAsDataURL(file);
 }
-function eliminarFoto(i){fotos[i]=null;const s=v('slot'+i);s.innerHTML='<span class="add-icon">+</span>';s.onclick=()=>abrirFoto(i);v('pi'+i).value='';conteoFotos();}
-function conteoFotos(){v('photo-count').textContent=fotos.filter(f=>f!==null).length+' / 5 fotos';}
-
+function eliminarFoto(i){fotos[i]=null;const s=document.getElementById('slot'+i);s.innerHTML='<span class="add-icon">+</span>';s.onclick=()=>abrirFoto(i);document.getElementById('pi'+i).value='';conteoFotos();}
+function conteoFotos(){document.getElementById('photo-count').textContent=fotos.filter(f=>f!==null).length+' / 5 fotos';}
+ 
+// Tasks
+function generarTareas(){
+  const hallazgos=(document.getElementById('hallazgos').value||'').split('\n').filter(h=>h.trim());
+  if(!hallazgos.length){document.getElementById('tasks-section').style.display='none';return;}
+  const mapa={'caja':'Gte Ops','diferencia':'Gte Ops','consignac':'Gte Ops','comprobante':'Gte Ops','nevera':'Mantenimiento','impresora':'Mantenimiento','iluminac':'Mantenimiento','ac':'Mantenimiento','aire':'Mantenimiento','silla':'Mantenimiento','piso':'Mantenimiento','pared':'Mantenimiento','luz':'Mantenimiento','equipo':'Mantenimiento','pos':'Mantenimiento','uniforme':'Coordinador','aseo':'Coordinador','accesorio':'Coordinador','aviso':'Coordinador','vencido':'Compras','cerveza':'Compras','licor':'Compras','alimento':'Compras','merchandising':'Compras','menú':'Coordinador','cristal':'Coordinador','limpieza':'Coordinador','venta':'Coordinador','personal':'Coordinador'};
+  document.getElementById('tasks-section').style.display='block';
+  const today=new Date();
+  document.getElementById('tasks-body').innerHTML=hallazgos.map(h=>{
+    const hl=h.toLowerCase();let resp='Coordinador',dias=7;
+    for(const[k,r] of Object.entries(mapa)){if(hl.includes(k)){resp=r;break;}}
+    if(hl.includes('no funciona')||hl.includes('vencido')||hl.includes('diferencia')||hl.includes('dañad'))dias=3;
+    const fecha=new Date(today);fecha.setDate(fecha.getDate()+dias);
+    const fStr=fecha.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'});
+    return `<div class="task-item"><div class="task-h">${h}</div><div class="task-meta"><span class="tag tag-r">${resp}</span><span class="tag ${dias===3?'tag-a':'tag-m'}">${dias===3?'Alta — 3d':'Media — 7d'}</span><span class="tag-f">→ ${fStr}</span></div></div>`;
+  }).join('');
+}
+ 
 // Draft
-const CAMPOS=['f_pdv','m1_menu','m1_precios','n_m1_precios','m1_cat','n_m1_cat','m1_cristal','n_m1_cristal','m1_menaje','n_m1_menaje','n_m1_menu','s1','m2_av_ent','n_m2_av_ent','m2_av_int','n_m2_av_int','m2_unif_b','n_m2_unif_b','m2_unif_c','n_m2_unif_c','m2_aseo','n_m2_aseo','s2','m3_caja','n_m3_caja','m3_dif','n_m3_dif','m3_cons','n_m3_cons','m3_comp','n_m3_comp','m3_pos','n_m3_pos','s3','m4_cerv','n_m4_cerv','m4_lic','n_m4_lic','m4_bsa','n_m4_bsa','m4_alim','n_m4_alim','m4_merch','n_m4_merch','m4_venc','n_m4_venc','s4','m5_l_coc','n_m5_l_coc','m5_l_bar','n_m5_l_bar','m5_l_ban','n_m5_l_ban','m5_l_mes','n_m5_l_mes','m5_imp_b','n_m5_imp_b','m5_imp_c','n_m5_imp_c','m5_frio','n_m5_frio','m5_luz','n_m5_luz','m5_ac','n_m5_ac','m5_equipo','n_m5_equipo','m5_p_coc','m5_p_ser','s5','m6_sillas','n_m6_sillas','m6_mesas','n_m6_mesas','m6_pisos','n_m6_pisos','m6_luces','n_m6_luces','m6_pos','n_m6_pos','m6_eq_coc','n_m6_eq_coc','m6_eq_bar','n_m6_eq_bar','s6','v_venta','v_tickets','v_tkt_prom','v_vol','v_sh_comida','v_sh_lic','m7_conoce_ventas','n_m7_ventas','m7_conoce_tkt','n_m7_tkt','m7_conoce_vol','n_m7_vol','s7','hallazgos','notas'];
-
 function guardar(){
-  const data={};CAMPOS.forEach(id=>{const el=v(id);if(el)data[id]=el.value;});
-  data._ts=tsInicio?tsInicio.toISOString():'';
+  const data={pdv:document.getElementById('f_pdv').value,respuestas:JSON.stringify(respuestas),hallazgos:document.getElementById('hallazgos').value,notas:document.getElementById('notas').value,_ts:tsInicio?tsInicio.toISOString():''};
+  // save notes
+  MODULOS.forEach(mod=>mod.items.forEach(item=>{const el=document.getElementById('n_'+item.id);if(el)data['n_'+item.id]=el.value;const inf=document.getElementById(item.id);if(inf&&item.tipo==='info')data['info_'+item.id]=inf.value;}));
   try{localStorage.setItem(DRAFT_KEY,JSON.stringify(data));}catch(e){}
 }
-
+ 
 function cargarBorrador(){
   try{
     const raw=localStorage.getItem(DRAFT_KEY);if(!raw)return;
     const data=JSON.parse(raw);let tieneData=false;
-    CAMPOS.forEach(id=>{const el=v(id);if(el&&data[id]!==undefined&&data[id]!==''){el.value=data[id];tieneData=true;}});
-    if(tieneData){
-      v('draft-banner').classList.add('show');
-      if(data._ts){tsInicio=new Date(data._ts);v('ts-val').textContent=formatTs(tsInicio);}
-      autocompletar();actualizar();
-      CAMPOS.filter(id=>id.startsWith('n_')).forEach(id=>{
-        const el=v(id);if(el&&el.value){const area=el.closest('.note-area');const tog=area?area.previousElementSibling:null;if(area&&tog){area.classList.add('open');tog.textContent='− Ocultar observación';}}
+    if(data.pdv){document.getElementById('f_pdv').value=data.pdv;autocompletar();tieneData=true;}
+    if(data.respuestas){
+      const r=JSON.parse(data.respuestas);
+      Object.entries(r).forEach(([k,v])=>{
+        respuestas[k]=v;
+        if(v==='ok'||v==='no'||v==='na'){['ok','no','na'].forEach(t=>{const btn=document.getElementById('btn-'+t+'-'+k);if(btn)btn.className='opt-btn'+(v===t?' sel-'+t:'');});}
+        else if(v!==null&&v!==undefined){const el=document.getElementById(k);if(el)el.value=v;}
       });
+      MODULOS.forEach(mod=>calcMod(mod.id));
+      tieneData=true;
     }
+    if(data.hallazgos)document.getElementById('hallazgos').value=data.hallazgos;
+    if(data.notas)document.getElementById('notas').value=data.notas;
+    if(data._ts){tsInicio=new Date(data._ts);document.getElementById('ts-val').textContent=formatTs(tsInicio);}
+    MODULOS.forEach(mod=>mod.items.forEach(item=>{
+      const n=document.getElementById('n_'+item.id);if(n&&data['n_'+item.id]){n.value=data['n_'+item.id];const tog=n.closest('.note-area');const tgl=tog?tog.previousElementSibling:null;if(tog&&tgl){tog.classList.add('open');tgl.textContent='− Ocultar';}}
+      const inf=document.getElementById(item.id);if(inf&&data['info_'+item.id])inf.value=data['info_'+item.id];
+    }));
+    if(tieneData)document.getElementById('draft-banner').classList.add('show');
   }catch(e){}
 }
-
+ 
 function limpiarBorrador(){
   try{localStorage.removeItem(DRAFT_KEY);}catch(e){}
-  v('draft-banner').classList.remove('show');
-  CAMPOS.forEach(id=>{const el=v(id);if(el)el.value='';});
-  fotos=[null,null,null,null,null];
-  [0,1,2,3,4].forEach(i=>{const s=v('slot'+i);s.innerHTML='<span class="add-icon">+</span>';s.onclick=()=>abrirFoto(i);});
-  conteoFotos();actualizar();v('pdv-auto').style.display='none';
-  tsInicio=new Date();v('ts-val').textContent=formatTs(tsInicio);
+  document.getElementById('draft-banner').classList.remove('show');
+  document.getElementById('f_pdv').value='';
+  document.getElementById('pdv-auto').style.display='none';
+  respuestas={};
+  document.querySelectorAll('.opt-btn').forEach(b=>b.className='opt-btn');
+  document.querySelectorAll('input[type=number],input[type=text]').forEach(i=>{if(!i.id.startsWith('pi'))i.value='';});
+  document.getElementById('hallazgos').value='';document.getElementById('notas').value='';
+  fotos=[null,null,null,null,null];[0,1,2,3,4].forEach(i=>{const s=document.getElementById('slot'+i);s.innerHTML='<span class="add-icon">+</span>';s.onclick=()=>abrirFoto(i);});
+  conteoFotos();MODULOS.forEach(mod=>calcMod(mod.id));
+  tsInicio=new Date();document.getElementById('ts-val').textContent=formatTs(tsInicio);
   mostrarToast('Nueva auditoría lista','#888');
 }
-
-function mostrarToast(msg,color){const t=v('toast');t.textContent=msg;t.style.background=color||'var(--green)';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
-
+ 
+function mostrarToast(msg,color){const t=document.getElementById('toast');t.textContent=msg;t.style.background=color||'var(--green)';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+ 
+function txt(id){const el=document.getElementById(id);return el?el.value||'':""}
+ 
 async function enviar(){
-  const s=[val('s1'),val('s2'),val('s3'),val('s4'),val('s5'),val('s6'),val('s7')];
-  const total=s.reduce((a,b)=>a+b,0);
-  if(total===0){mostrarToast('Primero llena los puntajes','#ef4444');return;}
   if(!txt('f_pdv')){mostrarToast('Selecciona el PDV','#ef4444');return;}
-  let overMax=false;
-  s.forEach((sc,i)=>{if(sc>MAXIMOS[i]){mostrarToast('M'+(i+1)+' supera el máximo permitido','#ef4444');overMax=true;}});
-  if(overMax)return;
-
-  const sel=v('f_pdv');const opt=sel.options[sel.selectedIndex];
+  const total=parseInt(document.getElementById('total-num').textContent)||0;
+  if(total===0){mostrarToast('Completa al menos un módulo','#ef4444');return;}
+ 
+  const sel=document.getElementById('f_pdv');const opt=sel.options[sel.selectedIndex];
   const zona=opt.dataset.zona||'',coord=opt.dataset.coord||'',tipo=opt.dataset.tipo||'';
   const estado=total>=85?'VERDE':total>=70?'AMARILLO':'ROJO';
   const fotosActivas=fotos.filter(f=>f!==null);
-
+ 
+  // Build scores array
+  const scores=MODULOS.map(mod=>{const chip=document.getElementById('score-chip-'+mod.id);return parseInt(chip?chip.textContent:0)||0;});
+ 
   const fila=[
     formatTs(tsInicio),formatTs(new Date()),
     gpsData.lat||'N/D',gpsData.lng||'N/D',gpsData.address,
     txt('f_pdv'),zona,coord,tipo,
     // M1
-    txt('m1_menu'),txt('m1_precios'),txt('n_m1_precios'),txt('m1_cat'),txt('n_m1_cat'),txt('m1_cristal'),txt('n_m1_cristal'),txt('m1_menaje'),txt('n_m1_menaje'),s[0],
+    txt('m1_menu_pct'),respuestas['m1_precios']||'',txt('n_m1_precios')||'',respuestas['m1_cat']||'',txt('n_m1_cat')||'',respuestas['m1_cristal']||'',txt('n_m1_cristal')||'',respuestas['m1_menaje']||'',txt('n_m1_menaje')||'',scores[0],
     // M2
-    txt('m2_av_ent'),txt('n_m2_av_ent'),txt('m2_av_int'),txt('n_m2_av_int'),txt('m2_unif_b'),txt('n_m2_unif_b'),txt('m2_unif_c'),txt('n_m2_unif_c'),txt('m2_aseo'),txt('n_m2_aseo'),s[1],
+    respuestas['m2_av_ent']||'',txt('n_m2_av_ent')||'',respuestas['m2_av_int']||'',txt('n_m2_av_int')||'',respuestas['m2_unif_b']||'',txt('n_m2_unif_b')||'',respuestas['m2_unif_c']||'',txt('n_m2_unif_c')||'',respuestas['m2_aseo']||'',txt('n_m2_aseo')||'',scores[1],
     // M3
-    txt('m3_caja'),txt('n_m3_caja'),txt('m3_dif'),txt('n_m3_dif'),txt('m3_cons'),txt('n_m3_cons'),txt('m3_comp'),txt('n_m3_comp'),txt('m3_pos'),txt('n_m3_pos'),s[2],
+    respuestas['m3_caja']||'',txt('n_m3_caja')||'',txt('m3_dif')||'',txt('n_m3_dif')||'',respuestas['m3_cons']||'',txt('n_m3_cons')||'',respuestas['m3_comp']||'',txt('n_m3_comp')||'',respuestas['m3_pos']||'',txt('n_m3_pos')||'',scores[2],
     // M4
-    txt('m4_cerv'),txt('n_m4_cerv'),txt('m4_lic'),txt('n_m4_lic'),txt('m4_bsa'),txt('n_m4_bsa'),txt('m4_alim'),txt('n_m4_alim'),txt('m4_merch'),txt('n_m4_merch'),txt('m4_venc'),txt('n_m4_venc'),s[3],
+    txt('m4_cerv'),txt('n_m4_cerv')||'',txt('m4_lic'),txt('n_m4_lic')||'',txt('m4_bsa'),txt('n_m4_bsa')||'',txt('m4_alim'),txt('n_m4_alim')||'',respuestas['m4_merch']||'',txt('n_m4_merch')||'',respuestas['m4_venc']||'',txt('n_m4_venc')||'',scores[3],
     // M5
-    txt('m5_l_coc'),txt('n_m5_l_coc'),txt('m5_l_bar'),txt('n_m5_l_bar'),txt('m5_l_ban'),txt('n_m5_l_ban'),txt('m5_l_mes'),txt('n_m5_l_mes'),txt('m5_imp_b'),txt('n_m5_imp_b'),txt('m5_imp_c'),txt('n_m5_imp_c'),txt('m5_frio'),txt('n_m5_frio'),txt('m5_luz'),txt('n_m5_luz'),txt('m5_ac'),txt('n_m5_ac'),txt('m5_equipo'),txt('n_m5_equipo'),txt('m5_p_coc'),txt('m5_p_ser'),s[4],
+    respuestas['m5_l_coc']||'',txt('n_m5_l_coc')||'',respuestas['m5_l_bar']||'',txt('n_m5_l_bar')||'',respuestas['m5_l_ban']||'',txt('n_m5_l_ban')||'',respuestas['m5_l_mes']||'',txt('n_m5_l_mes')||'',respuestas['m5_imp_b']||'',txt('n_m5_imp_b')||'',respuestas['m5_imp_c']||'',txt('n_m5_imp_c')||'',respuestas['m5_frio']||'',txt('n_m5_frio')||'',respuestas['m5_luz']||'',txt('n_m5_luz')||'',respuestas['m5_ac']||'',txt('n_m5_ac')||'',respuestas['m5_equipo']||'',txt('n_m5_equipo')||'',txt('m5_p_coc'),txt('m5_p_ser'),scores[4],
     // M6
-    txt('m6_sillas'),txt('n_m6_sillas'),txt('m6_mesas'),txt('n_m6_mesas'),txt('m6_pisos'),txt('n_m6_pisos'),txt('m6_luces'),txt('n_m6_luces'),txt('m6_pos'),txt('n_m6_pos'),txt('m6_eq_coc'),txt('n_m6_eq_coc'),txt('m6_eq_bar'),txt('n_m6_eq_bar'),s[5],
-    // M7 Ventas
-    txt('v_venta'),txt('v_tickets'),txt('v_tkt_prom'),txt('v_vol'),txt('v_sh_comida'),txt('v_sh_lic'),txt('m7_conoce_ventas'),txt('n_m7_ventas'),txt('m7_conoce_tkt'),txt('n_m7_tkt'),txt('m7_conoce_vol'),txt('n_m7_vol'),s[6],
-    // Total
+    respuestas['m6_sillas']||'',txt('n_m6_sillas')||'',respuestas['m6_mesas']||'',txt('n_m6_mesas')||'',respuestas['m6_pisos']||'',txt('n_m6_pisos')||'',respuestas['m6_luces']||'',txt('n_m6_luces')||'',respuestas['m6_pos']||'',txt('n_m6_pos')||'',respuestas['m6_eq_coc']||'',txt('n_m6_eq_coc')||'',respuestas['m6_eq_bar']||'',txt('n_m6_eq_bar')||'',scores[5],
+    // M7
+    txt('v_venta'),txt('v_tickets'),txt('v_tkt_prom'),txt('v_vol'),txt('v_sh_comida'),txt('v_sh_lic'),respuestas['m7_conoce_ventas']||'',txt('n_m7_ventas')||'',respuestas['m7_conoce_tkt']||'',txt('n_m7_tkt')||'',respuestas['m7_conoce_vol']||'',txt('n_m7_vol')||'',scores[6],
     total,estado,
     txt('hallazgos').replace(/\n/g,' | '),txt('notas'),
     fotosActivas.length
   ];
-
-  const btn=v('btn-enviar');btn.disabled=true;btn.textContent='Guardando…';
+ 
+  const btn=document.getElementById('btn-enviar');btn.disabled=true;btn.textContent='Guardando…';
   try{
     await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({row:fila,fotos:fotosActivas,pdv:txt('f_pdv')})});
     mostrarToast('✓ Guardado en Google Sheets');
     try{localStorage.removeItem(DRAFT_KEY);}catch(e){}
-    v('draft-banner').classList.remove('show');
+    document.getElementById('draft-banner').classList.remove('show');
     btn.textContent='✓ Enviado';
     setTimeout(()=>{btn.disabled=false;btn.textContent='Guardar en Sheets →';},3000);
   }catch(e){
