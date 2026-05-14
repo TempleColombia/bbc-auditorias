@@ -47,7 +47,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15
 .sec-score{font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:500;min-width:48px;text-align:right}
 .chevron{color:var(--muted);font-size:16px;transition:transform .25s}.chevron.open{transform:rotate(180deg)}
 .sec-body{display:none;padding:0 16px 16px;border-top:1px solid var(--border)}.sec-body.open{display:block}
- 
+
 /* Item block */
 .item-block{margin-top:10px;background:var(--surface2);border-radius:10px;padding:10px 12px}
 .item-label{font-size:12px;color:var(--text);font-weight:500;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
@@ -64,7 +64,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15
 .note-area textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:13px;font-family:var(--font);color:var(--text);resize:none;height:52px;outline:none;line-height:1.5}
 .note-area textarea:focus{border-color:var(--accent)}
 .note-area.open{display:block}
- 
+
 /* Module score bar */
 .mod-score-bar{margin-top:14px;padding-top:12px;border-top:1px solid var(--border)}
 .mod-score-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
@@ -72,7 +72,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15
 .mod-score-val{font-family:var(--mono);font-size:16px;font-weight:500;color:var(--accent)}
 .score-bar-bg{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
 .score-bar-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .4s}
- 
+
 /* Info fields */
 .info-field{margin-top:10px}
 .info-field label{display:block;font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
@@ -80,7 +80,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15
 .info-field input:focus{border-color:var(--accent)}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .sec-divider{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:14px;margin-bottom:2px;padding-bottom:6px;border-bottom:1px solid var(--border)}
- 
+
 /* Photos */
 .photo-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px}
 .photo-slot{aspect-ratio:1;border-radius:9px;border:1.5px dashed var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden}
@@ -93,7 +93,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15
 .field label{display:block;font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
 .field textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;font-size:13px;font-family:var(--font);color:var(--text);outline:none;resize:none;line-height:1.5}
 .field textarea:focus{border-color:var(--accent)}
- 
+
 /* Total */
 .total-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 16px;margin-bottom:14px}
 .total-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
@@ -105,7 +105,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15
 .mod-label{font-size:10px;color:var(--muted)}.mod-val{font-family:var(--mono);font-size:14px;font-weight:500;margin-top:1px}
 .total-bar-bg{height:8px;background:var(--border);border-radius:4px;overflow:hidden}
 .total-bar-fill{height:100%;border-radius:4px;transition:width .5s;background:var(--accent)}
- 
+
 /* Tasks */
 .tasks-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:14px;display:none}
 .tasks-hdr{padding:12px 16px;font-size:13px;font-weight:600;border-bottom:1px solid var(--border)}
@@ -123,7 +123,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15
 </style>
 </head>
 <body>
- 
+
 <div class="app-header">
   <div class="logo-row">
     <div class="logo-dot"><svg viewBox="0 0 16 16"><path d="M8 2l1.5 4.5H14l-3.7 2.7 1.4 4.3L8 11l-3.7 2.5 1.4-4.3L2 6.5h4.5z"/></svg></div>
@@ -132,12 +132,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15
   <div class="score-chip" id="header-score">0 / 100</div>
 </div>
 <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
- 
+
 <div class="draft-banner" id="draft-banner">
   <span class="draft-text">📋 Borrador guardado — continuando donde lo dejaste</span>
   <span class="draft-clear" onclick="limpiarBorrador()">Empezar nueva</span>
 </div>
- 
+
 <div class="container">
   <div class="gps-banner">
     <div class="gps-dot loading" id="gps-dot"></div>
@@ -147,7 +147,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15
     <div><div class="ts-label">Inicio de auditoría</div><div class="ts-val" id="ts-val">—</div></div>
     <div class="ts-lock">🔒 No editable</div>
   </div>
- 
+
   <!-- PDV -->
   <div class="pdv-card">
     <h2>Punto de venta</h2>
@@ -155,6 +155,53 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15
       <div style="font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Selecciona el PDV</div>
       <select id="f_pdv" onchange="autocompletar();guardar()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;font-size:14px;font-family:var(--font);color:var(--text);outline:none;appearance:none;-webkit-appearance:none;background-image:url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\' viewBox=\'0 0 12 8\'%3E%3Cpath d=\'M1 1l5 5 5-5\' stroke=\'%23888\' stroke-width=\'1.5\' fill=\'none\' stroke-linecap=\'round\'/%3E%3C/svg%3E');background-repeat:no-repeat;background-position:right 12px center;padding-right:34px">
         <option value="">— Selecciona un PDV —</option>
+        <optgroup label="Propios Centro — BBC">
+          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="BODEGA">CALLE 67</option>
+          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="BODEGA">ARBOLEDA / HEROES</option>
+          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="BODEGA">BOD CALLE 93</option>
+          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="BODEGA">LOURDES</option>
+          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="BODEGA">DIVER PLAZA</option>
+          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="BODEGA">MODELO</option>
+          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="BODEGA">PORTAL 80</option>
+          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="PUB">SALITRE</option>
+          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="PUB">TITAN</option>
+          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="PUB">ANDINO</option>
+          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="PUB">CALLE 85</option>
+          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="PUB">CALLE 63</option>
+          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="PUB">ROSALES</option>
+          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="PUB">CONNECTA</option>
+        </optgroup>
+        <optgroup label="Propios Norte — BBC">
+          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="BODEGA">VILLA DEL PRADO</option>
+          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="BODEGA">CALLE 100</option>
+          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="BODEGA">PASADENA</option>
+          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="BODEGA">IMPERIAL</option>
+          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="BODEGA">CHICO</option>
+          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="BODEGA">MINI CALLE 97</option>
+          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="PUB">PARQUE 93</option>
+          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="PUB">CEDRITOS</option>
+          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="PUB">AVDA 19</option>
+          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="PUB">COLINA</option>
+          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="PUB">USAQUEN</option>
+          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="PUB">PEPE SIERRA</option>
+          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="PUB">BELAIRE</option>
+        </optgroup>
+        <optgroup label="Propios Sur — BBC">
+          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="BODEGA">CORFERIAS</option>
+          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="BODEGA">CALLE 43</option>
+          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="BODEGA">BOSA CENTRO</option>
+          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="BODEGA">RESTREPO</option>
+          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="BODEGA">TERRAZA PASTEUR</option>
+          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="BODEGA">PLAZA CLARO</option>
+          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="BODEGA">PARK WAY</option>
+          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="PUB">MOVISTAR</option>
+          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="PUB">GALERÍAS</option>
+          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="PUB">CANDELARIA</option>
+          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="PUB">CENTRO MAYOR</option>
+          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="PUB">PLAZA CENTRAL</option>
+          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="PUB">SAN MARTIN</option>
+          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="PUB">PLAZA DE LAS AMÉRICAS</option>
+        </optgroup>
         <optgroup label="Centro FRQ — Harrison">
           <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">BEER PALS JAVERIANA</option>
           <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">BEER PALS SAS CL 109</option>
@@ -243,10 +290,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15
       </div>
     </div>
   </div>
- 
+
   <!-- MÓDULOS generados dinámicamente -->
   <div id="modulos-container"></div>
- 
+
   <!-- Fotos -->
   <div class="section">
     <div class="sec-hdr" onclick="toggleSec('f')">
@@ -270,7 +317,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15
       <div class="photo-count" id="photo-count">0 / 5 fotos</div>
     </div>
   </div>
- 
+
   <!-- Hallazgos -->
   <div class="section">
     <div class="sec-hdr" onclick="toggleSec('h')">
@@ -282,7 +329,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15
       <div class="field"><label>Notas adicionales</label><textarea id="notas" placeholder="Contexto del PDV, observaciones generales..." style="height:72px" oninput="guardar()"></textarea></div>
     </div>
   </div>
- 
+
   <!-- Total -->
   <div class="total-section" id="total-section">
     <div class="total-row">
@@ -295,22 +342,22 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15
     <div class="total-bar-bg" style="margin-bottom:14px"><div class="total-bar-fill" id="total-bar" style="width:0%"></div></div>
     <div class="module-scores" id="module-scores-grid"></div>
   </div>
- 
+
   <div class="tasks-section" id="tasks-section">
     <div class="tasks-hdr">📋 Tareas de mejora</div>
     <div id="tasks-body"></div>
   </div>
 </div>
- 
+
 <div class="bottom-bar">
   <button class="btn btn-send" id="btn-enviar" onclick="enviar()">Guardar en Sheets →</button>
 </div>
 <div class="toast" id="toast"></div>
- 
+
 <script>
-const SCRIPT_URL='https://script.google.com/a/macros/templecolombia.com/s/AKfycbyJDH95uutnkNmXzWprax1w3o5Elk5piRuGAzA9nZP6eKYwniswUcHvc4C-C-lepcxQMA/exec';
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycbyItpuGWvi4mPxo5_D7-w8ELpLxioIo31_z4M2cbOkSOcYo0OPbaqrD8KNvkRrU9oxXTA/exec';
 const DRAFT_KEY='bbc_v6';
- 
+
 // ── DEFINICIÓN DE MÓDULOS ──
 // tipo: 'yn' = sí/no, 'info' = campo informativo (no puntúa)
 const MODULOS = [
@@ -353,6 +400,8 @@ const MODULOS = [
     {id:'m5_frio', label:'Nevera funcionando', tipo:'yn'},
     {id:'m5_luz', label:'Iluminación ok', tipo:'yn'},
     {id:'m5_ac', label:'Aire acondicionado', tipo:'yn'},
+    {id:'m5_legales', label:'Legales completos', tipo:'yn', grupo:'Legal'},
+    {id:'m5_sanit', label:'Última fecha de sanitización', tipo:'fecha', grupo:'Sanitización'},
     {id:'m5_equipo', label:'Equipo completo', tipo:'yn', grupo:'Personal'},
     {id:'m5_p_coc', label:'Personas en cocina', tipo:'info'},
     {id:'m5_p_ser', label:'Personas en servicio', tipo:'info'},
@@ -378,14 +427,14 @@ const MODULOS = [
     {id:'m7_conoce_vol', label:'Conoce volumen y shares', tipo:'yn'},
   ]},
 ];
- 
+
 // Estado global
 let gpsData={lat:null,lng:null,address:'No disponible'};
 let tsInicio=null;
 let fotos=[null,null,null,null,null];
 // respuestas: {itemId: 'ok'|'no'|'na'|valor}
 let respuestas={};
- 
+
 // ── BUILD UI ──
 function buildModulos(){
   const cont=document.getElementById('modulos-container');
@@ -423,7 +472,7 @@ function buildModulos(){
     grid.appendChild(d);
   });
 }
- 
+
 function buildItems(mod){
   let html='';
   let grupoActual='';
@@ -450,6 +499,13 @@ function buildItems(mod){
         <span class="note-toggle" onclick="toggleNota(this)">+ Observación</span>
         <div class="note-area"><textarea id="n_${item.id}" placeholder="Observaciones..." oninput="guardar()"></textarea></div>
       </div>`;
+    } else if(item.tipo==='fecha'){
+      html+=`<div class="item-block">
+        <div class="item-label">${item.label}</div>
+        <input type="date" id="${item.id}" oninput="guardar()" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 11px;font-size:14px;font-family:var(--font);color:var(--text);outline:none;margin-bottom:6px">
+        <span class="note-toggle" onclick="toggleNota(this)">+ Observación</span>
+        <div class="note-area"><textarea id="n_${item.id}" placeholder="Observaciones..." oninput="guardar()"></textarea></div>
+      </div>`;
     } else {
       // info field
       html+=`<div class="info-field">
@@ -460,7 +516,7 @@ function buildItems(mod){
   });
   return html;
 }
- 
+
 // ── LOGIC ──
 function setResp(itemId, val, modId){
   respuestas[itemId]=val;
@@ -471,7 +527,7 @@ function setResp(itemId, val, modId){
   calcMod(parseInt(modId));
   guardar();
 }
- 
+
 function setRespPct(itemId, modId){
   const el=document.getElementById(itemId);
   const v=parseFloat(el.value);
@@ -479,7 +535,7 @@ function setRespPct(itemId, modId){
   calcMod(parseInt(modId));
   guardar();
 }
- 
+
 function calcMod(modId){
   const mod=MODULOS.find(m=>m.id===modId);
   const scorableItems=mod.items.filter(i=>i.tipo==='yn'||i.tipo==='pct'||i.tipo==='pct_neg');
@@ -504,7 +560,7 @@ function calcMod(modId){
   if(bar)bar.style.width=pct+'%';
   calcTotal();
 }
- 
+
 function calcTotal(){
   let total=0;
   const scores=[];
@@ -527,7 +583,7 @@ function calcTotal(){
   else{badge.textContent='🔴 ROJO';badge.className='estado-badge rojo';}
   generarTareas();
 }
- 
+
 function toggleSec(n){
   const b=document.getElementById('body'+n),ch=document.getElementById('ch'+n);
   if(!b)return;const open=b.classList.toggle('open');if(ch)ch.classList.toggle('open',open);
@@ -536,7 +592,7 @@ function toggleNota(el){
   const area=el.nextElementSibling;area.classList.toggle('open');
   el.textContent=area.classList.contains('open')?'− Ocultar':'+ Observación';
 }
- 
+
 // GPS
 window.onload=function(){
   tsInicio=new Date();
@@ -558,14 +614,14 @@ function obtenerGPS(){
   },err=>{const m={1:'Permiso GPS denegado',2:'Señal no encontrada',3:'Tiempo agotado'};setGPS(m[err.code]||'Error GPS','err');},{enableHighAccuracy:true,timeout:10000,maximumAge:0});
 }
 function setGPS(msg,state){document.getElementById('gps-val').textContent=msg;document.getElementById('gps-dot').className='gps-dot '+state;}
- 
+
 function autocompletar(){
   const sel=document.getElementById('f_pdv');const opt=sel.options[sel.selectedIndex];
   const zona=opt.dataset.zona||'',coord=opt.dataset.coord||'',tipo=opt.dataset.tipo||'';
   if(zona){document.getElementById('auto-zona').textContent=zona;document.getElementById('auto-coord').textContent=coord;document.getElementById('auto-tipo').textContent=tipo;document.getElementById('pdv-auto').style.display='block';}
   else{document.getElementById('pdv-auto').style.display='none';}
 }
- 
+
 // Photos
 function abrirFoto(i){document.getElementById('pi'+i).click();}
 function procesarFoto(i,input){
@@ -585,7 +641,7 @@ function procesarFoto(i,input){
 }
 function eliminarFoto(i){fotos[i]=null;const s=document.getElementById('slot'+i);s.innerHTML='<span class="add-icon">+</span>';s.onclick=()=>abrirFoto(i);document.getElementById('pi'+i).value='';conteoFotos();}
 function conteoFotos(){document.getElementById('photo-count').textContent=fotos.filter(f=>f!==null).length+' / 5 fotos';}
- 
+
 // Tasks
 function generarTareas(){
   const hallazgos=(document.getElementById('hallazgos').value||'').split('\n').filter(h=>h.trim());
@@ -602,7 +658,7 @@ function generarTareas(){
     return `<div class="task-item"><div class="task-h">${h}</div><div class="task-meta"><span class="tag tag-r">${resp}</span><span class="tag ${dias===3?'tag-a':'tag-m'}">${dias===3?'Alta — 3d':'Media — 7d'}</span><span class="tag-f">→ ${fStr}</span></div></div>`;
   }).join('');
 }
- 
+
 // Draft
 function guardar(){
   const data={pdv:document.getElementById('f_pdv').value,respuestas:JSON.stringify(respuestas),hallazgos:document.getElementById('hallazgos').value,notas:document.getElementById('notas').value,_ts:tsInicio?tsInicio.toISOString():''};
@@ -610,7 +666,7 @@ function guardar(){
   MODULOS.forEach(mod=>mod.items.forEach(item=>{const el=document.getElementById('n_'+item.id);if(el)data['n_'+item.id]=el.value;const inf=document.getElementById(item.id);if(inf&&item.tipo==='info')data['info_'+item.id]=inf.value;}));
   try{localStorage.setItem(DRAFT_KEY,JSON.stringify(data));}catch(e){}
 }
- 
+
 function cargarBorrador(){
   try{
     const raw=localStorage.getItem(DRAFT_KEY);if(!raw)return;
@@ -636,7 +692,7 @@ function cargarBorrador(){
     if(tieneData)document.getElementById('draft-banner').classList.add('show');
   }catch(e){}
 }
- 
+
 function limpiarBorrador(){
   try{localStorage.removeItem(DRAFT_KEY);}catch(e){}
   document.getElementById('draft-banner').classList.remove('show');
@@ -651,24 +707,24 @@ function limpiarBorrador(){
   tsInicio=new Date();document.getElementById('ts-val').textContent=formatTs(tsInicio);
   mostrarToast('Nueva auditoría lista','#888');
 }
- 
+
 function mostrarToast(msg,color){const t=document.getElementById('toast');t.textContent=msg;t.style.background=color||'var(--green)';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
- 
+
 function txt(id){const el=document.getElementById(id);return el?el.value||'':""}
- 
+
 async function enviar(){
   if(!txt('f_pdv')){mostrarToast('Selecciona el PDV','#ef4444');return;}
   const total=parseInt(document.getElementById('total-num').textContent)||0;
   if(total===0){mostrarToast('Completa al menos un módulo','#ef4444');return;}
- 
+
   const sel=document.getElementById('f_pdv');const opt=sel.options[sel.selectedIndex];
   const zona=opt.dataset.zona||'',coord=opt.dataset.coord||'',tipo=opt.dataset.tipo||'';
   const estado=total>=85?'VERDE':total>=70?'AMARILLO':'ROJO';
   const fotosActivas=fotos.filter(f=>f!==null);
- 
+
   // Build scores array
   const scores=MODULOS.map(mod=>{const chip=document.getElementById('score-chip-'+mod.id);return parseInt(chip?chip.textContent:0)||0;});
- 
+
   const fila=[
     formatTs(tsInicio),formatTs(new Date()),
     gpsData.lat||'N/D',gpsData.lng||'N/D',gpsData.address,
@@ -691,7 +747,7 @@ async function enviar(){
     txt('hallazgos').replace(/\n/g,' | '),txt('notas'),
     fotosActivas.length
   ];
- 
+
   const btn=document.getElementById('btn-enviar');btn.disabled=true;btn.textContent='Guardando…';
   try{
     await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({row:fila,fotos:fotosActivas,pdv:txt('f_pdv')})});
