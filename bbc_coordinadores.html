@@ -220,9 +220,36 @@ function renderApp(){
   const modDebil = modProms.reduce((minI,v,i,arr)=>v/MOD_MAX[i]<arr[minI]/MOD_MAX[minI]?i:minI,0);
   const modFuerte = modProms.reduce((maxI,v,i,arr)=>v/MOD_MAX[i]>arr[maxI]/MOD_MAX[maxI]?i:maxI,0);
 
-  // Highlights
-  const mejorPDV = ranking[0];
-  const peorPDV = ranking[ranking.length-1];
+  // ── Cumplimiento mensual por zona ──
+  const hoy = new Date();
+  const mesActual = hoy.getFullYear()+'-'+(String(hoy.getMonth()+1).padStart(2,'0'));
+  
+  // PDVs auditados este mes por zona
+  const auditadosMes = {};
+  todosLosDatos.forEach(r=>{
+    const fecha = col(r,I.tsEnvio).substring(0,7);
+    const zona = col(r,I.zona);
+    const pdv = col(r,I.pdv);
+    if(fecha===mesActual && zona){
+      if(!auditadosMes[zona]) auditadosMes[zona]=new Set();
+      auditadosMes[zona].add(pdv);
+    }
+  });
+
+  // Total PDVs por zona (de todos los datos históricos)
+  const totalPorZona = {};
+  const ultimasPorZona = {};
+  todosLosDatos.forEach(r=>{
+    const zona = col(r,I.zona);
+    const pdv = col(r,I.pdv);
+    if(zona && pdv){
+      if(!totalPorZona[zona]) totalPorZona[zona]=new Set();
+      totalPorZona[zona].add(pdv);
+    }
+  });
+
+  const zonasUnicas = Object.keys(totalPorZona).sort();
+  const mesNombre = hoy.toLocaleString('es-CO',{month:'long',year:'numeric'});
 
   // Alarmas — solo de última auditoría por PDV
   const alarmas = [];
@@ -283,6 +310,36 @@ function renderApp(){
         <div class="hl-val">${MOD_NOMBRES[modDebil]}</div>
         <div class="hl-sub">${modProms[modDebil]}/${MOD_MAX[modDebil]} prom.</div>
       </div>
+    </div>
+
+    <!-- Cumplimiento mensual -->
+    <div class="section-title">📅 Cumplimiento de auditorías — ${mesNombre}</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:24px">
+      ${zonasUnicas.map(zona=>{
+        const total = totalPorZona[zona]?totalPorZona[zona].size:0;
+        const auditados = auditadosMes[zona]?auditadosMes[zona].size:0;
+        const pct = total>0?Math.round(auditados/total*100):0;
+        const color = pct>=100?'#22c55e':pct>=50?'#eab308':'#ef4444';
+        const emoji = pct>=100?'✅':pct>=50?'⚠️':'🔴';
+        // PDVs sin auditar este mes
+        const sinAuditar = total - auditados;
+        return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+            <div>
+              <div style="font-size:12px;font-weight:600;color:var(--text)">${zona}</div>
+              <div style="font-size:10px;color:var(--muted);margin-top:2px">${auditados} de ${total} PDVs auditados</div>
+            </div>
+            <div style="font-size:20px">${emoji}</div>
+          </div>
+          <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:8px">
+            <div style="height:100%;width:${pct}%;background:${color};border-radius:3px;transition:width .5s"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-family:var(--mono);font-size:18px;font-weight:500;color:${color}">${pct}%</span>
+            ${sinAuditar>0?`<span style="font-size:10px;color:#ef4444;background:#7f1d1d22;padding:2px 8px;border-radius:5px">${sinAuditar} pendientes</span>`:'<span style="font-size:10px;color:#22c55e">¡Completo!</span>'}
+          </div>
+        </div>`;
+      }).join('')}
     </div>
 
     <!-- Alertas resumen -->
