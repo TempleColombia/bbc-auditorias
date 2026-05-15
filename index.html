@@ -717,45 +717,65 @@ async function enviar(){
   const total=parseInt(document.getElementById('total-num').textContent)||0;
   if(total===0){mostrarToast('Completa al menos un módulo','#ef4444');return;}
 
+  // ── Anti-duplicado: token único por auditoría ──
+  const token=txt('f_pdv')+'|'+formatTs(tsInicio);
+  try{
+    const enviados=JSON.parse(localStorage.getItem('bbc_enviados')||'[]');
+    if(enviados.includes(token)){
+      mostrarToast('Esta auditoría ya fue enviada','#eab308');
+      const btn=document.getElementById('btn-enviar');
+      btn.textContent='✓ Ya enviado';btn.disabled=true;
+      return;
+    }
+  }catch(e){}
+
   const sel=document.getElementById('f_pdv');const opt=sel.options[sel.selectedIndex];
   const zona=opt.dataset.zona||'',coord=opt.dataset.coord||'',tipo=opt.dataset.tipo||'';
   const estado=total>=85?'VERDE':total>=70?'AMARILLO':'ROJO';
   const fotosActivas=fotos.filter(f=>f!==null);
-
-  // Build scores array
   const scores=MODULOS.map(mod=>{const chip=document.getElementById('score-chip-'+mod.id);return parseInt(chip?chip.textContent:0)||0;});
 
   const fila=[
     formatTs(tsInicio),formatTs(new Date()),
     gpsData.lat||'N/D',gpsData.lng||'N/D',gpsData.address,
     txt('f_pdv'),zona,coord,tipo,
-    // M1
     txt('m1_menu_pct'),respuestas['m1_precios']||'',txt('n_m1_precios')||'',respuestas['m1_cat']||'',txt('n_m1_cat')||'',respuestas['m1_cristal']||'',txt('n_m1_cristal')||'',respuestas['m1_menaje']||'',txt('n_m1_menaje')||'',scores[0],
-    // M2
     respuestas['m2_av_ent']||'',txt('n_m2_av_ent')||'',respuestas['m2_av_int']||'',txt('n_m2_av_int')||'',respuestas['m2_unif_b']||'',txt('n_m2_unif_b')||'',respuestas['m2_unif_c']||'',txt('n_m2_unif_c')||'',respuestas['m2_aseo']||'',txt('n_m2_aseo')||'',scores[1],
-    // M3
     respuestas['m3_caja']||'',txt('n_m3_caja')||'',txt('m3_dif')||'',txt('n_m3_dif')||'',respuestas['m3_cons']||'',txt('n_m3_cons')||'',respuestas['m3_comp']||'',txt('n_m3_comp')||'',respuestas['m3_pos']||'',txt('n_m3_pos')||'',scores[2],
-    // M4
     txt('m4_cerv'),txt('n_m4_cerv')||'',txt('m4_lic'),txt('n_m4_lic')||'',txt('m4_bsa'),txt('n_m4_bsa')||'',txt('m4_alim'),txt('n_m4_alim')||'',respuestas['m4_merch']||'',txt('n_m4_merch')||'',respuestas['m4_venc']||'',txt('n_m4_venc')||'',scores[3],
-    // M5
-    respuestas['m5_l_coc']||'',txt('n_m5_l_coc')||'',respuestas['m5_l_bar']||'',txt('n_m5_l_bar')||'',respuestas['m5_l_ban']||'',txt('n_m5_l_ban')||'',respuestas['m5_l_mes']||'',txt('n_m5_l_mes')||'',respuestas['m5_imp_b']||'',txt('n_m5_imp_b')||'',respuestas['m5_imp_c']||'',txt('n_m5_imp_c')||'',respuestas['m5_frio']||'',txt('n_m5_frio')||'',respuestas['m5_luz']||'',txt('n_m5_luz')||'',respuestas['m5_ac']||'',txt('n_m5_ac')||'',respuestas['m5_equipo']||'',txt('n_m5_equipo')||'',txt('m5_p_coc'),txt('m5_p_ser'),scores[4],
-    // M6
+    respuestas['m5_l_coc']||'',txt('n_m5_l_coc')||'',respuestas['m5_l_bar']||'',txt('n_m5_l_bar')||'',respuestas['m5_l_ban']||'',txt('n_m5_l_ban')||'',respuestas['m5_l_mes']||'',txt('n_m5_l_mes')||'',respuestas['m5_imp_b']||'',txt('n_m5_imp_b')||'',respuestas['m5_imp_c']||'',txt('n_m5_imp_c')||'',respuestas['m5_frio']||'',txt('n_m5_frio')||'',respuestas['m5_luz']||'',txt('n_m5_luz')||'',respuestas['m5_ac']||'',txt('n_m5_ac')||'',respuestas['m5_legales']||'',txt('n_m5_legales')||'',txt('m5_sanit'),respuestas['m5_equipo']||'',txt('n_m5_equipo')||'',txt('m5_p_coc'),txt('m5_p_ser'),scores[4],
     respuestas['m6_sillas']||'',txt('n_m6_sillas')||'',respuestas['m6_mesas']||'',txt('n_m6_mesas')||'',respuestas['m6_pisos']||'',txt('n_m6_pisos')||'',respuestas['m6_luces']||'',txt('n_m6_luces')||'',respuestas['m6_pos']||'',txt('n_m6_pos')||'',respuestas['m6_eq_coc']||'',txt('n_m6_eq_coc')||'',respuestas['m6_eq_bar']||'',txt('n_m6_eq_bar')||'',scores[5],
-    // M7
     txt('v_venta'),txt('v_tickets'),txt('v_tkt_prom'),txt('v_vol'),txt('v_sh_comida'),txt('v_sh_lic'),respuestas['m7_conoce_ventas']||'',txt('n_m7_ventas')||'',respuestas['m7_conoce_tkt']||'',txt('n_m7_tkt')||'',respuestas['m7_conoce_vol']||'',txt('n_m7_vol')||'',scores[6],
     total,estado,
     txt('hallazgos').replace(/\n/g,' | '),txt('notas'),
     fotosActivas.length
   ];
 
-  const btn=document.getElementById('btn-enviar');btn.disabled=true;btn.textContent='Guardando…';
+  const btn=document.getElementById('btn-enviar');
+  btn.disabled=true;btn.textContent='Guardando…';
+
   try{
     await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({row:fila,fotos:fotosActivas,pdv:txt('f_pdv')})});
+
+    // Guardar token para evitar reenvío
+    try{
+      const enviados=JSON.parse(localStorage.getItem('bbc_enviados')||'[]');
+      enviados.push(token);
+      // Guardar solo los últimos 50 tokens
+      if(enviados.length>50)enviados.shift();
+      localStorage.setItem('bbc_enviados',JSON.stringify(enviados));
+    }catch(e){}
+
     mostrarToast('✓ Guardado en Google Sheets');
     try{localStorage.removeItem(DRAFT_KEY);}catch(e){}
     document.getElementById('draft-banner').classList.remove('show');
-    btn.textContent='✓ Enviado';
-    setTimeout(()=>{btn.disabled=false;btn.textContent='Guardar en Sheets →';},3000);
+
+    // Bloqueo permanente — solo se libera con "Empezar nueva"
+    btn.textContent='✓ Auditoría enviada';
+    btn.style.background='#22c55e';
+    btn.style.cursor='not-allowed';
+    // No re-habilitamos el botón automáticamente
+
   }catch(e){
     mostrarToast('Error — verifica conexión','#ef4444');
     btn.disabled=false;btn.textContent='Guardar en Sheets →';
