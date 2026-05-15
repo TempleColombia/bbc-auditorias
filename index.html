@@ -561,6 +561,52 @@ function calcMod(modId){
   calcTotal();
 }
 
+function validarCompleto(){
+  // Verifica que todos los ítems yn, pct, pct_neg tengan respuesta
+  const faltantes=[];
+  MODULOS.forEach(mod=>{
+    const itemsFaltantes=[];
+    mod.items.forEach(item=>{
+      if(item.tipo==='yn'){
+        const r=respuestas[item.id];
+        if(!r||r==='')itemsFaltantes.push(item.label);
+      } else if(item.tipo==='pct'||item.tipo==='pct_neg'){
+        const el=document.getElementById(item.id);
+        if(!el||el.value==='')itemsFaltantes.push(item.label);
+      }
+    });
+    if(itemsFaltantes.length>0){
+      faltantes.push({mod:mod.nombre, items:itemsFaltantes, id:mod.id});
+    }
+  });
+  return faltantes;
+}
+
+function mostrarIncompletos(faltantes){
+  // Abrir el primer módulo incompleto y resaltar ítems
+  if(faltantes.length===0)return;
+  const primero=faltantes[0];
+  // Abrir sección
+  const body=document.getElementById('body'+primero.id);
+  const ch=document.getElementById('ch'+primero.id);
+  if(body&&!body.classList.contains('open')){
+    body.classList.add('open');if(ch)ch.classList.add('open');
+  }
+  // Scroll al módulo
+  const sec=document.getElementById('body'+primero.id);
+  if(sec)sec.scrollIntoView({behavior:'smooth',block:'center'});
+  // Construir mensaje
+  const resumen=faltantes.map(f=>`• ${f.mod}: ${f.items.slice(0,3).join(', ')}${f.items.length>3?' y '+(f.items.length-3)+' más':''}`).join('\n');
+  mostrarToastLargo('⚠️ Faltan respuestas:\n'+resumen,'#ef4444');
+}
+
+function mostrarToastLargo(msg,color){
+  const t=document.getElementById('toast');
+  t.style.whiteSpace='pre-line';t.style.textAlign='left';t.style.maxWidth='320px';
+  t.textContent=msg;t.style.background=color||'var(--green)';
+  t.classList.add('show');setTimeout(()=>{t.classList.remove('show');t.style.whiteSpace='nowrap';},5000);
+}
+
 function calcTotal(){
   let total=0;
   const scores=[];
@@ -714,8 +760,15 @@ function txt(id){const el=document.getElementById(id);return el?el.value||'':""}
 
 async function enviar(){
   if(!txt('f_pdv')){mostrarToast('Selecciona el PDV','#ef4444');return;}
+
+  // ── Validar que todos los ítems estén respondidos ──
+  const faltantes=validarCompleto();
+  if(faltantes.length>0){
+    mostrarIncompletos(faltantes);
+    return;
+  }
+
   const total=parseInt(document.getElementById('total-num').textContent)||0;
-  if(total===0){mostrarToast('Completa al menos un módulo','#ef4444');return;}
 
   // ── Anti-duplicado: token único por auditoría ──
   const token=txt('f_pdv')+'|'+formatTs(tsInicio);
