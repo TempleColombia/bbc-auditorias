@@ -101,8 +101,17 @@ tr:hover td{background:rgba(255,255,255,.02)}
 .mod-detail-pdv{color:var(--text)}
 .mod-detail-score{font-family:var(--mono);font-size:12px;font-weight:500}
 
-/* Empty */
-.empty{text-align:center;padding:40px;color:var(--muted);font-size:13px}
+/* Zona filter buttons */
+.zona-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-family:var(--font);font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s}
+.zona-btn:hover{border-color:var(--accent);color:var(--text)}
+.zona-btn.active{background:var(--accent);color:#000;border-color:var(--accent)}
+
+/* Highlight cards */
+.highlight-card{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:12px;padding:14px 16px}
+.hl-label{font-size:11px;color:var(--muted);margin-bottom:4px}
+.hl-val{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hl-sub{font-family:var(--mono);font-size:12px;color:var(--accent)}
+@media(max-width:768px){.highlight-card{grid-column:span 2}}
 
 /* Footer */
 .footer{text-align:center;padding:24px;color:var(--muted);font-size:11px;border-top:1px solid var(--border);margin-top:32px}
@@ -147,7 +156,7 @@ const MOD_NOMBRES = ['Experiencia','Marketing','Finanzas','Inventario','Operacio
 const MOD_MAX = [15,15,15,15,15,15,10];
 
 let todosLosDatos = [];
-let resumenData = [];
+let zonaActiva = 'TODAS';
 
 async function cargarDatos(){
   document.getElementById('loading').style.display='block';
@@ -167,7 +176,6 @@ async function cargarDatos(){
 function col(row, i){ return (row && row[i]) ? String(row[i]).trim() : ''; }
 function num(row, i){ return parseFloat(col(row,i)) || 0; }
 
-// Índices (0-based)
 const I = {
   tsEnvio:1, pdv:5, zona:6, coord:7, tipo:8,
   s1:18, s2:29, s3:40, s4:53, s5:76, s6:91, s7:104,
@@ -177,9 +185,15 @@ const MOD_I = [I.s1,I.s2,I.s3,I.s4,I.s5,I.s6,I.s7];
 
 function estado(row){ return col(row,I.estado).toUpperCase(); }
 
+function filtrarPorZona(data){
+  if(zonaActiva==='TODAS') return data;
+  return data.filter(r=>col(r,I.zona).toUpperCase().includes(zonaActiva.toUpperCase()));
+}
+
 function renderApp(){
-  const data = todosLosDatos;
-  if(!data.length){ document.getElementById('loading').innerHTML='<div>Sin auditorías registradas.</div>'; return; }
+  const todasZonas = [...new Set(todosLosDatos.map(r=>col(r,I.zona)).filter(Boolean))].sort();
+  const data = filtrarPorZona(todosLosDatos);
+  if(!data.length){ document.getElementById('loading').innerHTML='<div>Sin auditorías para esta zona.</div>'; return; }
 
   const totales = data.map(r=>num(r,I.total));
   const prom = totales.length ? Math.round(totales.reduce((a,b)=>a+b,0)/totales.length) : 0;
@@ -198,12 +212,20 @@ function renderApp(){
     return vals.length ? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length) : 0;
   });
 
-  // Pendientes/alarmas
+  // Módulo más débil
+  const modDebil = modProms.reduce((minI,v,i,arr)=>v/MOD_MAX[i]<arr[minI]/MOD_MAX[minI]?i:minI,0);
+  const modFuerte = modProms.reduce((maxI,v,i,arr)=>v/MOD_MAX[i]>arr[maxI]/MOD_MAX[maxI]?i:maxI,0);
+
+  // Highlights
+  const mejorPDV = ranking[0];
+  const peorPDV = ranking[ranking.length-1];
+
+  // Alarmas — solo de última auditoría por PDV
   const alarmas = [];
-  data.forEach(r=>{
+  Object.values(ultimas).forEach(r=>{
     const h = col(r,I.hallazgos);
-    if(h){ h.split(' | ').forEach(hh=>{ if(hh.trim()) alarmas.push({pdv:col(r,I.pdv),zona:col(r,I.zona),coord:col(r,I.coord),desc:hh.trim(),tipo:'Hallazgo',prio:'media',fecha:col(r,I.tsEnvio).substring(0,10)}); }); }
-    MOD_I.forEach((idx,i)=>{ const s=num(r,idx); if(s>0&&s/MOD_MAX[i]<0.70) alarmas.push({pdv:col(r,I.pdv),zona:col(r,I.zona),coord:col(r,I.coord),desc:'Puntaje bajo en '+MOD_NOMBRES[i]+': '+s+'/'+MOD_MAX[i]+' ('+Math.round(s/MOD_MAX[i]*100)+'%)',tipo:MOD_NOMBRES[i],prio:'media',fecha:col(r,I.tsEnvio).substring(0,10)}); });
+    if(h){ h.split(' | ').forEach(hh=>{ if(hh.trim()) alarmas.push({pdv:col(r,I.pdv),zona:col(r,I.zona),desc:hh.trim(),tipo:'Hallazgo',fecha:col(r,I.tsEnvio).substring(0,10)}); }); }
+    MOD_I.forEach((idx,i)=>{ const s=num(r,idx); if(s>0&&s/MOD_MAX[i]<0.70) alarmas.push({pdv:col(r,I.pdv),zona:col(r,I.zona),desc:'Puntaje bajo en '+MOD_NOMBRES[i]+': '+s+'/'+MOD_MAX[i]+' ('+Math.round(s/MOD_MAX[i]*100)+'%)',tipo:MOD_NOMBRES[i],fecha:col(r,I.tsEnvio).substring(0,10)}); });
   });
 
   document.getElementById('update-time').textContent = 'Actualizado: '+new Date().toLocaleString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
@@ -211,14 +233,69 @@ function renderApp(){
   document.getElementById('app').style.display='block';
 
   document.getElementById('app').innerHTML = `
+    <!-- Filtro de zona -->
+    <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:12px;color:var(--muted);font-weight:500">Filtrar por zona:</span>
+      <button class="zona-btn ${zonaActiva==='TODAS'?'active':''}" onclick="setZona('TODAS')">Todas</button>
+      ${todasZonas.map(z=>`<button class="zona-btn ${zonaActiva===z?'active':''}" onclick="setZona('${z}')">${z}</button>`).join('')}
+    </div>
+
     <!-- KPIs -->
     <div class="kpi-grid">
-      <div class="kpi-card k-total"><div class="kpi-label">Total Auditorías</div><div class="kpi-val">${data.length}</div></div>
-      <div class="kpi-card k-prom"><div class="kpi-label">Promedio General</div><div class="kpi-val">${prom}/100</div></div>
+      <div class="kpi-card k-total"><div class="kpi-label">Auditorías</div><div class="kpi-val">${data.length}</div></div>
+      <div class="kpi-card k-prom"><div class="kpi-label">Promedio</div><div class="kpi-val">${prom}/100</div></div>
       <div class="kpi-card k-verde"><div class="kpi-label">🟢 Verde ≥85</div><div class="kpi-val">${verdes}</div></div>
-      <div class="kpi-card k-amarillo"><div class="kpi-label">🟡 Amarillo 70-84</div><div class="kpi-val">${amars}</div></div>
+      <div class="kpi-card k-amarillo"><div class="kpi-label">🟡 Amarillo</div><div class="kpi-val">${amars}</div></div>
       <div class="kpi-card k-rojo"><div class="kpi-label">🔴 Rojo &lt;70</div><div class="kpi-val">${rojos}</div></div>
     </div>
+
+    <!-- Highlights -->
+    <div class="section-title">⚡ Highlights</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px">
+      <div class="highlight-card" style="border-left-color:#22c55e">
+        <div class="hl-label">🥇 Mejor PDV</div>
+        <div class="hl-val">${mejorPDV?col(mejorPDV,I.pdv):'—'}</div>
+        <div class="hl-sub">${mejorPDV?num(mejorPDV,I.total)+'/100':''}</div>
+      </div>
+      <div class="highlight-card" style="border-left-color:#ef4444">
+        <div class="hl-label">⚠️ Necesita atención</div>
+        <div class="hl-val">${peorPDV?col(peorPDV,I.pdv):'—'}</div>
+        <div class="hl-sub">${peorPDV?num(peorPDV,I.total)+'/100':''}</div>
+      </div>
+      <div class="highlight-card" style="border-left-color:#22c55e">
+        <div class="hl-label">💪 Módulo más fuerte</div>
+        <div class="hl-val">${MOD_NOMBRES[modFuerte]}</div>
+        <div class="hl-sub">${modProms[modFuerte]}/${MOD_MAX[modFuerte]} prom.</div>
+      </div>
+      <div class="highlight-card" style="border-left-color:#ef4444">
+        <div class="hl-label">📉 Módulo más débil</div>
+        <div class="hl-val">${MOD_NOMBRES[modDebil]}</div>
+        <div class="hl-sub">${modProms[modDebil]}/${MOD_MAX[modDebil]} prom.</div>
+      </div>
+    </div>
+
+    <!-- Alertas resumen -->
+    ${alarmas.length>0?`
+    <div class="section-title">🚨 Alertas activas (${alarmas.length})</div>
+    <div style="background:var(--surface);border:1px solid #3a1a1a;border-radius:12px;padding:14px 16px;margin-bottom:24px">
+      <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap">
+        <span style="font-size:12px;background:#7f1d1d;color:#fca5a5;padding:4px 12px;border-radius:6px;font-weight:600">${alarmas.filter(a=>a.tipo==='Hallazgo').length} hallazgos</span>
+        <span style="font-size:12px;background:#713f12;color:#fde68a;padding:4px 12px;border-radius:6px;font-weight:600">${alarmas.filter(a=>a.tipo!=='Hallazgo').length} módulos con puntaje bajo</span>
+        <span style="font-size:12px;color:var(--muted)">${[...new Set(alarmas.map(a=>a.pdv))].length} PDVs afectados</span>
+      </div>
+      <div style="max-height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:6px">
+        ${alarmas.slice(0,10).map(a=>`
+          <div style="display:flex;align-items:flex-start;gap:10px;padding:8px 10px;background:var(--surface2);border-radius:8px">
+            <span style="font-size:10px;color:var(--muted);white-space:nowrap;margin-top:1px">${a.fecha}</span>
+            <div style="flex:1;min-width:0">
+              <span style="font-size:11px;font-weight:600;color:var(--accent)">${a.pdv}</span>
+              <span style="font-size:11px;color:var(--text);margin-left:6px">${a.desc.length>80?a.desc.substring(0,80)+'…':a.desc}</span>
+            </div>
+            <span style="font-size:10px;color:var(--muted);white-space:nowrap">${a.zona}</span>
+          </div>`).join('')}
+        ${alarmas.length>10?`<div style="text-align:center;font-size:11px;color:var(--muted);padding:4px">+${alarmas.length-10} más — ver tab Alarmas</div>`:''}
+      </div>
+    </div>`:''}
 
     <!-- Módulos -->
     <div class="section-title">📈 Promedio por módulo</div>
@@ -237,23 +314,23 @@ function renderApp(){
 
     <!-- Tabs -->
     <div class="tabs">
-      <div class="tab active" onclick="switchTab('ranking',this)">🏆 Ranking PDVs</div>
+      <div class="tab active" onclick="switchTab('ranking',this)">🏆 Ranking (${ranking.length})</div>
       <div class="tab" onclick="switchTab('modulos',this)">🔍 Por módulo</div>
-      <div class="tab" onclick="switchTab('alarmas',this)">⚠️ Alarmas (${alarmas.length})</div>
+      <div class="tab" onclick="switchTab('alarmas',this)">⚠️ Todas las alarmas (${alarmas.length})</div>
     </div>
 
     <!-- Ranking -->
     <div id="tab-ranking" class="tab-content active">
       <div class="table-wrap">
         <table>
-          <thead><tr><th>#</th><th>PDV</th><th>Zona</th><th>Tipo</th><th>Fecha</th>${MOD_NOMBRES.map(n=>`<th>${n.substring(0,4)}.</th>`).join('')}<th>Total</th><th>Estado</th></tr></thead>
+          <thead><tr><th>#</th><th>PDV</th><th>Zona</th><th>Tipo</th><th>Última auditoría</th>${MOD_NOMBRES.map(n=>`<th title="${n}">${n.substring(0,4)}.</th>`).join('')}<th>Total</th><th>Estado</th></tr></thead>
           <tbody>
             ${ranking.map((r,i)=>{
               const t=num(r,I.total); const est=estado(r);
               const badge=est==='VERDE'?'badge-verde':est==='AMARILLO'?'badge-amarillo':'badge-rojo';
               const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
               const scores=MOD_I.map((idx,mi)=>{const s=num(r,idx);const pct=s/MOD_MAX[mi];const c=pct>=0.85?'#22c55e':pct>=0.70?'#eab308':'#ef4444';return `<td class="score-cell" style="color:${c}">${s}</td>`;}).join('');
-              return `<tr><td class="medal">${medal}</td><td style="font-weight:500">${col(r,I.pdv)}</td><td>${col(r,I.zona)}</td><td>${col(r,I.tipo)}</td><td style="color:var(--muted);font-size:11px">${col(r,I.tsEnvio).substring(0,16)}</td>${scores}<td class="score-cell" style="font-size:15px;font-weight:700">${t}</td><td><span class="badge ${badge}">${est==='VERDE'?'🟢':est==='AMARILLO'?'🟡':'🔴'} ${est}</span></td></tr>`;
+              return `<tr><td class="medal">${medal}</td><td style="font-weight:500">${col(r,I.pdv)}</td><td style="font-size:11px">${col(r,I.zona)}</td><td style="font-size:11px">${col(r,I.tipo)}</td><td style="color:var(--muted);font-size:11px">${col(r,I.tsEnvio).substring(0,16)}</td>${scores}<td class="score-cell" style="font-size:15px;font-weight:700">${t}</td><td><span class="badge ${badge}">${est==='VERDE'?'🟢':est==='AMARILLO'?'🟡':'🔴'} ${est}</span></td></tr>`;
             }).join('')}
           </tbody>
         </table>
@@ -268,12 +345,12 @@ function renderApp(){
           const porPDV={};
           data.forEach(r=>{const p=col(r,I.pdv);const s=num(r,idx);if(!porPDV[p]||s<porPDV[p])porPDV[p]=s;});
           const peores=Object.entries(porPDV).sort((a,b)=>a[1]-b[1]).slice(0,5);
-          const prom=modProms[mi]; const pct=prom/max;
+          const p=modProms[mi]; const pct=p/max;
           const c=pct>=0.85?'#22c55e':pct>=0.70?'#eab308':'#ef4444';
           return `<div class="mod-detail-card">
             <div class="mod-detail-header">
               <div class="mod-detail-name">${nombre}</div>
-              <div class="mod-detail-prom" style="color:${c}">${prom}/${max} prom.</div>
+              <div class="mod-detail-prom" style="color:${c}">${p}/${max} prom.</div>
             </div>
             <div class="mod-detail-body">
               ${peores.map(p=>{
@@ -287,15 +364,14 @@ function renderApp(){
       </div>
     </div>
 
-    <!-- Alarmas -->
+    <!-- Todas las alarmas -->
     <div id="tab-alarmas" class="tab-content">
       ${alarmas.length===0?'<div class="empty">✅ Sin alarmas activas</div>':''}
       <div class="alarm-list">
-        ${alarmas.map(a=>`<div class="alarm-card ${a.prio}">
-          <div class="alarm-pdv">${a.pdv}</div>
+        ${alarmas.map(a=>`<div class="alarm-card media">
+          <div class="alarm-pdv">${a.pdv} <span style="font-size:10px;color:var(--muted);font-weight:400">${a.zona}</span></div>
           <div class="alarm-desc">${a.desc}</div>
           <div class="alarm-meta">
-            <span class="tag">${a.zona}</span>
             <span class="tag">${a.tipo}</span>
             <span class="tag" style="color:var(--muted)">${a.fecha}</span>
           </div>
@@ -303,6 +379,11 @@ function renderApp(){
       </div>
     </div>
   `;
+}
+
+function setZona(zona){
+  zonaActiva = zona;
+  renderApp();
 }
 
 function switchTab(name, el){
