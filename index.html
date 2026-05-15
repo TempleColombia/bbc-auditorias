@@ -416,15 +416,19 @@ const MODULOS = [
     {id:'m6_eq_bar', label:'Equipos barra ok', tipo:'yn'},
   ]},
   { id:7, nombre:'Ventas', icon:'📈', cls:'ic7', max:10, items:[
-    {id:'v_venta', label:'Venta general ($)', tipo:'info'},
+    {id:'m7_conoce_ppto', label:'¿El manager conoce el presupuesto del mes?', tipo:'yn', grupo:'Conocimiento del negocio'},
+    {id:'m7_conoce_ventas', label:'¿Conoce las ventas del mes al día de hoy?', tipo:'yn'},
+    {id:'m7_conoce_gap', label:'¿Sabe si va por encima o debajo del presupuesto?', tipo:'yn'},
+    {id:'m7_conoce_tickets', label:'¿Conoce el número de tickets y ticket promedio?', tipo:'yn'},
+    {id:'m7_conoce_vol', label:'¿Conoce el volumen de ventas y shares del mes?', tipo:'yn'},
+    {id:'m7_equipo_conoce', label:'¿El equipo conoce los indicadores clave?', tipo:'yn', grupo:'Equipo'},
+    {id:'v_venta', label:'Venta general del mes ($)', tipo:'info', grupo:'Datos informativos'},
+    {id:'v_ppto', label:'Presupuesto del mes ($)', tipo:'info'},
     {id:'v_tickets', label:'Número de tickets', tipo:'info'},
     {id:'v_tkt_prom', label:'Ticket promedio ($)', tipo:'info'},
     {id:'v_vol', label:'Volumen (HL)', tipo:'info'},
     {id:'v_sh_comida', label:'Share comida (%)', tipo:'info'},
     {id:'v_sh_lic', label:'Share licores (%)', tipo:'info'},
-    {id:'m7_conoce_ventas', label:'Conoce ventas del mes', tipo:'yn', grupo:'Evaluación'},
-    {id:'m7_conoce_tkt', label:'Conoce tickets y promedio', tipo:'yn'},
-    {id:'m7_conoce_vol', label:'Conoce volumen y shares', tipo:'yn'},
   ]},
 ];
 
