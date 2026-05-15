@@ -159,18 +159,18 @@ let todosLosDatos = [];
 let zonaActiva = 'TODAS';
 let coordActivo = 'TODOS';
 
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyItpuGWvi4mPxo5_D7-w8ELpLxioIo31_z4M2cbOkSOcYo0OPbaqrD8KNvkRrU9oxXTA/exec';
+
 async function cargarDatos(){
   document.getElementById('loading').style.display='block';
   document.getElementById('app').style.display='none';
   try {
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Auditorías!A2:DZ1000?key=${API_KEY}`;
-    const r = await fetch(url);
+    const r = await fetch(SCRIPT_URL);
     const d = await r.json();
-    if(d.error){throw new Error(d.error.message);}
-    todosLosDatos = d.values || [];
+    todosLosDatos = d.data || [];
     renderApp();
   } catch(e){
-    document.getElementById('loading').innerHTML = `<div style="color:#ef4444;font-size:14px">Error al cargar datos: ${e.message}<br><br><small>Verifica que la API Key esté configurada y el Sheet sea público.</small></div>`;
+    document.getElementById('loading').innerHTML = `<div style="color:#ef4444;font-size:14px">Error al cargar datos: ${e.message}</div>`;
   }
 }
 
