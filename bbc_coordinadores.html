@@ -223,14 +223,22 @@ function renderApp(){
   // ── Cumplimiento mensual por zona ──
   const hoy = new Date();
   const mesActual = hoy.getFullYear()+'-'+(String(hoy.getMonth()+1).padStart(2,'0'));
-  
+  const mesActualES = (String(hoy.getMonth()+1).padStart(2,'0'))+'/'+hoy.getFullYear(); // formato dd/mm/yyyy → mm/yyyy
+
   // PDVs auditados este mes por zona
   const auditadosMes = {};
   todosLosDatos.forEach(r=>{
-    const fecha = col(r,I.tsEnvio).substring(0,7);
+    const tsRaw = col(r,I.tsEnvio); // puede ser "14/05/2026 06:33" o "2026-05-14"
+    let esMes = false;
+    if(tsRaw.includes('/')){ // formato dd/mm/yyyy
+      const partes = tsRaw.split('/');
+      if(partes.length>=3) esMes = partes[1]===String(hoy.getMonth()+1).padStart(2,'0') && partes[2].substring(0,4)===String(hoy.getFullYear());
+    } else { // formato yyyy-mm-dd
+      esMes = tsRaw.substring(0,7)===mesActual;
+    }
     const zona = col(r,I.zona);
     const pdv = col(r,I.pdv);
-    if(fecha===mesActual && zona){
+    if(esMes && zona){
       if(!auditadosMes[zona]) auditadosMes[zona]=new Set();
       auditadosMes[zona].add(pdv);
     }
@@ -238,7 +246,6 @@ function renderApp(){
 
   // Total PDVs por zona (de todos los datos históricos)
   const totalPorZona = {};
-  const ultimasPorZona = {};
   todosLosDatos.forEach(r=>{
     const zona = col(r,I.zona);
     const pdv = col(r,I.pdv);
