@@ -165,13 +165,26 @@ async function cargarDatos(){
   document.getElementById('loading').style.display='block';
   document.getElementById('app').style.display='none';
   try {
-    const r = await fetch(SCRIPT_URL);
-    const d = await r.json();
-    todosLosDatos = d.data || [];
-    renderApp();
+    // Usamos JSONP-style via script tag para evitar CORS
+    const url = SCRIPT_URL + '?callback=recibirDatos';
+    const script = document.createElement('script');
+    script.src = url;
+    script.onerror = ()=>{ throw new Error('Error cargando script'); };
+    document.head.appendChild(script);
+    // Timeout por si no responde
+    setTimeout(()=>{
+      if(todosLosDatos.length===0){
+        document.getElementById('loading').innerHTML='<div style="color:#ef4444;font-size:14px">Tiempo de espera agotado. Verifica la conexión.</div>';
+      }
+    },10000);
   } catch(e){
-    document.getElementById('loading').innerHTML = `<div style="color:#ef4444;font-size:14px">Error al cargar datos: ${e.message}</div>`;
+    document.getElementById('loading').innerHTML = `<div style="color:#ef4444;font-size:14px">Error: ${e.message}</div>`;
   }
+}
+
+function recibirDatos(d){
+  todosLosDatos = d.data || [];
+  renderApp();
 }
 
 function col(row, i){ return (row && row[i]) ? String(row[i]).trim() : ''; }
