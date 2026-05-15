@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BBC Auditorías — Coordinadores</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0b;--surface:#141416;--surface2:#1e1e21;--border:#2a2a2e;--text:#f0f0f0;--muted:#777;--accent:#f5a623;--green:#22c55e;--yellow:#eab308;--red:#ef4444;--font:'DM Sans',sans-serif;--mono:'DM Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh}
+
+/* Header */
+.header{background:linear-gradient(135deg,#0a0a0b 0%,#141416 100%);border-bottom:1px solid var(--border);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(10px)}
+.logo-area{display:flex;align-items:center;gap:14px}
+.logo-img{width:40px;height:40px;object-fit:contain;filter:invert(1)}
+.brand-name{font-size:18px;font-weight:700;letter-spacing:-0.02em;color:var(--text)}
+.brand-sub{font-size:12px;color:var(--muted)}
+.header-right{display:flex;align-items:center;gap:12px}
+.update-badge{font-size:11px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);padding:5px 12px;border-radius:20px}
+.refresh-btn{background:var(--accent);color:#000;border:none;border-radius:10px;padding:8px 16px;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer}
+.refresh-btn:hover{opacity:.9}
+
+/* Container */
+.container{padding:24px;max-width:1200px;margin:0 auto}
+
+/* Loading */
+.loading{text-align:center;padding:80px 20px;color:var(--muted)}
+.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* KPI grid */
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px}
+@media(max-width:768px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center}
+.kpi-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.kpi-val{font-family:var(--mono);font-size:28px;font-weight:500}
+.kpi-card.k-total .kpi-val{color:var(--text)}
+.kpi-card.k-prom .kpi-val{color:var(--accent)}
+.kpi-card.k-verde .kpi-val{color:var(--green)}
+.kpi-card.k-amarillo .kpi-val{color:var(--yellow)}
+.kpi-card.k-rojo .kpi-val{color:var(--red)}
+
+/* Section titles */
+.section-title{font-size:13px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+
+/* Módulos grid */
+.mod-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:24px}
+@media(max-width:900px){.mod-grid{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:500px){.mod-grid{grid-template-columns:repeat(2,1fr)}}
+.mod-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 10px;text-align:center}
+.mod-name{font-size:10px;color:var(--muted);margin-bottom:6px;line-height:1.3}
+.mod-score{font-family:var(--mono);font-size:20px;font-weight:500}
+.mod-max{font-size:10px;color:var(--muted)}
+.mod-bar{height:4px;background:var(--border);border-radius:2px;margin-top:8px;overflow:hidden}
+.mod-bar-fill{height:100%;border-radius:2px;transition:width .5s}
+
+/* Tabs */
+.tabs{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:0}
+.tab{padding:10px 18px;font-size:13px;font-weight:500;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-content{display:none}.tab-content.active{display:block}
+
+/* Table */
+.table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{padding:10px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;background:var(--surface2);border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.badge{display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:600}
+.badge-verde{background:#14532d;color:#86efac}
+.badge-amarillo{background:#713f12;color:#fde68a}
+.badge-rojo{background:#7f1d1d;color:#fca5a5}
+.badge-pendiente{background:#1e2a1a;color:#86efac}
+.score-cell{font-family:var(--mono);font-weight:500;text-align:center}
+.medal{font-size:16px}
+.prio-alta{color:var(--red);font-weight:600}
+.prio-media{color:var(--yellow)}
+
+/* Alarm cards */
+.alarm-list{display:flex;flex-direction:column;gap:10px}
+.alarm-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.alarm-card.alta{border-left:3px solid var(--red)}
+.alarm-card.media{border-left:3px solid var(--yellow)}
+.alarm-pdv{font-size:13px;font-weight:600;margin-bottom:4px}
+.alarm-desc{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:8px}
+.alarm-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tag{font-size:10px;padding:3px 8px;border-radius:5px;background:var(--surface2);color:var(--muted);font-weight:500}
+
+/* Module detail */
+.mod-detail-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+@media(max-width:600px){.mod-detail-grid{grid-template-columns:1fr}}
+.mod-detail-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.mod-detail-header{padding:12px 16px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.mod-detail-name{font-size:13px;font-weight:600}
+.mod-detail-prom{font-family:var(--mono);font-size:13px;color:var(--accent)}
+.mod-detail-body{padding:12px 16px}
+.mod-detail-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px}
+.mod-detail-row:last-child{border-bottom:none}
+.mod-detail-pdv{color:var(--text)}
+.mod-detail-score{font-family:var(--mono);font-size:12px;font-weight:500}
+
+/* Empty */
+.empty{text-align:center;padding:40px;color:var(--muted);font-size:13px}
+
+/* Footer */
+.footer{text-align:center;padding:24px;color:var(--muted);font-size:11px;border-top:1px solid var(--border);margin-top:32px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo-area">
+    <img class="logo-img" src="data:image/jpeg;base64,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" alt="Temple BBC">
+    <div>
+      <div class="brand-name">BBC Auditorías</div>
+      <div class="brand-sub">Dashboard Coordinadores</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="update-badge" id="update-time">Cargando…</span>
+    <button class="refresh-btn" onclick="cargarDatos()">↻ Actualizar</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <div>Cargando datos…</div>
+  </div>
+  <div id="app" style="display:none"></div>
+</div>
+
+<div class="footer">BBC Colombia · Sistema de Auditorías · Solo lectura</div>
+
+<script>
+// ── CONFIGURACIÓN ──
+// Reemplaza con tu Sheet ID y una API Key de Google
+const SHEET_ID = '15snwnCCKLXjPlYSP6UN-TWiMqQJTr-OBYzp6mYIdv_Y';
+// Para leer el Sheet públicamente necesitas una Google API Key
+// Ve a console.cloud.google.com → APIs → Sheets API → Credentials → Create API Key
+// Pégala aquí:
+const API_KEY = 'AIzaSyDb8oVRMOSoPtXJ7kdvth6Dzxl-ica2M7s';
+
+const MOD_NOMBRES = ['Experiencia','Marketing','Finanzas','Inventario','Operaciones','Mantenimiento','Ventas'];
+const MOD_MAX = [15,15,15,15,15,15,10];
+
+let todosLosDatos = [];
+let resumenData = [];
+
+async function cargarDatos(){
+  document.getElementById('loading').style.display='block';
+  document.getElementById('app').style.display='none';
+  try {
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Auditorías!A2:DZ1000?key=${API_KEY}`;
+    const r = await fetch(url);
+    const d = await r.json();
+    if(d.error){throw new Error(d.error.message);}
+    todosLosDatos = d.values || [];
+    renderApp();
+  } catch(e){
+    document.getElementById('loading').innerHTML = `<div style="color:#ef4444;font-size:14px">Error al cargar datos: ${e.message}<br><br><small>Verifica que la API Key esté configurada y el Sheet sea público.</small></div>`;
+  }
+}
+
+function col(row, i){ return (row && row[i]) ? String(row[i]).trim() : ''; }
+function num(row, i){ return parseFloat(col(row,i)) || 0; }
+
+// Índices (0-based)
+const I = {
+  tsEnvio:1, pdv:5, zona:6, coord:7, tipo:8,
+  s1:18, s2:29, s3:40, s4:53, s5:76, s6:91, s7:104,
+  total:105, estado:106, hallazgos:107, notas:108
+};
+const MOD_I = [I.s1,I.s2,I.s3,I.s4,I.s5,I.s6,I.s7];
+
+function estado(row){ return col(row,I.estado).toUpperCase(); }
+
+function renderApp(){
+  const data = todosLosDatos;
+  if(!data.length){ document.getElementById('loading').innerHTML='<div>Sin auditorías registradas.</div>'; return; }
+
+  const totales = data.map(r=>num(r,I.total));
+  const prom = totales.length ? Math.round(totales.reduce((a,b)=>a+b,0)/totales.length) : 0;
+  const verdes = data.filter(r=>estado(r)==='VERDE').length;
+  const amars = data.filter(r=>estado(r)==='AMARILLO').length;
+  const rojos = data.filter(r=>estado(r)==='ROJO').length;
+
+  // Última por PDV
+  const ultimas = {};
+  data.forEach(r=>{ const p=col(r,I.pdv); if(!ultimas[p]||col(r,I.tsEnvio)>col(ultimas[p],I.tsEnvio)) ultimas[p]=r; });
+  const ranking = Object.values(ultimas).sort((a,b)=>num(b,I.total)-num(a,I.total));
+
+  // Promedios por módulo
+  const modProms = MOD_I.map((idx,i)=>{
+    const vals = data.map(r=>num(r,idx)).filter(v=>v>0);
+    return vals.length ? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length) : 0;
+  });
+
+  // Pendientes/alarmas
+  const alarmas = [];
+  data.forEach(r=>{
+    const h = col(r,I.hallazgos);
+    if(h){ h.split(' | ').forEach(hh=>{ if(hh.trim()) alarmas.push({pdv:col(r,I.pdv),zona:col(r,I.zona),coord:col(r,I.coord),desc:hh.trim(),tipo:'Hallazgo',prio:'media',fecha:col(r,I.tsEnvio).substring(0,10)}); }); }
+    MOD_I.forEach((idx,i)=>{ const s=num(r,idx); if(s>0&&s/MOD_MAX[i]<0.70) alarmas.push({pdv:col(r,I.pdv),zona:col(r,I.zona),coord:col(r,I.coord),desc:'Puntaje bajo en '+MOD_NOMBRES[i]+': '+s+'/'+MOD_MAX[i]+' ('+Math.round(s/MOD_MAX[i]*100)+'%)',tipo:MOD_NOMBRES[i],prio:'media',fecha:col(r,I.tsEnvio).substring(0,10)}); });
+  });
+
+  document.getElementById('update-time').textContent = 'Actualizado: '+new Date().toLocaleString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  document.getElementById('loading').style.display='none';
+  document.getElementById('app').style.display='block';
+
+  document.getElementById('app').innerHTML = `
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi-card k-total"><div class="kpi-label">Total Auditorías</div><div class="kpi-val">${data.length}</div></div>
+      <div class="kpi-card k-prom"><div class="kpi-label">Promedio General</div><div class="kpi-val">${prom}/100</div></div>
+      <div class="kpi-card k-verde"><div class="kpi-label">🟢 Verde ≥85</div><div class="kpi-val">${verdes}</div></div>
+      <div class="kpi-card k-amarillo"><div class="kpi-label">🟡 Amarillo 70-84</div><div class="kpi-val">${amars}</div></div>
+      <div class="kpi-card k-rojo"><div class="kpi-label">🔴 Rojo &lt;70</div><div class="kpi-val">${rojos}</div></div>
+    </div>
+
+    <!-- Módulos -->
+    <div class="section-title">📈 Promedio por módulo</div>
+    <div class="mod-grid" style="margin-bottom:28px">
+      ${MOD_NOMBRES.map((n,i)=>{
+        const p=modProms[i]; const pct=p/MOD_MAX[i];
+        const c=pct>=0.85?'#22c55e':pct>=0.70?'#eab308':'#ef4444';
+        return `<div class="mod-card">
+          <div class="mod-name">${n}</div>
+          <div class="mod-score" style="color:${c}">${p}</div>
+          <div class="mod-max">/ ${MOD_MAX[i]}</div>
+          <div class="mod-bar"><div class="mod-bar-fill" style="width:${pct*100}%;background:${c}"></div></div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('ranking',this)">🏆 Ranking PDVs</div>
+      <div class="tab" onclick="switchTab('modulos',this)">🔍 Por módulo</div>
+      <div class="tab" onclick="switchTab('alarmas',this)">⚠️ Alarmas (${alarmas.length})</div>
+    </div>
+
+    <!-- Ranking -->
+    <div id="tab-ranking" class="tab-content active">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>PDV</th><th>Zona</th><th>Tipo</th><th>Fecha</th>${MOD_NOMBRES.map(n=>`<th>${n.substring(0,4)}.</th>`).join('')}<th>Total</th><th>Estado</th></tr></thead>
+          <tbody>
+            ${ranking.map((r,i)=>{
+              const t=num(r,I.total); const est=estado(r);
+              const badge=est==='VERDE'?'badge-verde':est==='AMARILLO'?'badge-amarillo':'badge-rojo';
+              const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
+              const scores=MOD_I.map((idx,mi)=>{const s=num(r,idx);const pct=s/MOD_MAX[mi];const c=pct>=0.85?'#22c55e':pct>=0.70?'#eab308':'#ef4444';return `<td class="score-cell" style="color:${c}">${s}</td>`;}).join('');
+              return `<tr><td class="medal">${medal}</td><td style="font-weight:500">${col(r,I.pdv)}</td><td>${col(r,I.zona)}</td><td>${col(r,I.tipo)}</td><td style="color:var(--muted);font-size:11px">${col(r,I.tsEnvio).substring(0,16)}</td>${scores}<td class="score-cell" style="font-size:15px;font-weight:700">${t}</td><td><span class="badge ${badge}">${est==='VERDE'?'🟢':est==='AMARILLO'?'🟡':'🔴'} ${est}</span></td></tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Por módulo -->
+    <div id="tab-modulos" class="tab-content">
+      <div class="mod-detail-grid">
+        ${MOD_NOMBRES.map((nombre,mi)=>{
+          const idx=MOD_I[mi]; const max=MOD_MAX[mi];
+          const porPDV={};
+          data.forEach(r=>{const p=col(r,I.pdv);const s=num(r,idx);if(!porPDV[p]||s<porPDV[p])porPDV[p]=s;});
+          const peores=Object.entries(porPDV).sort((a,b)=>a[1]-b[1]).slice(0,5);
+          const prom=modProms[mi]; const pct=prom/max;
+          const c=pct>=0.85?'#22c55e':pct>=0.70?'#eab308':'#ef4444';
+          return `<div class="mod-detail-card">
+            <div class="mod-detail-header">
+              <div class="mod-detail-name">${nombre}</div>
+              <div class="mod-detail-prom" style="color:${c}">${prom}/${max} prom.</div>
+            </div>
+            <div class="mod-detail-body">
+              ${peores.map(p=>{
+                const pp=p[1]/max; const cc=pp>=0.85?'#22c55e':pp>=0.70?'#eab308':'#ef4444';
+                return `<div class="mod-detail-row"><span class="mod-detail-pdv" style="font-size:11px">${p[0]}</span><span class="mod-detail-score" style="color:${cc}">${p[1]}/${max}</span></div>`;
+              }).join('')}
+              ${peores.length===0?'<div class="empty">Sin datos</div>':''}
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <!-- Alarmas -->
+    <div id="tab-alarmas" class="tab-content">
+      ${alarmas.length===0?'<div class="empty">✅ Sin alarmas activas</div>':''}
+      <div class="alarm-list">
+        ${alarmas.map(a=>`<div class="alarm-card ${a.prio}">
+          <div class="alarm-pdv">${a.pdv}</div>
+          <div class="alarm-desc">${a.desc}</div>
+          <div class="alarm-meta">
+            <span class="tag">${a.zona}</span>
+            <span class="tag">${a.tipo}</span>
+            <span class="tag" style="color:var(--muted)">${a.fecha}</span>
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function switchTab(name, el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+}
+
+cargarDatos();
+</script>
+</body>
+</html>
