@@ -2,838 +2,317 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>BBC Auditorías</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BBC Auditorías — Coordinadores</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0e0e0f;--surface:#1a1a1c;--surface2:#242427;--border:#2e2e32;--text:#f0f0f0;--muted:#888;--accent:#f5a623;--green:#22c55e;--radius:14px;--font:'DM Sans',sans-serif;--mono:'DM Mono',monospace}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;min-height:100vh}
-.app-header{position:sticky;top:0;z-index:100;background:rgba(14,14,15,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
-.logo-row{display:flex;align-items:center;gap:10px}
-.logo-dot{width:26px;height:26px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center}
-.logo-dot svg{width:14px;height:14px;fill:#000}
-.app-title{font-size:14px;font-weight:600}
-.app-sub{font-size:11px;color:var(--muted)}
-.score-chip{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-family:var(--mono);font-size:13px;font-weight:500}
-.progress-bar{height:3px;background:var(--border)}
-.progress-fill{height:100%;background:var(--accent);transition:width 0.4s;width:0%}
-.draft-banner{background:#1a1f12;border:1px solid #2d3d1a;border-radius:10px;padding:10px 14px;margin:12px 16px 0;display:none;align-items:center;justify-content:space-between;gap:10px}
-.draft-banner.show{display:flex}
-.draft-text{font-size:12px;color:#a3c47a}
-.draft-clear{font-size:11px;color:var(--muted);cursor:pointer;text-decoration:underline;white-space:nowrap}
-.container{padding:12px 16px 100px;max-width:520px;margin:0 auto}
-.gps-banner{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
-.gps-dot{width:9px;height:9px;border-radius:50%;background:#888;flex-shrink:0}
-.gps-dot.ok{background:var(--green)}.gps-dot.err{background:#ef4444}.gps-dot.loading{background:var(--accent);animation:pulse 1s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.gps-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:1px}
-.gps-val{font-size:12px;color:var(--text);font-family:var(--mono)}
-.ts-strip{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:9px 13px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
-.ts-label{font-size:11px;color:var(--muted)}.ts-val{font-size:12px;font-family:var(--mono);color:var(--accent);font-weight:500}.ts-lock{font-size:11px;color:var(--muted)}
-.pdv-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:10px}
-.pdv-card h2{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px}
-.pdv-auto{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-top:10px;display:none}
-.pdv-auto-row{display:flex;gap:16px;flex-wrap:wrap}
-.pdv-auto-item{font-size:12px;color:var(--muted)}
-.pdv-auto-item span{color:var(--text);font-weight:500;display:block;margin-top:1px}
-.section{margin-bottom:10px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);background:var(--surface)}
-.sec-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none}
-.sec-hdr:active{background:var(--surface2)}
-.sec-left{display:flex;align-items:center;gap:10px}
-.sec-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
-.ic1{background:#1e2a1a}.ic2{background:#1a1e2e}.ic3{background:#2a1e1a}.ic4{background:#1e1a2a}.ic5{background:#1a2a28}.ic6{background:#2a1a22}.ic7{background:#1a2226}.ic0{background:#2a2a1a}.icf{background:#1a2020}
-.sec-name{font-size:14px;font-weight:600}.sec-max{font-size:11px;color:var(--muted);margin-top:1px}
-.sec-score{font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:500;min-width:48px;text-align:right}
-.chevron{color:var(--muted);font-size:16px;transition:transform .25s}.chevron.open{transform:rotate(180deg)}
-.sec-body{display:none;padding:0 16px 16px;border-top:1px solid var(--border)}.sec-body.open{display:block}
+:root{--bg:#0a0a0b;--surface:#141416;--surface2:#1e1e21;--border:#2a2a2e;--text:#f0f0f0;--muted:#777;--accent:#f5a623;--green:#22c55e;--yellow:#eab308;--red:#ef4444;--font:'DM Sans',sans-serif;--mono:'DM Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh}
 
-/* Item block */
-.item-block{margin-top:10px;background:var(--surface2);border-radius:10px;padding:10px 12px}
-.item-label{font-size:12px;color:var(--text);font-weight:500;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
-.item-label span{font-size:10px;color:var(--muted)}
-/* Toggle buttons */
-.item-opts{display:flex;gap:6px;margin-bottom:6px}
-.opt-btn{flex:1;padding:8px 4px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-size:12px;font-family:var(--font);font-weight:500;cursor:pointer;transition:all .15s;text-align:center}
-.opt-btn:active{transform:scale(.97)}
-.opt-btn.sel-ok{background:#14532d;border-color:#22c55e;color:#86efac}
-.opt-btn.sel-no{background:#7f1d1d;border-color:#ef4444;color:#fca5a5}
-.opt-btn.sel-na{background:#2a2a1a;border-color:#555;color:#aaa}
-.note-toggle{font-size:11px;color:var(--muted);cursor:pointer;text-decoration:underline;display:inline-block}
-.note-area{margin-top:6px;display:none}
-.note-area textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:13px;font-family:var(--font);color:var(--text);resize:none;height:52px;outline:none;line-height:1.5}
-.note-area textarea:focus{border-color:var(--accent)}
-.note-area.open{display:block}
+/* Header */
+.header{background:linear-gradient(135deg,#0a0a0b 0%,#141416 100%);border-bottom:1px solid var(--border);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(10px)}
+.logo-area{display:flex;align-items:center;gap:14px}
+.logo-img{width:40px;height:40px;object-fit:contain;filter:invert(1)}
+.brand-name{font-size:18px;font-weight:700;letter-spacing:-0.02em;color:var(--text)}
+.brand-sub{font-size:12px;color:var(--muted)}
+.header-right{display:flex;align-items:center;gap:12px}
+.update-badge{font-size:11px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);padding:5px 12px;border-radius:20px}
+.refresh-btn{background:var(--accent);color:#000;border:none;border-radius:10px;padding:8px 16px;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer}
+.refresh-btn:hover{opacity:.9}
 
-/* Module score bar */
-.mod-score-bar{margin-top:14px;padding-top:12px;border-top:1px solid var(--border)}
-.mod-score-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-.mod-score-label{font-size:12px;color:var(--muted)}
-.mod-score-val{font-family:var(--mono);font-size:16px;font-weight:500;color:var(--accent)}
-.score-bar-bg{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
-.score-bar-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .4s}
+/* Container */
+.container{padding:24px;max-width:1200px;margin:0 auto}
 
-/* Info fields */
-.info-field{margin-top:10px}
-.info-field label{display:block;font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
-.info-field input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:9px 11px;font-size:14px;font-family:var(--mono);color:var(--text);outline:none}
-.info-field input:focus{border-color:var(--accent)}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.sec-divider{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:14px;margin-bottom:2px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+/* Loading */
+.loading{text-align:center;padding:80px 20px;color:var(--muted)}
+.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-/* Photos */
-.photo-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px}
-.photo-slot{aspect-ratio:1;border-radius:9px;border:1.5px dashed var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden}
-.photo-slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:8px}
-.photo-slot .add-icon{font-size:20px;color:var(--muted)}
-.photo-slot .rm{position:absolute;top:2px;right:2px;width:18px;height:18px;background:rgba(0,0,0,.75);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;z-index:2;cursor:pointer}
-.photo-input{display:none}
-.photo-count{font-size:11px;color:var(--muted);margin-top:5px}
-.field{margin-top:12px}
-.field label{display:block;font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
-.field textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;font-size:13px;font-family:var(--font);color:var(--text);outline:none;resize:none;line-height:1.5}
-.field textarea:focus{border-color:var(--accent)}
+/* KPI grid */
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px}
+@media(max-width:768px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center}
+.kpi-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.kpi-val{font-family:var(--mono);font-size:28px;font-weight:500}
+.kpi-card.k-total .kpi-val{color:var(--text)}
+.kpi-card.k-prom .kpi-val{color:var(--accent)}
+.kpi-card.k-verde .kpi-val{color:var(--green)}
+.kpi-card.k-amarillo .kpi-val{color:var(--yellow)}
+.kpi-card.k-rojo .kpi-val{color:var(--red)}
 
-/* Total */
-.total-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 16px;margin-bottom:14px}
-.total-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.total-num{font-family:var(--mono);font-size:48px;font-weight:500;line-height:1}
-.estado-badge{padding:8px 16px;border-radius:20px;font-size:13px;font-weight:600}
-.verde{background:#14532d;color:#86efac}.amarillo{background:#713f12;color:#fde68a}.rojo{background:#7f1d1d;color:#fca5a5}
-.module-scores{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
-.mod-item{background:var(--surface2);border-radius:9px;padding:9px 11px}
-.mod-label{font-size:10px;color:var(--muted)}.mod-val{font-family:var(--mono);font-size:14px;font-weight:500;margin-top:1px}
-.total-bar-bg{height:8px;background:var(--border);border-radius:4px;overflow:hidden}
-.total-bar-fill{height:100%;border-radius:4px;transition:width .5s;background:var(--accent)}
+/* Section titles */
+.section-title{font-size:13px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;display:flex;align-items:center;gap:8px}
 
-/* Tasks */
-.tasks-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:14px;display:none}
-.tasks-hdr{padding:12px 16px;font-size:13px;font-weight:600;border-bottom:1px solid var(--border)}
-.task-item{padding:11px 16px;border-bottom:1px solid var(--border)}.task-item:last-child{border-bottom:none}
-.task-h{font-size:13px;line-height:1.4;margin-bottom:5px}
-.task-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.tag{font-size:10px;padding:3px 8px;border-radius:5px;font-weight:500}
-.tag-r{background:var(--surface2);color:var(--muted)}.tag-a{background:#7f1d1d;color:#fca5a5}.tag-m{background:#713f12;color:#fde68a}.tag-f{color:var(--muted);font-size:10px}
-.bottom-bar{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(14,14,15,.96);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:10px 16px;display:flex;gap:8px}
-.btn{flex:1;padding:13px;border-radius:11px;font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .15s}
-.btn:active{transform:scale(.97)}
-.btn-send{background:var(--accent);color:#000}.btn-send:disabled{opacity:.4;cursor:not-allowed}
-.toast{position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-16px);background:var(--green);color:#000;padding:10px 18px;border-radius:11px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;pointer-events:none;z-index:200;white-space:nowrap}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* Módulos grid */
+.mod-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:24px}
+@media(max-width:900px){.mod-grid{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:500px){.mod-grid{grid-template-columns:repeat(2,1fr)}}
+.mod-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 10px;text-align:center}
+.mod-name{font-size:10px;color:var(--muted);margin-bottom:6px;line-height:1.3}
+.mod-score{font-family:var(--mono);font-size:20px;font-weight:500}
+.mod-max{font-size:10px;color:var(--muted)}
+.mod-bar{height:4px;background:var(--border);border-radius:2px;margin-top:8px;overflow:hidden}
+.mod-bar-fill{height:100%;border-radius:2px;transition:width .5s}
+
+/* Tabs */
+.tabs{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:0}
+.tab{padding:10px 18px;font-size:13px;font-weight:500;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-content{display:none}.tab-content.active{display:block}
+
+/* Table */
+.table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{padding:10px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;background:var(--surface2);border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.badge{display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:600}
+.badge-verde{background:#14532d;color:#86efac}
+.badge-amarillo{background:#713f12;color:#fde68a}
+.badge-rojo{background:#7f1d1d;color:#fca5a5}
+.badge-pendiente{background:#1e2a1a;color:#86efac}
+.score-cell{font-family:var(--mono);font-weight:500;text-align:center}
+.medal{font-size:16px}
+.prio-alta{color:var(--red);font-weight:600}
+.prio-media{color:var(--yellow)}
+
+/* Alarm cards */
+.alarm-list{display:flex;flex-direction:column;gap:10px}
+.alarm-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.alarm-card.alta{border-left:3px solid var(--red)}
+.alarm-card.media{border-left:3px solid var(--yellow)}
+.alarm-pdv{font-size:13px;font-weight:600;margin-bottom:4px}
+.alarm-desc{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:8px}
+.alarm-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tag{font-size:10px;padding:3px 8px;border-radius:5px;background:var(--surface2);color:var(--muted);font-weight:500}
+
+/* Module detail */
+.mod-detail-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+@media(max-width:600px){.mod-detail-grid{grid-template-columns:1fr}}
+.mod-detail-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.mod-detail-header{padding:12px 16px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.mod-detail-name{font-size:13px;font-weight:600}
+.mod-detail-prom{font-family:var(--mono);font-size:13px;color:var(--accent)}
+.mod-detail-body{padding:12px 16px}
+.mod-detail-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px}
+.mod-detail-row:last-child{border-bottom:none}
+.mod-detail-pdv{color:var(--text)}
+.mod-detail-score{font-family:var(--mono);font-size:12px;font-weight:500}
+
+/* Empty */
+.empty{text-align:center;padding:40px;color:var(--muted);font-size:13px}
+
+/* Footer */
+.footer{text-align:center;padding:24px;color:var(--muted);font-size:11px;border-top:1px solid var(--border);margin-top:32px}
 </style>
 </head>
 <body>
 
-<div class="app-header">
-  <div class="logo-row">
-    <div class="logo-dot"><svg viewBox="0 0 16 16"><path d="M8 2l1.5 4.5H14l-3.7 2.7 1.4 4.3L8 11l-3.7 2.5 1.4-4.3L2 6.5h4.5z"/></svg></div>
-    <div><div class="app-title">BBC Auditorías</div><div class="app-sub">7 módulos · 100 pts · automático</div></div>
+<div class="header">
+  <div class="logo-area">
+    <img class="logo-img" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAGTAeMDASIAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAIBAwj/xAAjEAEBAAIABwEBAQEBAAAAAAAAAQIRAxIhMUFRYXEyEyKB/8QAFgEBAQEAAAAAAAAAAAAAAAAAAAEC/8QAFhEBAQEAAAAAAAAAAAAAAAAAABEB/9oADAMBAAIRAxEAPwDxkLxwmt2rmMnhYlcpLe0bMMnUIVznD91vJPqwE8uPpup6jQGanoaKjDU9NAZqeozlx9KEVHJGXh+q6AOVwyZZZ3jsEK4DtcZfCbhPFIVzFXGzwlFAAAABUxyvhvJfgIF/5/W8k9kK5jpyT3T/AD+kK5i+S+2XDL0CRtlneMAAABslvaAwXMPdVMcZ4IlclTDL06NWFc5w75reSfVhBPJj6byz1GgM1PUGiowaAzU9RnLj6UIqeTFnJPawHO4X3E3Gzw7BCuA7WS94m4Tx0IVzG2autiK6YXeKnPhXrY6KgAqAAAAAAAAAAAAAAAADLJe8aA53D1SYXz0dBItTMMZ9a0EAFAAAAAABNxl8KARcPVZML5dBItTMZPqgAAVAAAAAAAAAAAAAAAAAE53WNBzt3bRgy03G6srs4OuF3iuJqgFQZldTemss3NAjnvqM58mWaumMtK5svbObL2wBvNl7bzZe0gK58m899RADpOJPTZnj7cgqR2ll7VrgvG5W9KtI6AKgAAAAAADKDRyy5p3tSlWO44Nlu+lpSOwnGWd7tSoAAAAAAAACM+aduyLbe9Sq6XLGeWXOfXMKRf8Ap8Zz34kRVc+XtnNl7YA3my9t5svaQFc+XtvPfiAHTHLd1paOHNTftaoAKg58W9o6OOV3bU1cYAii+HdXXtADuMxu5trTIADnxJ5Q7XrNOVmrpNXGAIoAAAACsMd/gGONv46SSTUGqgAqAIyz126oqxymWW97XjnL8KRQCoAAxGWGusdBFcccbXXGSdhoACoAADLZO7nlnb26IrqOeOdnfquWWdAaAqCM8PMWIrgOmeO+s7uaKAAAAAANxm7pjrhNT6CgGmQAE53WP65Kzu8kstYAAAAvh3rp0cHbG7m1xNaAqCOJNzfpYiuArPHV3OyUUAABsm7oDHHddZ0MZqaaqACoMtkm6WyTdcsrbUVuWVv4kEUABWOVn2OksvZxbLZegkdhGOW+l7rUAFQAABmVknUBGWfpmWVqUqwARRstl6MAdccpf1Tg6YZb6XutSLAVBzzx8x0EVwFZ46u/CUUAABsm7oG4Td34dWSammqgAqCc7qKcs7uoqQEUAAAAVhdX4kB3EcPLxVqgAqMs3NOWU1XZmU3NIriNs1dViKOnDmpvynCbrquJoAqDLdTda5Z5bvxFZlbawEUAAAABsm7oG4Y7vx1ZJqaaqACoAAI4mO+sWIrgKzx1d+EooAAAAADrhlua8qcJ0u3bG7m1xGgKjLNzTlZq6dkcSbm/SauOYCKOuGOp9Zhjrre61xNAFQBmV1NgniXU05tt3dsZaAAAAAAAAJ0dcbuOTcbq7B2GS7m41pkABOUljnZZdV2ZZL3RWYTUUCoAy3U2CeJfDmXrdjLQAAAAAA6YY6m/KcJu78Oq4mgCoAzK6mwaIwy30q0UAVGWbmnKzV07I4k3N+YmrjmAigAAADcbqsAdxHDu5r0tUAFRxymrpeGPmqslu2pFAFQABjnnlu/G55b6RCauACKAAAAAAAAAArHLV+Ok6uKsMtfio6jJ1aqAAAADnxL4dHHLe7tNXGAIoAAAA2Td0x04c8gqTU00GmQAByzu78VxL4c01cHbG7m3FWF1UV1AaZAAcs5q/Eu2U3NOLLQAAAAADcbq7dnB1w3yza4mqAVAAAABGeXiGeXiOaaoAigAAAAAAAAAAAAAKxys/HSWWbji3G2XoqOwzGyzo1UAAGWS92gOWWFnbql3TcZUi1yFXCzt1SigANk3dOs6J4c8rXE0AVBluptrnxLu69Iqbd3bARQAHTh3c0txl1dusu5tcTWgKg58SddujMpuaRXEBFAbMbewMbjjb2XjhJ36rWJU44yfaoFQAABgNc88vEM8t9J2QlWACKAAAAAAAAAAAAAAAAAAvheXRHC7VapoAqAAAADLJe8aA53C+E6u9adhItZJqaaCoAAzK6m3FfEvXSGdawAAAAXw74Q2XV2DsMa0yAA5cSay/SYW/HUSLUzCT6oFQAAAAAAZl/Nay9qK4gMqAAAAAAAAAAAAAAAAAAAA6cLtVo4XarVNAFRPNObVU5Z/1THKxKsdRMyl+KVAAAAAAAAGWS+Izkx9KEVHJPp/n9WA5/5/W8k91YCeTH03lnqNAY0FQAAAAAABlsneg1OWUics746ISrHadZK1mP8AM/GiDK1lUcQGWgAAAAAAAAAAAYy5YzyChFzniJudvxKsdGXOT65W77hSKudvxIIoADtj/M/Gsx/mfjVZGVrKo4gMtAAAAAAAAAAAAAAAAAAAAOnC7VaOF2q1TQBUcs/wCqlWf9VLLQAAAAOskuMlRlhZ26iVIArZbPNbz5e0gK578b/p8QA6c89HPPrmFSOnPj9Oeeq5hSL/0+HPfUQCq58vbOa+6wAAAG4y3s6Y4yfoOQrP8AqpAAAAB2x/mfjWY/zPxqsjK1lUcQGWgAAAAAAAAAAAAAAAAAAAHThdqtHC7VapoAqOWf9VKs/6qWWhsys7VgDpM55ipZe1cRakdxymVnls4nuFI6CZnj7bLL2ojQFAAAAAAAAAAAF44earHGRSxKydGgqOXE/pK+L3iGWgAAHXDHXW9wbO0aDTIytZQcQGWgAAAAAAAAAAAAAAAAAAAFYZa6Xs6OKsMtfi1HUZOrVQZZLNVoDjljqsdrNzVc8sdX4ipbO8Y2d4iuwDTIADlxP6Srif0lloAAAAAAAAAB2jWNaZAAc+L3iF8XvEM60E6tk3dR0wx1+gYY6/VArIAoIzy10nczy10jmigCKAAAAAAAAAAAAAAAAAAAAAArHKz8dJdzccW45WVUdhkss3GqgyzfdoDlljr8TO7s5546/EWuoydmqgADnxf6/8Qvi+EM60AAAAAAAAA3H+oDsA0yAA58X+v/EyW3UVnN56isZJEUxxkigVAABGeXiMzy8RCVYAIoAAAAAAAAAAAAAAAAAAAAAAAAADcbZejrjZZ0cWy2XcB2E45SxTTIxoDGgAACOJ/Lm659ca5Jq4AIoAAAAAArh/0lfCnW0HQBpkABmmgADAEZ5b6TszPLf4lKoAigAAAAAAAAAAAAAAAAAAAAAAAAAAAAANlsu46Y5S/rkToDuJwy3+qVkAUAAHG9Lp2cuJNZfqauJARQAAAAAB14c/5cnadJpcTWgKgAADLZJugW6m655Zb/GZZW1iKAIoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA6YZb6Xu5gO4jDLfSrVABUEcSbm/S2XrEVxG2aumIoAAAAACuHN5fjqjhzWO/a1xNAFQBOVkgNtkm65ZW2ltt3WMqACgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADphl4rmA7jJdzbWmQAEZ466xzd3PPHzE1cQAigACsMd34zGbunWTU1FQaCoAAnLLljnbbd1ud3klloAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABfDvh0cZdXbrLubXE1oCoAA5Z466zsl2vVzyx1fiLiWybuoydXXHHU+orcZqaaDTIAAnK6x2py4l3dekVICKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAL4d8IAdxON3FNMgADLNzVaAnHHX6oEABQABOd1HJWd3UstAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANxuq6uK+Hl4q4mugCoAAAAAAI4mXiNyuo5Jq4AIoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADrhluavdThOldcctxcRQCoAAMt1N0vRzyy3fiKzK7u2AigAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADZbLuMAdcbLFOMtl3HTHKX9VFMLdTdc8st/gGeW/xIIoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAToAKzt2kAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf/2Q==" alt="Temple BBC">
+    <div>
+      <div class="brand-name">BBC Auditorías</div>
+      <div class="brand-sub">Dashboard Coordinadores</div>
+    </div>
   </div>
-  <div class="score-chip" id="header-score">0 / 100</div>
-</div>
-<div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
-
-<div class="draft-banner" id="draft-banner">
-  <span class="draft-text">📋 Borrador guardado — continuando donde lo dejaste</span>
-  <span class="draft-clear" onclick="limpiarBorrador()">Empezar nueva</span>
+  <div class="header-right">
+    <span class="update-badge" id="update-time">Cargando…</span>
+    <button class="refresh-btn" onclick="cargarDatos()">↻ Actualizar</button>
+  </div>
 </div>
 
 <div class="container">
-  <div class="gps-banner">
-    <div class="gps-dot loading" id="gps-dot"></div>
-    <div style="flex:1"><div class="gps-label">Ubicación GPS</div><div class="gps-val" id="gps-val">Obteniendo ubicación…</div></div>
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <div>Cargando datos…</div>
   </div>
-  <div class="ts-strip">
-    <div><div class="ts-label">Inicio de auditoría</div><div class="ts-val" id="ts-val">—</div></div>
-    <div class="ts-lock">🔒 No editable</div>
-  </div>
-
-  <!-- PDV -->
-  <div class="pdv-card">
-    <h2>Punto de venta</h2>
-    <div style="margin-top:0">
-      <div style="font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Selecciona el PDV</div>
-      <select id="f_pdv" onchange="autocompletar();guardar()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;font-size:14px;font-family:var(--font);color:var(--text);outline:none;appearance:none;-webkit-appearance:none;background-image:url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\' viewBox=\'0 0 12 8\'%3E%3Cpath d=\'M1 1l5 5 5-5\' stroke=\'%23888\' stroke-width=\'1.5\' fill=\'none\' stroke-linecap=\'round\'/%3E%3C/svg%3E');background-repeat:no-repeat;background-position:right 12px center;padding-right:34px">
-        <option value="">— Selecciona un PDV —</option>
-        <optgroup label="Propios Centro — BBC">
-          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="BODEGA">CALLE 67</option>
-          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="BODEGA">ARBOLEDA / HEROES</option>
-          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="BODEGA">BOD CALLE 93</option>
-          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="BODEGA">LOURDES</option>
-          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="BODEGA">DIVER PLAZA</option>
-          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="BODEGA">MODELO</option>
-          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="BODEGA">PORTAL 80</option>
-          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="PUB">SALITRE</option>
-          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="PUB">TITAN</option>
-          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="PUB">ANDINO</option>
-          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="PUB">CALLE 85</option>
-          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="PUB">CALLE 63</option>
-          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="PUB">ROSALES</option>
-          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="PUB">CONNECTA</option>
-        </optgroup>
-        <optgroup label="Propios Norte — BBC">
-          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="BODEGA">VILLA DEL PRADO</option>
-          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="BODEGA">CALLE 100</option>
-          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="BODEGA">PASADENA</option>
-          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="BODEGA">IMPERIAL</option>
-          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="BODEGA">CHICO</option>
-          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="BODEGA">MINI CALLE 97</option>
-          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="PUB">PARQUE 93</option>
-          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="PUB">CEDRITOS</option>
-          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="PUB">AVDA 19</option>
-          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="PUB">COLINA</option>
-          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="PUB">USAQUEN</option>
-          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="PUB">PEPE SIERRA</option>
-          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="PUB">BELAIRE</option>
-        </optgroup>
-        <optgroup label="Propios Sur — BBC">
-          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="BODEGA">CORFERIAS</option>
-          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="BODEGA">CALLE 43</option>
-          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="BODEGA">BOSA CENTRO</option>
-          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="BODEGA">RESTREPO</option>
-          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="BODEGA">TERRAZA PASTEUR</option>
-          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="BODEGA">PLAZA CLARO</option>
-          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="BODEGA">PARK WAY</option>
-          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="PUB">MOVISTAR</option>
-          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="PUB">GALERÍAS</option>
-          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="PUB">CANDELARIA</option>
-          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="PUB">CENTRO MAYOR</option>
-          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="PUB">PLAZA CENTRAL</option>
-          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="PUB">SAN MARTIN</option>
-          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="PUB">PLAZA DE LAS AMÉRICAS</option>
-        </optgroup>
-        <optgroup label="Centro FRQ — Harrison">
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">BEER PALS JAVERIANA</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">BEER PALS SAS CL 109</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">BODEGA KUZUDAMA MALL PLAZA</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">DUYAN INVERSIONES SAS SOACHA TERREROS</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">EL BREWER BODEGA BOGOTA COLINA 152</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">GRUPO PROYECATRICO SAS - NUESTRO BOGOTA</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">HARBOUR TOWN BOGOTA ALSACIA</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">HARBOUR TOWN SAS HAYUELOS</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">INDUSTRIAS VANDELAY S.A.S CHIA</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">INDUSTRIAS VANDELAY UNICENTRO BOGOTA</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">INVERSIONES AHG - GRAN ESTACION</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">INVERSIONES AHG BOGOTÁ CALLE 165</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="PUB">INVERSIONES AHG CENTRO EMPRESARIAL 127</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">INVERSIONES AHG UNICENTRO OCCIDENTE</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">OIKOS BODEGA BBC TOCANCIPA</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">OLD STYLE BOGOTA TEQUENDAMA</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">POLA INVESTMENT BODEGA CALLE 100 WTC</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">POLA INVESTMENT BOGOTÁ SALITRE</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">POLA INVESTMENT GROUP - BODEGA CALLE 90</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="PUB">PUB CHAPINERO KUZUDAMA SAS</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="PUB">PUB SANTAFE KUZUDAMA SAS</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="PUB">PUB VILLA DEL RIO AHG</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">VILLA DE LEYVA - POLA INVESTMENT GROUP</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="PUB">VOLANDO ALTO SAS PUB CALLE 19</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">ZONA BBC BOGOTA CALLE 140</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">ZONA BBC BOGOTA PORTO ALEGRE</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">ZONA BBC S.A.S. - GRANADA HILLS</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">ZONA BBC SAS CALLE 150</option>
-        </optgroup>
-        <optgroup label="Sur Fraq — Milena">
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">ARTESANALES PREMIUM CALI CHIPICHAPE</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">ARTESANALES PREMIUM CALI GRANADA</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">ARTESANALES PREMIUM CALI RÍO CALI</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">ARTESANALES PREMIUM FLORA CALI</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">ARTESANALES PREMIUN CALI AEROPUERTO</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">BAP COMPANY FLORENCIA CUNDUY</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">BAP COMPANY ZOMAC S.A.S</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">BIRRAPEDIA SAS - TULUA</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">BREWERY BODEGA SEBASTIAN PASTO</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">BREWERY SAS PASTO ESTUDIANTES</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">GESSAG SAS PALMIRA LLANOGRANDE</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">GRUPO INGERLIN CALI PARQUE DEL PERRO</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">GRUPO INGERLIN JARDIN PLAZA</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">GRUPO INGERLIN PUERTO 125</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">GRUPO INGERLIN SAS - LAS PALMAS</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">GRUPO INGERLIN SAS - SAN FERNANDO</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">INVERSIONES AHG - CC ACQUA IBAGUE</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">INVERSIONES AHG IBAGUE VERGEL PLAZA</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">RESILIENCIA FC S.A.S. - POPAYAN</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">RESILIENCIA POPAYAN CENTRO HISTORICO</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">RESILIENCIA POPAYAN NORTE</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="PUB">SANTAMARTA</option>
-        </optgroup>
-        <optgroup label="Andes Fraq — Natalia">
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">AMANTA SAS - ARMENIA</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">AMANTA SAS ARMENIA PORTAL QUINDIO</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">AMANTA SAS PALO DE AGUA</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">AMANTA SAS PERIERA</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">BBC CARTAGO AMANTA SAS</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">BODEGA SABANETA MERA CERON</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">BODEGA VILLA DEL ROSARIO INV APONTE SAS</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">BURBANO CONTRERAS NAVAS - CUCUTA</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="PUB">INVERSIONES AHG - PUB BUCARAMANGA</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">INVERSIONES AHG LA FLORIDA</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">MALTAURBANA SAS MANIZALES</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">MERA CERON BODEGA MEDELLIN LA 70</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">PERLA DEL LUPULO BODEGA UNICENTRO PEREIRA</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="PUB">PUB BARRANQUILLA CANTOR COMPANY</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="PUB">PUB MANIZALES</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="PUB">PUB VALBUENA BROTHERS SAS - ESTRADA MED</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">VALBUENA BROTHERS - MEDELLIN AMSTERDAM</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">VALBUENA BROTHERS CIUDAD DE RIO</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">VALBUENA BROTHERS COMPANY CC LLANOGRANDE</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="PUB">VALBUENA BROTHERS PROVENZA</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">VALBUENA BROTHERS SAS - LAURELES MEDELLIN</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">VALBUENA BROTHERS SQUARE</option>
-        </optgroup>
-      </select>
-    </div>
-    <div class="pdv-auto" id="pdv-auto">
-      <div class="pdv-auto-row">
-        <div class="pdv-auto-item">Zona<span id="auto-zona">—</span></div>
-        <div class="pdv-auto-item">Coordinador<span id="auto-coord">—</span></div>
-        <div class="pdv-auto-item">Tipo<span id="auto-tipo">—</span></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- MÓDULOS generados dinámicamente -->
-  <div id="modulos-container"></div>
-
-  <!-- Fotos -->
-  <div class="section">
-    <div class="sec-hdr" onclick="toggleSec('f')">
-      <div class="sec-left"><div class="sec-icon icf">📸</div><div><div class="sec-name">Fotos del punto</div><div style="font-size:11px;color:var(--muted)">Máximo 5 fotos</div></div></div>
-      <span class="chevron" id="chf">⌄</span>
-    </div>
-    <div class="sec-body" id="bodyf">
-      <div style="font-size:12px;color:var(--muted);margin-top:8px;margin-bottom:8px">Toca cada cuadro para abrir la cámara.</div>
-      <div class="photo-grid">
-        <div class="photo-slot" onclick="abrirFoto(0)" id="slot0"><span class="add-icon">+</span></div>
-        <div class="photo-slot" onclick="abrirFoto(1)" id="slot1"><span class="add-icon">+</span></div>
-        <div class="photo-slot" onclick="abrirFoto(2)" id="slot2"><span class="add-icon">+</span></div>
-        <div class="photo-slot" onclick="abrirFoto(3)" id="slot3"><span class="add-icon">+</span></div>
-        <div class="photo-slot" onclick="abrirFoto(4)" id="slot4"><span class="add-icon">+</span></div>
-      </div>
-      <input type="file" accept="image/*" capture="environment" class="photo-input" id="pi0" onchange="procesarFoto(0,this)">
-      <input type="file" accept="image/*" capture="environment" class="photo-input" id="pi1" onchange="procesarFoto(1,this)">
-      <input type="file" accept="image/*" capture="environment" class="photo-input" id="pi2" onchange="procesarFoto(2,this)">
-      <input type="file" accept="image/*" capture="environment" class="photo-input" id="pi3" onchange="procesarFoto(3,this)">
-      <input type="file" accept="image/*" capture="environment" class="photo-input" id="pi4" onchange="procesarFoto(4,this)">
-      <div class="photo-count" id="photo-count">0 / 5 fotos</div>
-    </div>
-  </div>
-
-  <!-- Hallazgos -->
-  <div class="section">
-    <div class="sec-hdr" onclick="toggleSec('h')">
-      <div class="sec-left"><div class="sec-icon ic0">⚠️</div><div><div class="sec-name">Hallazgos & notas</div><div style="font-size:11px;color:var(--muted)">Observaciones críticas</div></div></div>
-      <span class="chevron" id="chh">⌄</span>
-    </div>
-    <div class="sec-body" id="bodyh">
-      <div class="field"><label>Hallazgos críticos (uno por línea)</label><textarea id="hallazgos" placeholder="ej: Nevera sin funcionar&#10;Diferencia en caja del 8%" style="height:90px" oninput="guardar()"></textarea></div>
-      <div class="field"><label>Notas adicionales</label><textarea id="notas" placeholder="Contexto del PDV, observaciones generales..." style="height:72px" oninput="guardar()"></textarea></div>
-    </div>
-  </div>
-
-  <!-- Total -->
-  <div class="total-section" id="total-section">
-    <div class="total-row">
-      <div>
-        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Puntaje total</div>
-        <div class="total-num" id="total-num">0</div>
-      </div>
-      <div class="estado-badge" id="estado-badge">—</div>
-    </div>
-    <div class="total-bar-bg" style="margin-bottom:14px"><div class="total-bar-fill" id="total-bar" style="width:0%"></div></div>
-    <div class="module-scores" id="module-scores-grid"></div>
-  </div>
-
-  <div class="tasks-section" id="tasks-section">
-    <div class="tasks-hdr">📋 Tareas de mejora</div>
-    <div id="tasks-body"></div>
-  </div>
+  <div id="app" style="display:none"></div>
 </div>
 
-<div class="bottom-bar">
-  <button class="btn btn-send" id="btn-enviar" onclick="enviar()">Guardar en Sheets →</button>
-</div>
-<div class="toast" id="toast"></div>
+<div class="footer">BBC Colombia · Sistema de Auditorías · Solo lectura</div>
 
 <script>
-const SCRIPT_URL='https://script.google.com/macros/s/AKfycbyItpuGWvi4mPxo5_D7-w8ELpLxioIo31_z4M2cbOkSOcYo0OPbaqrD8KNvkRrU9oxXTA/exec';
-const DRAFT_KEY='bbc_v6';
+// ── CONFIGURACIÓN ──
+// Reemplaza con tu Sheet ID y una API Key de Google
+const SHEET_ID = '15snwnCCKLXjPlYSP6UN-TWiMqQJTr-OBYzp6mYIdv_Y';
+// Para leer el Sheet públicamente necesitas una Google API Key
+// Ve a console.cloud.google.com → APIs → Sheets API → Credentials → Create API Key
+// Pégala aquí:
+const API_KEY = 'AIzaSyDb8oVRMOSoPtXJ7kdvth6Dzxl-ica2M7s';
 
-// ── DEFINICIÓN DE MÓDULOS ──
-// tipo: 'yn' = sí/no, 'info' = campo informativo (no puntúa)
-const MODULOS = [
-  { id:1, nombre:'Experiencia', icon:'🍺', cls:'ic1', max:15, items:[
-    {id:'m1_menu_pct', label:'Menú disponible (%)', tipo:'pct'},
-    {id:'m1_precios', label:'Precios actualizados', tipo:'yn'},
-    {id:'m1_cat', label:'Categorías completas', tipo:'yn'},
-    {id:'m1_cristal', label:'Cristalería completa', tipo:'yn'},
-    {id:'m1_menaje', label:'Menaje cocina completo', tipo:'yn'},
-  ]},
-  { id:2, nombre:'Marketing & Uniformes', icon:'👕', cls:'ic2', max:15, items:[
-    {id:'m2_av_ent', label:'Avisos BBC entrada', tipo:'yn'},
-    {id:'m2_av_int', label:'Avisos BBC interior', tipo:'yn'},
-    {id:'m2_unif_b', label:'Uniforme barra correcto', tipo:'yn'},
-    {id:'m2_unif_c', label:'Uniforme cocina correcto', tipo:'yn'},
-    {id:'m2_aseo', label:'Aseo y accesorios ok', tipo:'yn'},
-  ]},
-  { id:3, nombre:'Finanzas & Caja', icon:'💰', cls:'ic3', max:15, items:[
-    {id:'m3_caja', label:'Caja cuadra', tipo:'yn'},
-    {id:'m3_dif', label:'Diferencia en caja (%)', tipo:'pct_neg'},
-    {id:'m3_cons', label:'Consignaciones al día', tipo:'yn'},
-    {id:'m3_comp', label:'Comprobantes organizados', tipo:'yn'},
-    {id:'m3_pos', label:'POS funcionando', tipo:'yn'},
-  ]},
-  { id:4, nombre:'Inventario', icon:'📦', cls:'ic4', max:15, items:[
-    {id:'m4_cerv', label:'Cervezas BBC (%)', tipo:'pct'},
-    {id:'m4_lic', label:'Licores (%)', tipo:'pct'},
-    {id:'m4_bsa', label:'Bebidas sin alcohol (%)', tipo:'pct'},
-    {id:'m4_alim', label:'Alimentos (%)', tipo:'pct'},
-    {id:'m4_merch', label:'Merchandising completo', tipo:'yn'},
-    {id:'m4_venc', label:'Sin productos vencidos', tipo:'yn'},
-  ]},
-  { id:5, nombre:'Operaciones & Personal', icon:'🧹', cls:'ic5', max:15, items:[
-    {id:'m5_l_coc', label:'Limpieza cocina', tipo:'yn', grupo:'Limpieza'},
-    {id:'m5_l_bar', label:'Limpieza barra', tipo:'yn'},
-    {id:'m5_l_ban', label:'Limpieza baños', tipo:'yn'},
-    {id:'m5_l_mes', label:'Limpieza mesas', tipo:'yn'},
-    {id:'m5_imp_b', label:'Impresora barra', tipo:'yn', grupo:'Equipos'},
-    {id:'m5_imp_c', label:'Impresora cocina', tipo:'yn'},
-    {id:'m5_frio', label:'Nevera funcionando', tipo:'yn'},
-    {id:'m5_luz', label:'Iluminación ok', tipo:'yn'},
-    {id:'m5_ac', label:'Aire acondicionado', tipo:'yn'},
-    {id:'m5_legales', label:'Legales completos', tipo:'yn', grupo:'Legal'},
-    {id:'m5_sanit', label:'Última fecha de sanitización', tipo:'fecha', grupo:'Sanitización'},
-    {id:'m5_equipo', label:'Equipo completo', tipo:'yn', grupo:'Personal'},
-    {id:'m5_p_coc', label:'Personas en cocina', tipo:'info'},
-    {id:'m5_p_ser', label:'Personas en servicio', tipo:'info'},
-  ]},
-  { id:6, nombre:'Mantenimiento', icon:'🔩', cls:'ic6', max:15, items:[
-    {id:'m6_sillas', label:'Sillas en buen estado', tipo:'yn'},
-    {id:'m6_mesas', label:'Mesas en buen estado', tipo:'yn'},
-    {id:'m6_pisos', label:'Pisos y paredes ok', tipo:'yn'},
-    {id:'m6_luces', label:'Luces completas', tipo:'yn'},
-    {id:'m6_pos', label:'Sistema POS completo', tipo:'yn'},
-    {id:'m6_eq_coc', label:'Equipos cocina ok', tipo:'yn'},
-    {id:'m6_eq_bar', label:'Equipos barra ok', tipo:'yn'},
-  ]},
-  { id:7, nombre:'Ventas', icon:'📈', cls:'ic7', max:10, items:[
-    {id:'v_venta', label:'Venta general ($)', tipo:'info'},
-    {id:'v_tickets', label:'Número de tickets', tipo:'info'},
-    {id:'v_tkt_prom', label:'Ticket promedio ($)', tipo:'info'},
-    {id:'v_vol', label:'Volumen (HL)', tipo:'info'},
-    {id:'v_sh_comida', label:'Share comida (%)', tipo:'info'},
-    {id:'v_sh_lic', label:'Share licores (%)', tipo:'info'},
-    {id:'m7_conoce_ventas', label:'Conoce ventas del mes', tipo:'yn', grupo:'Evaluación'},
-    {id:'m7_conoce_tkt', label:'Conoce tickets y promedio', tipo:'yn'},
-    {id:'m7_conoce_vol', label:'Conoce volumen y shares', tipo:'yn'},
-  ]},
-];
+const MOD_NOMBRES = ['Experiencia','Marketing','Finanzas','Inventario','Operaciones','Mantenimiento','Ventas'];
+const MOD_MAX = [15,15,15,15,15,15,10];
 
-// Estado global
-let gpsData={lat:null,lng:null,address:'No disponible'};
-let tsInicio=null;
-let fotos=[null,null,null,null,null];
-// respuestas: {itemId: 'ok'|'no'|'na'|valor}
-let respuestas={};
+let todosLosDatos = [];
+let resumenData = [];
 
-// ── BUILD UI ──
-function buildModulos(){
-  const cont=document.getElementById('modulos-container');
-  // Total card primero vacío
-  MODULOS.forEach(mod=>{
-    const sec=document.createElement('div');sec.className='section';
-    sec.innerHTML=`
-      <div class="sec-hdr" onclick="toggleSec(${mod.id})">
-        <div class="sec-left">
-          <div class="sec-icon ${mod.cls}">${mod.icon}</div>
-          <div><div class="sec-name">${mod.nombre}</div><div style="font-size:11px;color:var(--muted)">Módulo ${mod.id} · máx ${mod.max}</div></div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span class="sec-score" id="score-chip-${mod.id}">—</span>
-          <span class="chevron" id="ch${mod.id}">⌄</span>
-        </div>
-      </div>
-      <div class="sec-body" id="body${mod.id}">
-        ${buildItems(mod)}
-        <div class="mod-score-bar">
-          <div class="mod-score-row">
-            <span class="mod-score-label">Puntaje automático</span>
-            <span class="mod-score-val" id="score-val-${mod.id}">0 / ${mod.max}</span>
-          </div>
-          <div class="score-bar-bg"><div class="score-bar-fill" id="score-bar-${mod.id}" style="width:0%"></div></div>
-        </div>
-      </div>`;
-    cont.appendChild(sec);
-  });
-  // Build total grid
-  const grid=document.getElementById('module-scores-grid');
-  MODULOS.forEach(mod=>{
-    const d=document.createElement('div');d.className='mod-item';
-    d.innerHTML=`<div class="mod-label">M${mod.id} ${mod.nombre}</div><div class="mod-val" id="r${mod.id}">—</div>`;
-    grid.appendChild(d);
-  });
-}
-
-function buildItems(mod){
-  let html='';
-  let grupoActual='';
-  mod.items.forEach(item=>{
-    if(item.grupo && item.grupo!==grupoActual){
-      grupoActual=item.grupo;
-      html+=`<div class="sec-divider">${item.grupo}</div>`;
-    }
-    if(item.tipo==='yn'){
-      html+=`<div class="item-block">
-        <div class="item-label">${item.label}</div>
-        <div class="item-opts">
-          <button class="opt-btn" id="btn-ok-${item.id}" onclick="setResp('${item.id}','ok','${mod.id}')">✓ Sí / Ok</button>
-          <button class="opt-btn" id="btn-no-${item.id}" onclick="setResp('${item.id}','no','${mod.id}')">✗ No</button>
-          <button class="opt-btn" id="btn-na-${item.id}" onclick="setResp('${item.id}','na','${mod.id}')">N/A</button>
-        </div>
-        <span class="note-toggle" onclick="toggleNota(this)">+ Observación</span>
-        <div class="note-area"><textarea id="n_${item.id}" placeholder="Observaciones..." oninput="guardar()"></textarea></div>
-      </div>`;
-    } else if(item.tipo==='pct'||item.tipo==='pct_neg'){
-      html+=`<div class="item-block">
-        <div class="item-label">${item.label} <span>0-100</span></div>
-        <input type="number" id="${item.id}" min="0" max="100" placeholder="—" oninput="setRespPct('${item.id}','${mod.id}')" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 11px;font-size:15px;font-family:var(--mono);color:var(--text);outline:none;margin-bottom:6px">
-        <span class="note-toggle" onclick="toggleNota(this)">+ Observación</span>
-        <div class="note-area"><textarea id="n_${item.id}" placeholder="Observaciones..." oninput="guardar()"></textarea></div>
-      </div>`;
-    } else if(item.tipo==='fecha'){
-      html+=`<div class="item-block">
-        <div class="item-label">${item.label}</div>
-        <input type="date" id="${item.id}" oninput="guardar()" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 11px;font-size:14px;font-family:var(--font);color:var(--text);outline:none;margin-bottom:6px">
-        <span class="note-toggle" onclick="toggleNota(this)">+ Observación</span>
-        <div class="note-area"><textarea id="n_${item.id}" placeholder="Observaciones..." oninput="guardar()"></textarea></div>
-      </div>`;
-    } else {
-      // info field
-      html+=`<div class="info-field">
-        <label>${item.label}</label>
-        <input type="text" id="${item.id}" placeholder="—" oninput="guardar()">
-      </div>`;
-    }
-  });
-  return html;
-}
-
-// ── LOGIC ──
-function setResp(itemId, val, modId){
-  respuestas[itemId]=val;
-  ['ok','no','na'].forEach(t=>{
-    const btn=document.getElementById('btn-'+t+'-'+itemId);
-    if(btn){btn.className='opt-btn'+(val===t?' sel-'+t:'');}
-  });
-  calcMod(parseInt(modId));
-  guardar();
-}
-
-function setRespPct(itemId, modId){
-  const el=document.getElementById(itemId);
-  const v=parseFloat(el.value);
-  respuestas[itemId]=isNaN(v)?null:v;
-  calcMod(parseInt(modId));
-  guardar();
-}
-
-function calcMod(modId){
-  const mod=MODULOS.find(m=>m.id===modId);
-  const scorableItems=mod.items.filter(i=>i.tipo==='yn'||i.tipo==='pct'||i.tipo==='pct_neg');
-  let ok=0,total=0;
-  scorableItems.forEach(item=>{
-    const r=respuestas[item.id];
-    if(r===null||r===undefined||r==='')return; // no respondido → no cuenta aún
-    if(r==='na')return; // N/A → excluir
-    total++;
-    if(item.tipo==='yn'){if(r==='ok')ok++;}
-    else if(item.tipo==='pct'){const pct=parseFloat(r)||0;if(pct>=80)ok++;}
-    else if(item.tipo==='pct_neg'){const pct=parseFloat(r)||0;if(pct<5)ok++;} // diferencia de caja <5% = ok
-  });
-  const score=total>0?Math.round((ok/total)*mod.max):0;
-  // Update UI
-  const chip=document.getElementById('score-chip-'+modId);
-  const val=document.getElementById('score-val-'+modId);
-  const bar=document.getElementById('score-bar-'+modId);
-  const pct=total>0?(ok/total)*100:0;
-  if(chip)chip.textContent=score+'/'+mod.max;
-  if(val)val.textContent=score+' / '+mod.max+' ('+ok+'/'+total+' ok)';
-  if(bar)bar.style.width=pct+'%';
-  calcTotal();
-}
-
-function validarCompleto(){
-  // Verifica que todos los ítems yn, pct, pct_neg tengan respuesta
-  const faltantes=[];
-  MODULOS.forEach(mod=>{
-    const itemsFaltantes=[];
-    mod.items.forEach(item=>{
-      if(item.tipo==='yn'){
-        const r=respuestas[item.id];
-        if(!r||r==='')itemsFaltantes.push(item.label);
-      } else if(item.tipo==='pct'||item.tipo==='pct_neg'){
-        const el=document.getElementById(item.id);
-        if(!el||el.value==='')itemsFaltantes.push(item.label);
-      }
-    });
-    if(itemsFaltantes.length>0){
-      faltantes.push({mod:mod.nombre, items:itemsFaltantes, id:mod.id});
-    }
-  });
-  return faltantes;
-}
-
-function mostrarIncompletos(faltantes){
-  // Abrir el primer módulo incompleto y resaltar ítems
-  if(faltantes.length===0)return;
-  const primero=faltantes[0];
-  // Abrir sección
-  const body=document.getElementById('body'+primero.id);
-  const ch=document.getElementById('ch'+primero.id);
-  if(body&&!body.classList.contains('open')){
-    body.classList.add('open');if(ch)ch.classList.add('open');
+async function cargarDatos(){
+  document.getElementById('loading').style.display='block';
+  document.getElementById('app').style.display='none';
+  try {
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Auditorías!A2:DZ1000?key=${API_KEY}`;
+    const r = await fetch(url);
+    const d = await r.json();
+    if(d.error){throw new Error(d.error.message);}
+    todosLosDatos = d.values || [];
+    renderApp();
+  } catch(e){
+    document.getElementById('loading').innerHTML = `<div style="color:#ef4444;font-size:14px">Error al cargar datos: ${e.message}<br><br><small>Verifica que la API Key esté configurada y el Sheet sea público.</small></div>`;
   }
-  // Scroll al módulo
-  const sec=document.getElementById('body'+primero.id);
-  if(sec)sec.scrollIntoView({behavior:'smooth',block:'center'});
-  // Construir mensaje
-  const resumen=faltantes.map(f=>`• ${f.mod}: ${f.items.slice(0,3).join(', ')}${f.items.length>3?' y '+(f.items.length-3)+' más':''}`).join('\n');
-  mostrarToastLargo('⚠️ Faltan respuestas:\n'+resumen,'#ef4444');
 }
 
-function mostrarToastLargo(msg,color){
-  const t=document.getElementById('toast');
-  t.style.whiteSpace='pre-line';t.style.textAlign='left';t.style.maxWidth='320px';
-  t.textContent=msg;t.style.background=color||'var(--green)';
-  t.classList.add('show');setTimeout(()=>{t.classList.remove('show');t.style.whiteSpace='nowrap';},5000);
-}
+function col(row, i){ return (row && row[i]) ? String(row[i]).trim() : ''; }
+function num(row, i){ return parseFloat(col(row,i)) || 0; }
 
-function calcTotal(){
-  let total=0;
-  const scores=[];
-  MODULOS.forEach(mod=>{
-    const chip=document.getElementById('score-chip-'+mod.id);
-    const txt=chip?chip.textContent:'—';
-    const sc=parseInt(txt)||0;
-    scores.push(sc);
-    total+=sc;
-    const ri=document.getElementById('r'+mod.id);
-    if(ri)ri.textContent=sc+'/'+mod.max;
-  });
-  document.getElementById('total-num').textContent=total;
-  document.getElementById('total-bar').style.width=Math.min(total,100)+'%';
-  document.getElementById('header-score').textContent=total+' / 100';
-  document.getElementById('progress').style.width=Math.min(total,100)+'%';
-  const badge=document.getElementById('estado-badge');
-  if(total>=85){badge.textContent='🟢 VERDE';badge.className='estado-badge verde';}
-  else if(total>=70){badge.textContent='🟡 AMARILLO';badge.className='estado-badge amarillo';}
-  else{badge.textContent='🔴 ROJO';badge.className='estado-badge rojo';}
-  generarTareas();
-}
-
-function toggleSec(n){
-  const b=document.getElementById('body'+n),ch=document.getElementById('ch'+n);
-  if(!b)return;const open=b.classList.toggle('open');if(ch)ch.classList.toggle('open',open);
-}
-function toggleNota(el){
-  const area=el.nextElementSibling;area.classList.toggle('open');
-  el.textContent=area.classList.contains('open')?'− Ocultar':'+ Observación';
-}
-
-// GPS
-window.onload=function(){
-  tsInicio=new Date();
-  document.getElementById('ts-val').textContent=formatTs(tsInicio);
-  obtenerGPS();
-  buildModulos();
-  cargarBorrador();
+// Índices (0-based)
+const I = {
+  tsEnvio:1, pdv:5, zona:6, coord:7, tipo:8,
+  s1:18, s2:29, s3:40, s4:53, s5:76, s6:91, s7:104,
+  total:105, estado:106, hallazgos:107, notas:108
 };
-function formatTs(d){return d.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+d.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
-function obtenerGPS(){
-  if(!navigator.geolocation){setGPS('GPS no disponible','err');return;}
-  navigator.geolocation.getCurrentPosition(pos=>{
-    gpsData.lat=pos.coords.latitude.toFixed(6);gpsData.lng=pos.coords.longitude.toFixed(6);
-    gpsData.address=gpsData.lat+', '+gpsData.lng;
-    document.getElementById('gps-val').textContent='📍 '+gpsData.lat+', '+gpsData.lng;
-    document.getElementById('gps-dot').className='gps-dot ok';
-    fetch('https://nominatim.openstreetmap.org/reverse?lat='+gpsData.lat+'&lon='+gpsData.lng+'&format=json')
-      .then(r=>r.json()).then(d=>{const a=d.address;const r=[a.road,a.neighbourhood,a.city||a.town].filter(Boolean).join(', ');if(r){gpsData.address=r+' ('+gpsData.lat+', '+gpsData.lng+')';document.getElementById('gps-val').textContent='📍 '+r;}}).catch(()=>{});
-  },err=>{const m={1:'Permiso GPS denegado',2:'Señal no encontrada',3:'Tiempo agotado'};setGPS(m[err.code]||'Error GPS','err');},{enableHighAccuracy:true,timeout:10000,maximumAge:0});
+const MOD_I = [I.s1,I.s2,I.s3,I.s4,I.s5,I.s6,I.s7];
+
+function estado(row){ return col(row,I.estado).toUpperCase(); }
+
+function renderApp(){
+  const data = todosLosDatos;
+  if(!data.length){ document.getElementById('loading').innerHTML='<div>Sin auditorías registradas.</div>'; return; }
+
+  const totales = data.map(r=>num(r,I.total));
+  const prom = totales.length ? Math.round(totales.reduce((a,b)=>a+b,0)/totales.length) : 0;
+  const verdes = data.filter(r=>estado(r)==='VERDE').length;
+  const amars = data.filter(r=>estado(r)==='AMARILLO').length;
+  const rojos = data.filter(r=>estado(r)==='ROJO').length;
+
+  // Última por PDV
+  const ultimas = {};
+  data.forEach(r=>{ const p=col(r,I.pdv); if(!ultimas[p]||col(r,I.tsEnvio)>col(ultimas[p],I.tsEnvio)) ultimas[p]=r; });
+  const ranking = Object.values(ultimas).sort((a,b)=>num(b,I.total)-num(a,I.total));
+
+  // Promedios por módulo
+  const modProms = MOD_I.map((idx,i)=>{
+    const vals = data.map(r=>num(r,idx)).filter(v=>v>0);
+    return vals.length ? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length) : 0;
+  });
+
+  // Pendientes/alarmas
+  const alarmas = [];
+  data.forEach(r=>{
+    const h = col(r,I.hallazgos);
+    if(h){ h.split(' | ').forEach(hh=>{ if(hh.trim()) alarmas.push({pdv:col(r,I.pdv),zona:col(r,I.zona),coord:col(r,I.coord),desc:hh.trim(),tipo:'Hallazgo',prio:'media',fecha:col(r,I.tsEnvio).substring(0,10)}); }); }
+    MOD_I.forEach((idx,i)=>{ const s=num(r,idx); if(s>0&&s/MOD_MAX[i]<0.70) alarmas.push({pdv:col(r,I.pdv),zona:col(r,I.zona),coord:col(r,I.coord),desc:'Puntaje bajo en '+MOD_NOMBRES[i]+': '+s+'/'+MOD_MAX[i]+' ('+Math.round(s/MOD_MAX[i]*100)+'%)',tipo:MOD_NOMBRES[i],prio:'media',fecha:col(r,I.tsEnvio).substring(0,10)}); });
+  });
+
+  document.getElementById('update-time').textContent = 'Actualizado: '+new Date().toLocaleString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  document.getElementById('loading').style.display='none';
+  document.getElementById('app').style.display='block';
+
+  document.getElementById('app').innerHTML = `
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi-card k-total"><div class="kpi-label">Total Auditorías</div><div class="kpi-val">${data.length}</div></div>
+      <div class="kpi-card k-prom"><div class="kpi-label">Promedio General</div><div class="kpi-val">${prom}/100</div></div>
+      <div class="kpi-card k-verde"><div class="kpi-label">🟢 Verde ≥85</div><div class="kpi-val">${verdes}</div></div>
+      <div class="kpi-card k-amarillo"><div class="kpi-label">🟡 Amarillo 70-84</div><div class="kpi-val">${amars}</div></div>
+      <div class="kpi-card k-rojo"><div class="kpi-label">🔴 Rojo &lt;70</div><div class="kpi-val">${rojos}</div></div>
+    </div>
+
+    <!-- Módulos -->
+    <div class="section-title">📈 Promedio por módulo</div>
+    <div class="mod-grid" style="margin-bottom:28px">
+      ${MOD_NOMBRES.map((n,i)=>{
+        const p=modProms[i]; const pct=p/MOD_MAX[i];
+        const c=pct>=0.85?'#22c55e':pct>=0.70?'#eab308':'#ef4444';
+        return `<div class="mod-card">
+          <div class="mod-name">${n}</div>
+          <div class="mod-score" style="color:${c}">${p}</div>
+          <div class="mod-max">/ ${MOD_MAX[i]}</div>
+          <div class="mod-bar"><div class="mod-bar-fill" style="width:${pct*100}%;background:${c}"></div></div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('ranking',this)">🏆 Ranking PDVs</div>
+      <div class="tab" onclick="switchTab('modulos',this)">🔍 Por módulo</div>
+      <div class="tab" onclick="switchTab('alarmas',this)">⚠️ Alarmas (${alarmas.length})</div>
+    </div>
+
+    <!-- Ranking -->
+    <div id="tab-ranking" class="tab-content active">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>PDV</th><th>Zona</th><th>Tipo</th><th>Fecha</th>${MOD_NOMBRES.map(n=>`<th>${n.substring(0,4)}.</th>`).join('')}<th>Total</th><th>Estado</th></tr></thead>
+          <tbody>
+            ${ranking.map((r,i)=>{
+              const t=num(r,I.total); const est=estado(r);
+              const badge=est==='VERDE'?'badge-verde':est==='AMARILLO'?'badge-amarillo':'badge-rojo';
+              const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
+              const scores=MOD_I.map((idx,mi)=>{const s=num(r,idx);const pct=s/MOD_MAX[mi];const c=pct>=0.85?'#22c55e':pct>=0.70?'#eab308':'#ef4444';return `<td class="score-cell" style="color:${c}">${s}</td>`;}).join('');
+              return `<tr><td class="medal">${medal}</td><td style="font-weight:500">${col(r,I.pdv)}</td><td>${col(r,I.zona)}</td><td>${col(r,I.tipo)}</td><td style="color:var(--muted);font-size:11px">${col(r,I.tsEnvio).substring(0,16)}</td>${scores}<td class="score-cell" style="font-size:15px;font-weight:700">${t}</td><td><span class="badge ${badge}">${est==='VERDE'?'🟢':est==='AMARILLO'?'🟡':'🔴'} ${est}</span></td></tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Por módulo -->
+    <div id="tab-modulos" class="tab-content">
+      <div class="mod-detail-grid">
+        ${MOD_NOMBRES.map((nombre,mi)=>{
+          const idx=MOD_I[mi]; const max=MOD_MAX[mi];
+          const porPDV={};
+          data.forEach(r=>{const p=col(r,I.pdv);const s=num(r,idx);if(!porPDV[p]||s<porPDV[p])porPDV[p]=s;});
+          const peores=Object.entries(porPDV).sort((a,b)=>a[1]-b[1]).slice(0,5);
+          const prom=modProms[mi]; const pct=prom/max;
+          const c=pct>=0.85?'#22c55e':pct>=0.70?'#eab308':'#ef4444';
+          return `<div class="mod-detail-card">
+            <div class="mod-detail-header">
+              <div class="mod-detail-name">${nombre}</div>
+              <div class="mod-detail-prom" style="color:${c}">${prom}/${max} prom.</div>
+            </div>
+            <div class="mod-detail-body">
+              ${peores.map(p=>{
+                const pp=p[1]/max; const cc=pp>=0.85?'#22c55e':pp>=0.70?'#eab308':'#ef4444';
+                return `<div class="mod-detail-row"><span class="mod-detail-pdv" style="font-size:11px">${p[0]}</span><span class="mod-detail-score" style="color:${cc}">${p[1]}/${max}</span></div>`;
+              }).join('')}
+              ${peores.length===0?'<div class="empty">Sin datos</div>':''}
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <!-- Alarmas -->
+    <div id="tab-alarmas" class="tab-content">
+      ${alarmas.length===0?'<div class="empty">✅ Sin alarmas activas</div>':''}
+      <div class="alarm-list">
+        ${alarmas.map(a=>`<div class="alarm-card ${a.prio}">
+          <div class="alarm-pdv">${a.pdv}</div>
+          <div class="alarm-desc">${a.desc}</div>
+          <div class="alarm-meta">
+            <span class="tag">${a.zona}</span>
+            <span class="tag">${a.tipo}</span>
+            <span class="tag" style="color:var(--muted)">${a.fecha}</span>
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>
+  `;
 }
-function setGPS(msg,state){document.getElementById('gps-val').textContent=msg;document.getElementById('gps-dot').className='gps-dot '+state;}
 
-function autocompletar(){
-  const sel=document.getElementById('f_pdv');const opt=sel.options[sel.selectedIndex];
-  const zona=opt.dataset.zona||'',coord=opt.dataset.coord||'',tipo=opt.dataset.tipo||'';
-  if(zona){document.getElementById('auto-zona').textContent=zona;document.getElementById('auto-coord').textContent=coord;document.getElementById('auto-tipo').textContent=tipo;document.getElementById('pdv-auto').style.display='block';}
-  else{document.getElementById('pdv-auto').style.display='none';}
+function switchTab(name, el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
 }
 
-// Photos
-function abrirFoto(i){document.getElementById('pi'+i).click();}
-function procesarFoto(i,input){
-  const file=input.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=e=>{
-    const img=new Image();
-    img.onload=()=>{
-      const canvas=document.createElement('canvas');const max=800;let w=img.width,h=img.height;
-      if(w>max){h=h*max/w;w=max;}if(h>max){w=w*max/h;h=max;}
-      canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);
-      const b64=canvas.toDataURL('image/jpeg',0.7);fotos[i]=b64;
-      const slot=document.getElementById('slot'+i);slot.innerHTML=`<img src="${b64}"><div class="rm" onclick="event.stopPropagation();eliminarFoto(${i})">✕</div>`;
-      conteoFotos();
-    };img.src=e.target.result;
-  };reader.readAsDataURL(file);
-}
-function eliminarFoto(i){fotos[i]=null;const s=document.getElementById('slot'+i);s.innerHTML='<span class="add-icon">+</span>';s.onclick=()=>abrirFoto(i);document.getElementById('pi'+i).value='';conteoFotos();}
-function conteoFotos(){document.getElementById('photo-count').textContent=fotos.filter(f=>f!==null).length+' / 5 fotos';}
-
-// Tasks
-function generarTareas(){
-  const hallazgos=(document.getElementById('hallazgos').value||'').split('\n').filter(h=>h.trim());
-  if(!hallazgos.length){document.getElementById('tasks-section').style.display='none';return;}
-  const mapa={'caja':'Gte Ops','diferencia':'Gte Ops','consignac':'Gte Ops','comprobante':'Gte Ops','nevera':'Mantenimiento','impresora':'Mantenimiento','iluminac':'Mantenimiento','ac':'Mantenimiento','aire':'Mantenimiento','silla':'Mantenimiento','piso':'Mantenimiento','pared':'Mantenimiento','luz':'Mantenimiento','equipo':'Mantenimiento','pos':'Mantenimiento','uniforme':'Coordinador','aseo':'Coordinador','accesorio':'Coordinador','aviso':'Coordinador','vencido':'Compras','cerveza':'Compras','licor':'Compras','alimento':'Compras','merchandising':'Compras','menú':'Coordinador','cristal':'Coordinador','limpieza':'Coordinador','venta':'Coordinador','personal':'Coordinador'};
-  document.getElementById('tasks-section').style.display='block';
-  const today=new Date();
-  document.getElementById('tasks-body').innerHTML=hallazgos.map(h=>{
-    const hl=h.toLowerCase();let resp='Coordinador',dias=7;
-    for(const[k,r] of Object.entries(mapa)){if(hl.includes(k)){resp=r;break;}}
-    if(hl.includes('no funciona')||hl.includes('vencido')||hl.includes('diferencia')||hl.includes('dañad'))dias=3;
-    const fecha=new Date(today);fecha.setDate(fecha.getDate()+dias);
-    const fStr=fecha.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'});
-    return `<div class="task-item"><div class="task-h">${h}</div><div class="task-meta"><span class="tag tag-r">${resp}</span><span class="tag ${dias===3?'tag-a':'tag-m'}">${dias===3?'Alta — 3d':'Media — 7d'}</span><span class="tag-f">→ ${fStr}</span></div></div>`;
-  }).join('');
-}
-
-// Draft
-function guardar(){
-  const data={pdv:document.getElementById('f_pdv').value,respuestas:JSON.stringify(respuestas),hallazgos:document.getElementById('hallazgos').value,notas:document.getElementById('notas').value,_ts:tsInicio?tsInicio.toISOString():''};
-  // save notes
-  MODULOS.forEach(mod=>mod.items.forEach(item=>{const el=document.getElementById('n_'+item.id);if(el)data['n_'+item.id]=el.value;const inf=document.getElementById(item.id);if(inf&&item.tipo==='info')data['info_'+item.id]=inf.value;}));
-  try{localStorage.setItem(DRAFT_KEY,JSON.stringify(data));}catch(e){}
-}
-
-function cargarBorrador(){
-  try{
-    const raw=localStorage.getItem(DRAFT_KEY);if(!raw)return;
-    const data=JSON.parse(raw);let tieneData=false;
-    if(data.pdv){document.getElementById('f_pdv').value=data.pdv;autocompletar();tieneData=true;}
-    if(data.respuestas){
-      const r=JSON.parse(data.respuestas);
-      Object.entries(r).forEach(([k,v])=>{
-        respuestas[k]=v;
-        if(v==='ok'||v==='no'||v==='na'){['ok','no','na'].forEach(t=>{const btn=document.getElementById('btn-'+t+'-'+k);if(btn)btn.className='opt-btn'+(v===t?' sel-'+t:'');});}
-        else if(v!==null&&v!==undefined){const el=document.getElementById(k);if(el)el.value=v;}
-      });
-      MODULOS.forEach(mod=>calcMod(mod.id));
-      tieneData=true;
-    }
-    if(data.hallazgos)document.getElementById('hallazgos').value=data.hallazgos;
-    if(data.notas)document.getElementById('notas').value=data.notas;
-    if(data._ts){tsInicio=new Date(data._ts);document.getElementById('ts-val').textContent=formatTs(tsInicio);}
-    MODULOS.forEach(mod=>mod.items.forEach(item=>{
-      const n=document.getElementById('n_'+item.id);if(n&&data['n_'+item.id]){n.value=data['n_'+item.id];const tog=n.closest('.note-area');const tgl=tog?tog.previousElementSibling:null;if(tog&&tgl){tog.classList.add('open');tgl.textContent='− Ocultar';}}
-      const inf=document.getElementById(item.id);if(inf&&data['info_'+item.id])inf.value=data['info_'+item.id];
-    }));
-    if(tieneData)document.getElementById('draft-banner').classList.add('show');
-  }catch(e){}
-}
-
-function limpiarBorrador(){
-  try{localStorage.removeItem(DRAFT_KEY);}catch(e){}
-  document.getElementById('draft-banner').classList.remove('show');
-  document.getElementById('f_pdv').value='';
-  document.getElementById('pdv-auto').style.display='none';
-  respuestas={};
-  document.querySelectorAll('.opt-btn').forEach(b=>b.className='opt-btn');
-  document.querySelectorAll('input[type=number],input[type=text]').forEach(i=>{if(!i.id.startsWith('pi'))i.value='';});
-  document.getElementById('hallazgos').value='';document.getElementById('notas').value='';
-  fotos=[null,null,null,null,null];[0,1,2,3,4].forEach(i=>{const s=document.getElementById('slot'+i);s.innerHTML='<span class="add-icon">+</span>';s.onclick=()=>abrirFoto(i);});
-  conteoFotos();MODULOS.forEach(mod=>calcMod(mod.id));
-  tsInicio=new Date();document.getElementById('ts-val').textContent=formatTs(tsInicio);
-  mostrarToast('Nueva auditoría lista','#888');
-}
-
-function mostrarToast(msg,color){const t=document.getElementById('toast');t.textContent=msg;t.style.background=color||'var(--green)';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
-
-function txt(id){const el=document.getElementById(id);return el?el.value||'':""}
-
-async function enviar(){
-  if(!txt('f_pdv')){mostrarToast('Selecciona el PDV','#ef4444');return;}
-
-  // ── Validar que todos los ítems estén respondidos ──
-  const faltantes=validarCompleto();
-  if(faltantes.length>0){
-    mostrarIncompletos(faltantes);
-    return;
-  }
-
-  const total=parseInt(document.getElementById('total-num').textContent)||0;
-
-  // ── Anti-duplicado: token único por auditoría ──
-  const token=txt('f_pdv')+'|'+formatTs(tsInicio);
-  try{
-    const enviados=JSON.parse(localStorage.getItem('bbc_enviados')||'[]');
-    if(enviados.includes(token)){
-      mostrarToast('Esta auditoría ya fue enviada','#eab308');
-      const btn=document.getElementById('btn-enviar');
-      btn.textContent='✓ Ya enviado';btn.disabled=true;
-      return;
-    }
-  }catch(e){}
-
-  const sel=document.getElementById('f_pdv');const opt=sel.options[sel.selectedIndex];
-  const zona=opt.dataset.zona||'',coord=opt.dataset.coord||'',tipo=opt.dataset.tipo||'';
-  const estado=total>=85?'VERDE':total>=70?'AMARILLO':'ROJO';
-  const fotosActivas=fotos.filter(f=>f!==null);
-  const scores=MODULOS.map(mod=>{const chip=document.getElementById('score-chip-'+mod.id);return parseInt(chip?chip.textContent:0)||0;});
-
-  const fila=[
-    formatTs(tsInicio),formatTs(new Date()),
-    gpsData.lat||'N/D',gpsData.lng||'N/D',gpsData.address,
-    txt('f_pdv'),zona,coord,tipo,
-    txt('m1_menu_pct'),respuestas['m1_precios']||'',txt('n_m1_precios')||'',respuestas['m1_cat']||'',txt('n_m1_cat')||'',respuestas['m1_cristal']||'',txt('n_m1_cristal')||'',respuestas['m1_menaje']||'',txt('n_m1_menaje')||'',scores[0],
-    respuestas['m2_av_ent']||'',txt('n_m2_av_ent')||'',respuestas['m2_av_int']||'',txt('n_m2_av_int')||'',respuestas['m2_unif_b']||'',txt('n_m2_unif_b')||'',respuestas['m2_unif_c']||'',txt('n_m2_unif_c')||'',respuestas['m2_aseo']||'',txt('n_m2_aseo')||'',scores[1],
-    respuestas['m3_caja']||'',txt('n_m3_caja')||'',txt('m3_dif')||'',txt('n_m3_dif')||'',respuestas['m3_cons']||'',txt('n_m3_cons')||'',respuestas['m3_comp']||'',txt('n_m3_comp')||'',respuestas['m3_pos']||'',txt('n_m3_pos')||'',scores[2],
-    txt('m4_cerv'),txt('n_m4_cerv')||'',txt('m4_lic'),txt('n_m4_lic')||'',txt('m4_bsa'),txt('n_m4_bsa')||'',txt('m4_alim'),txt('n_m4_alim')||'',respuestas['m4_merch']||'',txt('n_m4_merch')||'',respuestas['m4_venc']||'',txt('n_m4_venc')||'',scores[3],
-    respuestas['m5_l_coc']||'',txt('n_m5_l_coc')||'',respuestas['m5_l_bar']||'',txt('n_m5_l_bar')||'',respuestas['m5_l_ban']||'',txt('n_m5_l_ban')||'',respuestas['m5_l_mes']||'',txt('n_m5_l_mes')||'',respuestas['m5_imp_b']||'',txt('n_m5_imp_b')||'',respuestas['m5_imp_c']||'',txt('n_m5_imp_c')||'',respuestas['m5_frio']||'',txt('n_m5_frio')||'',respuestas['m5_luz']||'',txt('n_m5_luz')||'',respuestas['m5_ac']||'',txt('n_m5_ac')||'',respuestas['m5_legales']||'',txt('n_m5_legales')||'',txt('m5_sanit'),respuestas['m5_equipo']||'',txt('n_m5_equipo')||'',txt('m5_p_coc'),txt('m5_p_ser'),scores[4],
-    respuestas['m6_sillas']||'',txt('n_m6_sillas')||'',respuestas['m6_mesas']||'',txt('n_m6_mesas')||'',respuestas['m6_pisos']||'',txt('n_m6_pisos')||'',respuestas['m6_luces']||'',txt('n_m6_luces')||'',respuestas['m6_pos']||'',txt('n_m6_pos')||'',respuestas['m6_eq_coc']||'',txt('n_m6_eq_coc')||'',respuestas['m6_eq_bar']||'',txt('n_m6_eq_bar')||'',scores[5],
-    txt('v_venta'),txt('v_tickets'),txt('v_tkt_prom'),txt('v_vol'),txt('v_sh_comida'),txt('v_sh_lic'),respuestas['m7_conoce_ventas']||'',txt('n_m7_ventas')||'',respuestas['m7_conoce_tkt']||'',txt('n_m7_tkt')||'',respuestas['m7_conoce_vol']||'',txt('n_m7_vol')||'',scores[6],
-    total,estado,
-    txt('hallazgos').replace(/\n/g,' | '),txt('notas'),
-    fotosActivas.length
-  ];
-
-  const btn=document.getElementById('btn-enviar');
-  btn.disabled=true;btn.textContent='Guardando…';
-
-  try{
-    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({row:fila,fotos:fotosActivas,pdv:txt('f_pdv')})});
-
-    // Guardar token para evitar reenvío
-    try{
-      const enviados=JSON.parse(localStorage.getItem('bbc_enviados')||'[]');
-      enviados.push(token);
-      // Guardar solo los últimos 50 tokens
-      if(enviados.length>50)enviados.shift();
-      localStorage.setItem('bbc_enviados',JSON.stringify(enviados));
-    }catch(e){}
-
-    mostrarToast('✓ Guardado en Google Sheets');
-    try{localStorage.removeItem(DRAFT_KEY);}catch(e){}
-    document.getElementById('draft-banner').classList.remove('show');
-
-    // Bloqueo permanente — solo se libera con "Empezar nueva"
-    btn.textContent='✓ Auditoría enviada';
-    btn.style.background='#22c55e';
-    btn.style.cursor='not-allowed';
-    // No re-habilitamos el botón automáticamente
-
-  }catch(e){
-    mostrarToast('Error — verifica conexión','#ef4444');
-    btn.disabled=false;btn.textContent='Guardar en Sheets →';
-  }
-}
+cargarDatos();
 </script>
 </body>
 </html>
