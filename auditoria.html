@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Auditoría Coordinadores · BBC</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0b0b;
+  --surface: #161616;
+  --surface2: #1f1f1f;
+  --border: #2e2e2e;
+  --amber: #E8A020;
+  --amber-dim: rgba(232,160,32,0.12);
+  --red: #E84444;
+  --red-dim: rgba(232,68,68,0.12);
+  --green: #3EBF6A;
+  --green-dim: rgba(62,191,106,0.12);
+  --yellow: #F0C040;
+  --yellow-dim: rgba(240,192,64,0.12);
+  --text: #EFEFEF;
+  --muted: #888;
+  --dim: #444;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body { height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Barlow', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+
+/* ─── HEADER ─────────────────────────────────────── */
+.header {
+  position: sticky; top: 0; z-index: 50;
+  background: #000;
+  border-bottom: 3px solid var(--amber);
+  padding: 14px 18px;
+  display: flex; align-items: center; gap: 14px;
+}
+.header-logo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 32px; font-weight: 900;
+  color: var(--amber); letter-spacing: -1px;
+  line-height: 1;
+}
+.header-sub {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; font-weight: 600;
+  color: var(--muted); text-transform: uppercase;
+  letter-spacing: 2.5px; line-height: 1.3;
+}
+
+/* ─── PROGRESS ───────────────────────────────────── */
+.progress-wrap { background: var(--surface2); }
+.progress-bar { height: 3px; background: var(--border); }
+.progress-fill { height: 100%; background: var(--amber); transition: width .35s ease; }
+.progress-label {
+  padding: 7px 18px;
+  font-size: 10px; font-weight: 600;
+  color: var(--dim); text-transform: uppercase; letter-spacing: 2px;
+  display: flex; justify-content: space-between;
+}
+
+/* ─── STEPS ──────────────────────────────────────── */
+.step { display: none; padding: 22px 18px 100px; }
+.step.active { display: block; animation: fadeUp .2s ease; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.step-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 20px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--amber);
+  margin-bottom: 20px; padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+
+/* ─── FIELDS ─────────────────────────────────────── */
+.field { margin-bottom: 22px; }
+
+.field > label, .field-label {
+  display: block; margin-bottom: 8px;
+  font-size: 11px; font-weight: 600;
+  color: var(--muted); text-transform: uppercase; letter-spacing: 1.8px;
+}
+
+.locked-field {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 9px; padding: 13px 15px;
+  font-size: 14px; color: var(--dim);
+  display: flex; align-items: center; gap: 10px;
+}
+
+.gps-badge {
+  margin-top: 8px; padding: 9px 13px; border-radius: 7px;
+  font-size: 12px; font-weight: 500; line-height: 1.4;
+  display: flex; align-items: center; gap: 7px;
+}
+.gps-badge.loading { background: var(--yellow-dim); color: var(--yellow); }
+.gps-badge.ok      { background: var(--green-dim);  color: var(--green); }
+.gps-badge.error   { background: var(--red-dim);    color: var(--red); }
+
+/* ─── RADIO CARDS ────────────────────────────────── */
+.r-cards { display: flex; flex-direction: column; gap: 9px; }
+.r-card input { display: none; }
+.r-card label {
+  display: flex; align-items: center; gap: 14px;
+  padding: 15px 16px;
+  background: var(--surface); border: 2px solid var(--border); border-radius: 10px;
+  cursor: pointer; transition: border-color .15s, background .15s;
+  font-size: 15px; font-weight: 500; color: var(--text);
+  text-transform: none; letter-spacing: 0;
+}
+.r-card input:checked + label {
+  border-color: var(--amber); background: var(--amber-dim); color: var(--amber);
+}
+.dot {
+  width: 20px; height: 20px; flex-shrink: 0;
+  border: 2px solid var(--dim); border-radius: 50%;
+  transition: all .15s; display: flex; align-items: center; justify-content: center;
+}
+.r-card input:checked + label .dot {
+  border-color: var(--amber); background: var(--amber);
+}
+.r-card input:checked + label .dot::after {
+  content: ''; width: 7px; height: 7px;
+  background: #000; border-radius: 50%;
+}
+
+/* ─── SELECT ─────────────────────────────────────── */
+select {
+  width: 100%; padding: 14px 40px 14px 16px;
+  background: var(--surface); border: 2px solid var(--border); border-radius: 10px;
+  color: var(--text); font-size: 15px; font-family: 'Barlow', sans-serif;
+  appearance: none; cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%23888' d='M5 6 0 0h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 16px center;
+}
+select:focus { outline: none; border-color: var(--amber); }
+select option { background: var(--surface2); }
+
+/* ─── KPI COUNTER ────────────────────────────────── */
+.kpi-box {
+  background: var(--surface); border: 2px solid var(--border); border-radius: 12px;
+  padding: 22px; display: flex; align-items: center; justify-content: center; gap: 24px;
+  margin-bottom: 10px;
+}
+.kpi-btn {
+  width: 52px; height: 52px; border: 2px solid var(--border); border-radius: 50%;
+  background: var(--surface2); color: var(--text);
+  font-size: 26px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .12s; user-select: none;
+}
+.kpi-btn:active { background: var(--amber); color: #000; border-color: var(--amber); transform: scale(.9); }
+.kpi-num-wrap { text-align: center; min-width: 80px; }
+.kpi-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 72px; font-weight: 900; color: var(--amber); line-height: 1;
+}
+.kpi-denom { font-size: 11px; color: var(--muted); margin-top: 2px; letter-spacing: 1px; }
+
+.kpi-alert {
+  text-align: center; padding: 10px 14px; border-radius: 8px;
+  font-size: 13px; font-weight: 600; margin-bottom: 18px; min-height: 38px;
+}
+.kpi-alert.a { background: var(--red-dim); color: var(--red); }
+.kpi-alert.w { background: var(--yellow-dim); color: var(--yellow); }
+.kpi-alert.g { background: var(--green-dim); color: var(--green); }
+
+/* ─── CHECKBOXES ─────────────────────────────────── */
+.chk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.chk-item input { display: none; }
+.chk-item label {
+  display: flex; align-items: center; gap: 9px;
+  padding: 13px 12px;
+  background: var(--surface); border: 2px solid var(--border); border-radius: 9px;
+  cursor: pointer; transition: all .15s;
+  font-size: 13px; font-weight: 500; color: var(--text);
+  text-transform: none; letter-spacing: 0; line-height: 1.3;
+}
+.chk-item input:checked + label {
+  border-color: var(--red); background: var(--red-dim); color: #ff9090;
+}
+.chk-item.nov input:checked + label {
+  border-color: var(--yellow); background: var(--yellow-dim); color: var(--yellow);
+}
+.chk-item.ok-item input:checked + label {
+  border-color: var(--green); background: var(--green-dim); color: var(--green);
+}
+.chk-box {
+  width: 18px; height: 18px; flex-shrink: 0;
+  border: 2px solid var(--dim); border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 900;
+}
+.chk-item input:checked + label .chk-box {
+  background: var(--red); border-color: var(--red); color: #fff;
+}
+.chk-item.nov input:checked + label .chk-box {
+  background: var(--yellow); border-color: var(--yellow); color: #000;
+}
+.chk-item.ok-item input:checked + label .chk-box {
+  background: var(--green); border-color: var(--green); color: #000;
+}
+
+/* ─── TEXTAREA / INPUT ───────────────────────────── */
+textarea {
+  width: 100%; padding: 13px 15px; min-height: 80px;
+  background: var(--surface); border: 2px solid var(--border); border-radius: 10px;
+  color: var(--text); font-size: 15px; font-family: 'Barlow', sans-serif; resize: none;
+}
+textarea:focus { outline: none; border-color: var(--amber); }
+textarea::placeholder { color: var(--dim); }
+
+/* ─── PHOTO ──────────────────────────────────────── */
+.photo-btn {
+  width: 100%; padding: 22px 16px;
+  background: var(--surface); border: 2px dashed var(--border); border-radius: 12px;
+  color: var(--muted); font-size: 15px; font-family: 'Barlow', sans-serif;
+  cursor: pointer; transition: all .2s; text-align: center;
+}
+.photo-btn:focus, .photo-btn:active { border-color: var(--amber); color: var(--amber); }
+#photoInput { display: none; }
+#photoPreview {
+  width: 100%; border-radius: 10px; margin-top: 10px;
+  display: none; max-height: 220px; object-fit: cover;
+  border: 2px solid var(--border);
+}
+
+/* ─── CONDITIONAL ────────────────────────────────── */
+.cond { display: none; margin-top: 16px; }
+.cond.on { display: block; }
+
+/* ─── INFO BOX ───────────────────────────────────── */
+.info {
+  background: var(--amber-dim); border: 1px solid rgba(232,160,32,.35);
+  border-radius: 9px; padding: 12px 14px; margin-bottom: 18px;
+  font-size: 13px; color: var(--amber); line-height: 1.5;
+}
+
+/* ─── ERROR ──────────────────────────────────────── */
+.err { color: var(--red); font-size: 12px; margin-top: 6px; display: none; }
+.err.on { display: block; }
+
+.divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+/* ─── NAV BUTTONS ────────────────────────────────── */
+.nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 40;
+  display: flex; gap: 10px; padding: 14px 18px 18px;
+  background: var(--bg); border-top: 1px solid var(--border);
+}
+.btn {
+  flex: 1; padding: 15px;
+  border: none; border-radius: 10px; cursor: pointer;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
+  transition: opacity .15s, transform .1s;
+}
+.btn:active { transform: scale(.97); }
+.btn-back  { background: var(--surface2); color: var(--muted); flex: 0 0 80px; }
+.btn-next  { background: var(--amber); color: #000; }
+.btn-send  { background: var(--green); color: #000; }
+
+/* ─── SUCCESS ────────────────────────────────────── */
+#successScreen {
+  display: none; padding: 50px 24px; text-align: center;
+}
+#successScreen.on { display: block; animation: fadeUp .3s ease; }
+.s-icon { font-size: 80px; margin-bottom: 20px; }
+.s-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 36px; font-weight: 900; color: var(--green);
+  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;
+}
+.s-sub { color: var(--muted); font-size: 15px; line-height: 1.6; margin-bottom: 32px; }
+.btn-new {
+  width: 100%; padding: 16px; border: none; border-radius: 10px; cursor: pointer;
+  background: var(--amber); color: #000;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 18px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
+}
+
+/* ─── OVERLAY ────────────────────────────────────── */
+#overlay {
+  display: none; position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,.88); flex-direction: column;
+  align-items: center; justify-content: center; gap: 18px;
+}
+#overlay.on { display: flex; }
+.spinner {
+  width: 46px; height: 46px;
+  border: 4px solid var(--border); border-top-color: var(--amber);
+  border-radius: 50%; animation: spin .75s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.overlay-txt {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 16px; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 2.5px;
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-logo">BBC</div>
+  <div class="header-sub">Auditoría Comercial<br>Coordinadores de Zona</div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-wrap">
+  <div class="progress-bar"><div class="progress-fill" id="pFill" style="width:0%"></div></div>
+  <div class="progress-label">
+    <span id="pLabel">Paso 1 de 6</span>
+    <span id="pName" style="color:var(--amber)">Identificación</span>
+  </div>
+</div>
+
+<form id="form" autocomplete="off">
+
+<!-- ════════════════════════════════════════════════
+  PASO 1 — IDENTIFICACIÓN
+════════════════════════════════════════════════ -->
+<div class="step active" id="step1">
+  <div class="step-title">👤 Identificación</div>
+
+  <div class="field">
+    <label class="field-label">¿Quién eres?</label>
+    <div class="r-cards">
+      <div class="r-card">
+        <input type="radio" name="coord" id="german" value="Germán Piragauta" data-zona="NORTE">
+        <label for="german"><span class="dot"></span>Germán Piragauta — Zona Norte</label>
+      </div>
+      <div class="r-card">
+        <input type="radio" name="coord" id="yency" value="Yency Delgadillo" data-zona="SUR">
+        <label for="yency"><span class="dot"></span>Yency Delgadillo — Zona Sur</label>
+      </div>
+    </div>
+    <div class="err" id="e-coord">Selecciona tu nombre para continuar.</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">🕐 Fecha y hora &nbsp;<span style="color:var(--amber)">— captura automática</span></label>
+    <div class="locked-field">🔒 <span id="tsDisplay">Cargando...</span></div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">📍 Ubicación GPS &nbsp;<span style="color:var(--amber)">— captura automática</span></label>
+    <div class="locked-field">🔒 <span id="gpsDisplay">Obteniendo ubicación...</span></div>
+    <div class="gps-badge loading" id="gpsBadge">⏳ Capturando GPS...</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════
+  PASO 2 — PDV
+════════════════════════════════════════════════ -->
+<div class="step" id="step2">
+  <div class="step-title">📍 Punto de Venta</div>
+
+  <div class="field">
+    <label class="field-label">¿En qué PDV estás ahora?</label>
+    <select id="pdvSelect">
+      <option value="">— Primero selecciona tu nombre (paso 1) —</option>
+    </select>
+    <div class="err" id="e-pdv">Selecciona el punto de venta.</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="field">
+    <label class="field-label">Tipo de visita</label>
+    <div class="r-cards">
+      <div class="r-card">
+        <input type="radio" name="tipo" id="t-ruta" value="Visita de ruta">
+        <label for="t-ruta"><span class="dot"></span>🗺️ Visita de ruta</label>
+      </div>
+      <div class="r-card">
+        <input type="radio" name="tipo" id="t-seg" value="Visita de seguimiento">
+        <label for="t-seg"><span class="dot"></span>🔁 Visita de seguimiento &nbsp;<small style="font-size:11px;opacity:.55">PDV ≤ 4 KPIs</small></label>
+      </div>
+    </div>
+    <div class="err" id="e-tipo">Selecciona el tipo de visita.</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════
+  PASO 3 — KPIs
+════════════════════════════════════════════════ -->
+<div class="step" id="step3">
+  <div class="step-title">📊 Estado Comercial</div>
+
+  <div class="field">
+    <label class="field-label">¿Cuántos KPIs está cumpliendo hoy este PDV?</label>
+    <div class="kpi-box">
+      <button type="button" class="kpi-btn" onclick="kpiDelta(-1)">−</button>
+      <div class="kpi-num-wrap">
+        <div class="kpi-num" id="kpiNum">—</div>
+        <div class="kpi-denom">DE 8 KPIS</div>
+      </div>
+      <button type="button" class="kpi-btn" onclick="kpiDelta(1)">+</button>
+    </div>
+    <div class="kpi-alert" id="kpiAlert"></div>
+    <div class="err" id="e-kpi">Selecciona cuántos KPIs se están cumpliendo.</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">¿Cuáles KPIs son los más críticos en este punto? <span style="opacity:.5">(opcional)</span></label>
+    <div class="chk-grid">
+      <div class="chk-item"><input type="checkbox" name="kpis" id="kp1" value="NR vs Ritmo"><label for="kp1"><span class="chk-box">✓</span>NR vs Ritmo</label></div>
+      <div class="chk-item"><input type="checkbox" name="kpis" id="kp2" value="Tickets"><label for="kp2"><span class="chk-box">✓</span>Tickets</label></div>
+      <div class="chk-item"><input type="checkbox" name="kpis" id="kp3" value="TK Promedio"><label for="kp3"><span class="chk-box">✓</span>TK Promedio</label></div>
+      <div class="chk-item"><input type="checkbox" name="kpis" id="kp4" value="NPS ≥90"><label for="kp4"><span class="chk-box">✓</span>NPS ≥90</label></div>
+      <div class="chk-item"><input type="checkbox" name="kpis" id="kp5" value="Share Comida"><label for="kp5"><span class="chk-box">✓</span>Share Comida</label></div>
+      <div class="chk-item"><input type="checkbox" name="kpis" id="kp6" value="Nóm/LE"><label for="kp6"><span class="chk-box">✓</span>Nóm/LE</label></div>
+      <div class="chk-item"><input type="checkbox" name="kpis" id="kp7" value="Volumen HL"><label for="kp7"><span class="chk-box">✓</span>Volumen HL</label></div>
+      <div class="chk-item"><input type="checkbox" name="kpis" id="kp8" value="Costo Prod"><label for="kp8"><span class="chk-box">✓</span>Costo Prod</label></div>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">¿Qué acción concreta acordaste con el equipo para mejorar? <span style="color:var(--red)">*</span></label>
+    <textarea id="accion" placeholder="Ej: Reforzar cross-selling en hora pico, revisar carta de cocteles con el equipo..." rows="3"></textarea>
+    <div class="err" id="e-accion">Describe la acción acordada.</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════
+  PASO 4 — MANAGER
+════════════════════════════════════════════════ -->
+<div class="step" id="step4">
+  <div class="step-title">🤝 Conversación con el Manager</div>
+
+  <div class="field">
+    <label class="field-label">¿Hablaste con el manager o encargado?</label>
+    <div class="r-cards">
+      <div class="r-card">
+        <input type="radio" name="manager" id="mg-si" value="Sí" onchange="toggleManager()">
+        <label for="mg-si"><span class="dot"></span>✅ Sí, hablé con el manager</label>
+      </div>
+      <div class="r-card">
+        <input type="radio" name="manager" id="mg-no" value="No" onchange="toggleManager()">
+        <label for="mg-no"><span class="dot"></span>❌ No pude hablar con el manager</label>
+      </div>
+    </div>
+    <div class="err" id="e-mgr">Selecciona una opción.</div>
+  </div>
+
+  <div class="cond" id="c-motivo">
+    <div class="field">
+      <label class="field-label">¿Por qué no pudiste hablar con el manager?</label>
+      <textarea id="motivoMgr" placeholder="Motivo..." rows="2"></textarea>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="field">
+    <label class="field-label">¿Identificaste alguna novedad?</label>
+    <div class="chk-grid">
+      <div class="chk-item nov"><input type="checkbox" name="nov" id="n1" value="Falta o rotación de personal" onchange="chkNov()"><label for="n1"><span class="chk-box">✓</span>👥 Falta de personal</label></div>
+      <div class="chk-item nov"><input type="checkbox" name="nov" id="n2" value="Daño o falta de equipos" onchange="chkNov()"><label for="n2"><span class="chk-box">✓</span>🔧 Equipos dañados</label></div>
+      <div class="chk-item nov"><input type="checkbox" name="nov" id="n3" value="Mantenimiento pendiente" onchange="chkNov()"><label for="n3"><span class="chk-box">✓</span>🛠️ Mantenimiento</label></div>
+      <div class="chk-item nov"><input type="checkbox" name="nov" id="n4" value="Problema de zona o seguridad" onchange="chkNov()"><label for="n4"><span class="chk-box">✓</span>🚨 Zona / Seguridad</label></div>
+      <div class="chk-item nov"><input type="checkbox" name="nov" id="n5" value="Faltante de insumos" onchange="chkNov()"><label for="n5"><span class="chk-box">✓</span>📦 Insumos faltantes</label></div>
+      <div class="chk-item ok-item"><input type="checkbox" name="nov" id="n6" value="Sin novedades" onchange="chkNinguna()"><label for="n6"><span class="chk-box">✓</span>✅ Sin novedades</label></div>
+    </div>
+    <div class="err" id="e-nov">Selecciona al menos una opción.</div>
+  </div>
+
+  <div class="cond" id="c-desc-nov">
+    <div class="field">
+      <label class="field-label">Describe la novedad principal <span style="color:var(--red)">*</span></label>
+      <textarea id="descNov" placeholder="¿Qué encontraste? ¿Qué necesita el punto?" rows="3"></textarea>
+      <div class="err" id="e-desc-nov">Describe la novedad.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════
+  PASO 5 — SERVICIO
+════════════════════════════════════════════════ -->
+<div class="step" id="step5">
+  <div class="step-title">⭐ Servicio y Operación</div>
+
+  <div class="field">
+    <label class="field-label">¿El punto está operando bien? <span style="opacity:.55">(equipo, presentación, limpieza)</span></label>
+    <div class="r-cards">
+      <div class="r-card">
+        <input type="radio" name="op" id="op1" value="Sí, todo en orden" onchange="chkOp()">
+        <label for="op1"><span class="dot"></span>✅ Sí, todo en orden</label>
+      </div>
+      <div class="r-card">
+        <input type="radio" name="op" id="op2" value="Hay novedades menores" onchange="chkOp()">
+        <label for="op2"><span class="dot"></span>⚠️ Hay novedades menores</label>
+      </div>
+      <div class="r-card">
+        <input type="radio" name="op" id="op3" value="Hay problemas que requieren acción" onchange="chkOp()">
+        <label for="op3"><span class="dot"></span>🚨 Hay problemas que requieren acción</label>
+      </div>
+    </div>
+    <div class="err" id="e-op">Selecciona una opción.</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">¿El personal está ejecutando el servicio correctamente?</label>
+    <div class="r-cards">
+      <div class="r-card"><input type="radio" name="pers" id="ps1" value="Sí"><label for="ps1"><span class="dot"></span>✅ Sí</label></div>
+      <div class="r-card"><input type="radio" name="pers" id="ps2" value="Parcialmente"><label for="ps2"><span class="dot"></span>⚠️ Parcialmente</label></div>
+      <div class="r-card"><input type="radio" name="pers" id="ps3" value="No"><label for="ps3"><span class="dot"></span>❌ No</label></div>
+    </div>
+    <div class="err" id="e-pers">Selecciona una opción.</div>
+  </div>
+
+  <div class="cond" id="c-prob">
+    <div class="field">
+      <label class="field-label">Describe el problema de servicio o equipo</label>
+      <textarea id="probServ" placeholder="¿Qué está fallando?" rows="3"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════
+  PASO 6 — CIERRE
+════════════════════════════════════════════════ -->
+<div class="step" id="step6">
+  <div class="step-title">📷 Evidencia y Cierre</div>
+
+  <div class="info">
+    Captura <strong>lo más importante</strong> de este momento: lo mejor que está pasando en el punto, o el problema más crítico que encontraste.
+  </div>
+
+  <div class="field">
+    <label class="field-label">Foto de evidencia <span style="color:var(--red)">*</span></label>
+    <button type="button" class="photo-btn" id="photoBtn" onclick="document.getElementById('photoInput').click()">
+      📷 &nbsp;Tomar o subir foto
+    </button>
+    <input type="file" id="photoInput" accept="image/*" capture="environment" onchange="prevPhoto(this)">
+    <img id="photoPreview" src="" alt="Vista previa">
+    <div class="err" id="e-foto">La foto es obligatoria para enviar.</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Observación adicional <span style="opacity:.45">(opcional)</span></label>
+    <textarea id="obs" placeholder="¿Algo más que deba quedar registrado?" rows="3"></textarea>
+  </div>
+</div>
+
+</form><!-- /form -->
+
+<!-- SUCCESS SCREEN -->
+<div id="successScreen">
+  <div class="s-icon">✅</div>
+  <div class="s-title">¡Visita Registrada!</div>
+  <div class="s-sub" id="sMsg">La auditoría fue enviada correctamente.</div>
+  <button class="btn-new" onclick="resetAll()">+ Registrar otra visita</button>
+</div>
+
+<!-- LOADING OVERLAY -->
+<div id="overlay">
+  <div class="spinner"></div>
+  <div class="overlay-txt">Enviando...</div>
+</div>
+
+<!-- NAV BUTTONS -->
+<div class="nav" id="nav">
+  <button type="button" class="btn btn-back" id="btnBack" onclick="prev()" style="display:none">← Atrás</button>
+  <button type="button" class="btn btn-next" id="btnNext" onclick="next()">Continuar →</button>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════
+   CONFIG — PEGAR URL DEL APPS SCRIPT AQUÍ
+══════════════════════════════════════════════════ */
+const SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+/* ══════════════════════════════════════════════════ */
+
+const STEP_NAMES = ['Identificación', 'Punto de Venta', 'Estado Comercial', 'Manager', 'Servicio', 'Cierre'];
+const TOTAL = 6;
+
+const PDV = {
+  NORTE: [
+    'PUB ANDINO','PUB AVDA 19','PUB PARQUE 93','PUB USAQUÉN',
+    'PUB CEDRITOS','PUB CALLE 85','PUB ROSALES','PUB PEPE SIERRA',
+    'PUB BELAÍRE','PUB COLINA','PUB CALLE 63',
+    'BODEGA VILLA DEL PRADO','BODEGA PASADENA','BODEGA LOURDES',
+    'MINIPUB CALLE 97','BODEGA CALLE 67','BODEGA CHICO',
+    'BODEGA HÉROES','BODEGA IMPERIAL','BODEGA CALLE 93','BODEGA CALLE 100'
+  ],
+  SUR: [
+    'PUB SALITRE','PUB CANDELARIA','PUB TITÁN','PUB GALERÍAS',
+    'PUB SAN MARTÍN','PUB CENTRO MAYOR','PUB PLAZA AMÉRICAS',
+    'PUB PLAZA CENTRAL','PUB CONECTA','PUB MOVISTAR ARENA',
+    'BODEGA TERRAZA PASTEUR','BODEGA DIVER PLAZA','BODEGA CORFERIAS',
+    'BODEGA RESTREPO','BODEGA BOSA CENTRO','BODEGA CALLE 43',
+    'BODEGA PARK WAY','BODEGA MODELO','BODEGA PORTAL CALLE 80','BODEGA PLAZA CLARO'
+  ]
+};
+
+let cur = 1;
+let gps = { lat: '', lng: '', acc: '' };
+let ts = '';
+let kpiVal = null;
+let photoB64 = null;
+
+/* ── INIT ─────────────────────────────────────── */
+window.addEventListener('DOMContentLoaded', () => {
+  const now = new Date();
+  ts = now.toLocaleString('es-CO', {
+    weekday: 'long', year: 'numeric', month: 'long',
+    day: 'numeric', hour: '2-digit', minute: '2-digit'
+  });
+  document.getElementById('tsDisplay').textContent = ts;
+  captureGPS();
+  updateUI();
+});
+
+function captureGPS() {
+  if (!navigator.geolocation) { gpsErr('GPS no disponible'); return; }
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      gps = {
+        lat: pos.coords.latitude.toFixed(6),
+        lng: pos.coords.longitude.toFixed(6),
+        acc: Math.round(pos.coords.accuracy)
+      };
+      document.getElementById('gpsDisplay').textContent = `${gps.lat}, ${gps.lng}`;
+      const b = document.getElementById('gpsBadge');
+      b.className = 'gps-badge ok';
+      b.textContent = `✅ GPS capturado · Precisión ±${gps.acc}m`;
+    },
+    () => gpsErr('No se pudo obtener la ubicación. Activa el GPS.'),
+    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+  );
+}
+
+function gpsErr(msg) {
+  document.getElementById('gpsDisplay').textContent = 'No disponible';
+  const b = document.getElementById('gpsBadge');
+  b.className = 'gps-badge error';
+  b.textContent = '⚠️ ' + msg;
+}
+
+/* ── COORDINATOR → PDV LIST ───────────────────── */
+document.querySelectorAll('input[name="coord"]').forEach(r => {
+  r.addEventListener('change', function() {
+    const list = PDV[this.dataset.zona] || [];
+    const sel = document.getElementById('pdvSelect');
+    sel.innerHTML = '<option value="">— Selecciona el punto —</option>';
+    list.forEach(p => {
+      const o = document.createElement('option');
+      o.value = p; o.textContent = p;
+      sel.appendChild(o);
+    });
+  });
+});
+
+/* ── KPI ──────────────────────────────────────── */
+function kpiDelta(d) {
+  if (kpiVal === null && d < 0) return;
+  if (kpiVal === null && d > 0) kpiVal = 0;
+  else kpiVal = Math.max(0, Math.min(8, kpiVal + d));
+  
+  document.getElementById('kpiNum').textContent = kpiVal;
+  document.getElementById('e-kpi').classList.remove('on');
+  
+  const a = document.getElementById('kpiAlert');
+  if (kpiVal <= 4) {
+    a.className = 'kpi-alert a';
+    a.textContent = `🚨 ALERTA · ${kpiVal}/8 KPIs. Visita obligatoria 2 veces por semana.`;
+  } else if (kpiVal <= 6) {
+    a.className = 'kpi-alert w';
+    a.textContent = `⚠️ EN RIESGO · ${kpiVal}/8 KPIs. Seguimiento activo.`;
+  } else {
+    a.className = 'kpi-alert g';
+    a.textContent = `✅ EN META · ${kpiVal}/8 KPIs.`;
+  }
+}
+
+/* ── CONDITIONALS ─────────────────────────────── */
+function toggleManager() {
+  document.getElementById('c-motivo').classList.toggle('on',
+    document.getElementById('mg-no').checked);
+}
+
+function chkNov() {
+  const any = [...document.querySelectorAll('input[name="nov"]:checked')]
+    .some(c => c.value !== 'Sin novedades');
+  document.getElementById('c-desc-nov').classList.toggle('on', any);
+}
+
+function chkNinguna() {
+  if (document.getElementById('n6').checked) {
+    document.querySelectorAll('input[name="nov"]').forEach(c => {
+      if (c.id !== 'n6') c.checked = false;
+    });
+    document.getElementById('c-desc-nov').classList.remove('on');
+  }
+}
+
+function chkOp() {
+  const v = document.querySelector('input[name="op"]:checked')?.value;
+  document.getElementById('c-prob').classList.toggle('on', v && v !== 'Sí, todo en orden');
+}
+
+/* ── PHOTO ────────────────────────────────────── */
+function prevPhoto(input) {
+  if (!input.files?.[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement('canvas');
+      const MAX = 1200;
+      let [w, h] = [img.width, img.height];
+      if (w > h && w > MAX) { h = h * MAX / w; w = MAX; }
+      else if (h > MAX) { w = w * MAX / h; h = MAX; }
+      c.width = w; c.height = h;
+      c.getContext('2d').drawImage(img, 0, 0, w, h);
+      photoB64 = c.toDataURL('image/jpeg', .78);
+      const pv = document.getElementById('photoPreview');
+      pv.src = photoB64; pv.style.display = 'block';
+      document.getElementById('photoBtn').textContent = '✅  Foto lista — toca para cambiar';
+      document.getElementById('e-foto').classList.remove('on');
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+/* ── VALIDATION ───────────────────────────────── */
+function validate(s) {
+  let ok = true;
+  const fail = id => { document.getElementById(id).classList.add('on'); ok = false; };
+  const pass = id => document.getElementById(id).classList.remove('on');
+
+  if (s === 1) {
+    document.querySelector('input[name="coord"]:checked') ? pass('e-coord') : fail('e-coord');
+  }
+  if (s === 2) {
+    document.getElementById('pdvSelect').value ? pass('e-pdv') : fail('e-pdv');
+    document.querySelector('input[name="tipo"]:checked') ? pass('e-tipo') : fail('e-tipo');
+  }
+  if (s === 3) {
+    kpiVal !== null ? pass('e-kpi') : fail('e-kpi');
+    document.getElementById('accion').value.trim() ? pass('e-accion') : fail('e-accion');
+  }
+  if (s === 4) {
+    document.querySelector('input[name="manager"]:checked') ? pass('e-mgr') : fail('e-mgr');
+    const novs = document.querySelectorAll('input[name="nov"]:checked').length;
+    novs > 0 ? pass('e-nov') : fail('e-nov');
+    const hasNov = [...document.querySelectorAll('input[name="nov"]:checked')]
+      .some(c => c.value !== 'Sin novedades');
+    if (hasNov) {
+      document.getElementById('descNov').value.trim() ? pass('e-desc-nov') : fail('e-desc-nov');
+    } else pass('e-desc-nov');
+  }
+  if (s === 5) {
+    document.querySelector('input[name="op"]:checked') ? pass('e-op') : fail('e-op');
+    document.querySelector('input[name="pers"]:checked') ? pass('e-pers') : fail('e-pers');
+  }
+  if (s === 6) {
+    photoB64 ? pass('e-foto') : fail('e-foto');
+  }
+  return ok;
+}
+
+/* ── NAV ──────────────────────────────────────── */
+function next() {
+  if (!validate(cur)) {
+    document.querySelector('.err.on')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  if (cur === TOTAL) { submit(); return; }
+  document.getElementById(`step${cur}`).classList.remove('active');
+  cur++;
+  document.getElementById(`step${cur}`).classList.add('active');
+  updateUI();
+  window.scrollTo(0, 0);
+}
+
+function prev() {
+  document.getElementById(`step${cur}`).classList.remove('active');
+  cur--;
+  document.getElementById(`step${cur}`).classList.add('active');
+  updateUI();
+  window.scrollTo(0, 0);
+}
+
+function updateUI() {
+  const pct = ((cur - 1) / (TOTAL - 1)) * 100;
+  document.getElementById('pFill').style.width = pct + '%';
+  document.getElementById('pLabel').textContent = `Paso ${cur} de ${TOTAL}`;
+  document.getElementById('pName').textContent = STEP_NAMES[cur - 1];
+  document.getElementById('btnBack').style.display = cur > 1 ? 'block' : 'none';
+  const nb = document.getElementById('btnNext');
+  if (cur === TOTAL) { nb.textContent = '✅ Enviar Auditoría'; nb.className = 'btn btn-send'; }
+  else { nb.textContent = 'Continuar →'; nb.className = 'btn btn-next'; }
+}
+
+/* ── COLLECT ──────────────────────────────────── */
+function collect() {
+  const coord = document.querySelector('input[name="coord"]:checked');
+  return {
+    timestamp: ts,
+    timestampISO: new Date().toISOString(),
+    coordinador: coord?.value || '',
+    zona: coord?.dataset?.zona || '',
+    gpsLat: gps.lat, gpsLng: gps.lng, gpsAcc: gps.acc,
+    pdv: document.getElementById('pdvSelect').value,
+    tipoVisita: document.querySelector('input[name="tipo"]:checked')?.value || '',
+    kpisCumplidos: kpiVal,
+    kpisCriticos: [...document.querySelectorAll('input[name="kpis"]:checked')].map(c=>c.value).join(', '),
+    accionComercial: document.getElementById('accion').value.trim(),
+    habloManager: document.querySelector('input[name="manager"]:checked')?.value || '',
+    motivoNoManager: document.getElementById('motivoMgr').value.trim(),
+    novedades: [...document.querySelectorAll('input[name="nov"]:checked')].map(c=>c.value).join(', '),
+    descNovedad: document.getElementById('descNov').value.trim(),
+    operacion: document.querySelector('input[name="op"]:checked')?.value || '',
+    personal: document.querySelector('input[name="pers"]:checked')?.value || '',
+    problemaServicio: document.getElementById('probServ').value.trim(),
+    observacion: document.getElementById('obs').value.trim(),
+    foto: photoB64 || ''
+  };
+}
+
+/* ── SUBMIT ───────────────────────────────────── */
+async function submit() {
+  const data = collect();
+  document.getElementById('overlay').classList.add('on');
+  try {
+    const res = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: { 'Content-Type': 'text/plain' }
+    });
+    const json = await res.json();
+    document.getElementById('overlay').classList.remove('on');
+    if (json.status === 'ok') {
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      document.getElementById('nav').style.display = 'none';
+      document.getElementById('form').style.display = 'none';
+      document.getElementById('successScreen').classList.add('on');
+      document.getElementById('sMsg').innerHTML =
+        `<strong>${data.coordinador}</strong> · ${data.pdv}<br><span style="font-size:13px">${data.timestamp}</span>`;
+    } else {
+      alert('Error al enviar. Inténtalo de nuevo.\n' + (json.message || ''));
+    }
+  } catch(e) {
+    document.getElementById('overlay').classList.remove('on');
+    alert('Error de conexión. Verifica tu internet e intenta de nuevo.');
+  }
+}
+
+/* ── RESET ────────────────────────────────────── */
+function resetAll() {
+  document.getElementById('form').reset();
+  document.getElementById('form').style.display = 'block';
+  document.getElementById('nav').style.display = 'flex';
+  document.getElementById('successScreen').classList.remove('on');
+  document.querySelectorAll('.err').forEach(e => e.classList.remove('on'));
+  document.querySelectorAll('.cond').forEach(c => c.classList.remove('on'));
+  document.getElementById('kpiNum').textContent = '—';
+  document.getElementById('kpiAlert').textContent = '';
+  document.getElementById('kpiAlert').className = 'kpi-alert';
+  document.getElementById('photoPreview').style.display = 'none';
+  document.getElementById('photoBtn').textContent = '📷 \u00a0Tomar o subir foto';
+  kpiVal = null; photoB64 = null;
+  cur = 1;
+  document.getElementById('step1').classList.add('active');
+  // Refresh timestamp + GPS
+  const now = new Date();
+  ts = now.toLocaleString('es-CO', { weekday:'long', year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit' });
+  document.getElementById('tsDisplay').textContent = ts;
+  document.getElementById('gpsBadge').className = 'gps-badge loading';
+  document.getElementById('gpsBadge').textContent = '⏳ Capturando GPS...';
+  document.getElementById('gpsDisplay').textContent = 'Obteniendo ubicación...';
+  gps = { lat:'', lng:'', acc:'' };
+  captureGPS();
+  updateUI();
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>

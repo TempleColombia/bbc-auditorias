@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Auditorías · BBC</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0b0b0b; --s:#161616; --s2:#1f1f1f; --brd:#2e2e2e;
+  --amber:#E8A020; --a-dim:rgba(232,160,32,.1);
+  --red:#E84444; --r-dim:rgba(232,68,68,.1);
+  --green:#3EBF6A; --g-dim:rgba(62,191,106,.1);
+  --yellow:#F0C040; --y-dim:rgba(240,192,64,.1);
+  --txt:#EFEFEF; --muted:#777; --dim:#3a3a3a;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--txt);font-family:'Barlow',sans-serif;-webkit-font-smoothing:antialiased;}
+
+/* HEADER */
+.hdr{background:#000;border-bottom:3px solid var(--amber);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;position:sticky;top:0;z-index:50;}
+.hdr-l{display:flex;align-items:center;gap:14px;}
+.logo{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;color:var(--amber);letter-spacing:-1px;line-height:1;}
+.hdr-sub{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:2.5px;}
+.refresh-btn{padding:9px 16px;background:var(--s2);border:1px solid var(--brd);border-radius:8px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;cursor:pointer;transition:all .15s;}
+.refresh-btn:hover{border-color:var(--amber);color:var(--amber);}
+
+/* FILTERS */
+.filters{padding:16px 24px;display:flex;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--brd);background:var(--s);}
+select.fil{padding:9px 32px 9px 12px;background:var(--s2);border:1px solid var(--brd);border-radius:8px;color:var(--txt);font-family:'Barlow',sans-serif;font-size:13px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%23888' d='M5 6 0 0h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;cursor:pointer;}
+select.fil:focus{outline:none;border-color:var(--amber);}
+
+/* STATS ROW */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;padding:20px 24px;border-bottom:1px solid var(--brd);}
+.stat{background:var(--s);border:1px solid var(--brd);border-radius:10px;padding:16px;}
+.stat-n{font-family:'Barlow Condensed',sans-serif;font-size:42px;font-weight:900;line-height:1;}
+.stat-l{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-top:4px;}
+.stat.amber .stat-n{color:var(--amber);}
+.stat.green  .stat-n{color:var(--green);}
+.stat.red    .stat-n{color:var(--red);}
+.stat.yellow .stat-n{color:var(--yellow);}
+
+/* TABLE */
+.tbl-wrap{padding:20px 24px;overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;padding:10px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);border-bottom:2px solid var(--brd);white-space:nowrap;}
+td{padding:12px 12px;border-bottom:1px solid var(--dim);vertical-align:top;max-width:220px;}
+tr:hover td{background:var(--s);}
+.tag{display:inline-block;padding:3px 9px;border-radius:5px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.tag-norte{background:rgba(232,160,32,.15);color:var(--amber);}
+.tag-sur  {background:rgba(62,191,106,.15);color:var(--green);}
+.tag-ruta {background:rgba(119,119,119,.15);color:var(--muted);}
+.tag-seg  {background:rgba(240,192,64,.15);color:var(--yellow);}
+.kpi-pill{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;}
+.kpi-ok {background:var(--g-dim);color:var(--green);}
+.kpi-w  {background:var(--y-dim);color:var(--yellow);}
+.kpi-bad{background:var(--r-dim);color:var(--red);}
+.foto-link{color:var(--amber);text-decoration:none;font-size:12px;}
+.foto-link:hover{text-decoration:underline;}
+
+/* EMPTY / LOADING */
+.empty{padding:60px 24px;text-align:center;color:var(--muted);font-size:15px;}
+.empty .icon{font-size:48px;margin-bottom:12px;}
+
+/* SPINNER */
+.spin-wrap{padding:60px;display:flex;justify-content:center;}
+.spinner{width:40px;height:40px;border:3px solid var(--brd);border-top-color:var(--amber);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+@media(max-width:768px){
+  .stats{grid-template-columns:1fr 1fr;}
+  .tbl-wrap{padding:16px;}
+  th,td{padding:9px 8px;}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-l">
+    <div class="logo">BBC</div>
+    <div class="hdr-sub">Dashboard<br>Auditorías Coordinadores</div>
+  </div>
+  <button class="refresh-btn" onclick="load()">↻ Actualizar</button>
+</div>
+
+<div class="filters">
+  <select class="fil" id="fZona" onchange="render()">
+    <option value="">Todas las zonas</option>
+    <option value="NORTE">Norte — Germán</option>
+    <option value="SUR">Sur — Yency</option>
+  </select>
+  <select class="fil" id="fTipo" onchange="render()">
+    <option value="">Todos los tipos</option>
+    <option value="Visita de ruta">Visita de ruta</option>
+    <option value="Visita de seguimiento">Visita de seguimiento</option>
+  </select>
+  <select class="fil" id="fKpi" onchange="render()">
+    <option value="">Todos los KPIs</option>
+    <option value="alert">En alerta (≤4 KPIs)</option>
+    <option value="risk">En riesgo (5-6 KPIs)</option>
+    <option value="ok">En meta (7-8 KPIs)</option>
+  </select>
+</div>
+
+<div class="stats" id="statsRow"></div>
+<div class="tbl-wrap" id="tblWrap">
+  <div class="spin-wrap"><div class="spinner"></div></div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════
+   CONFIG — misma URL que en auditoria.html
+══════════════════════════════════════════════════ */
+const SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+/* ══════════════════════════════════════════════════ */
+
+let allData = [];
+
+async function load() {
+  document.getElementById('tblWrap').innerHTML = '<div class="spin-wrap"><div class="spinner"></div></div>';
+  try {
+    const res  = await fetch(SCRIPT_URL + '?t=' + Date.now());
+    const json = await res.json();
+    allData = json.data || [];
+    render();
+  } catch(e) {
+    document.getElementById('tblWrap').innerHTML =
+      '<div class="empty"><div class="icon">⚠️</div>No se pudo conectar. Verifica la URL del Apps Script.</div>';
+  }
+}
+
+function render() {
+  const zona = document.getElementById('fZona').value;
+  const tipo = document.getElementById('fTipo').value;
+  const kpiF = document.getElementById('fKpi').value;
+
+  let rows = allData.filter(r => {
+    if (zona && r['Zona'] !== zona) return false;
+    if (tipo && r['Tipo Visita'] !== tipo) return false;
+    if (kpiF) {
+      const k = Number(r['KPIs Cumplidos (de 8)']);
+      if (kpiF === 'alert' && k > 4) return false;
+      if (kpiF === 'risk'  && (k <= 4 || k > 6)) return false;
+      if (kpiF === 'ok'    && k <= 6) return false;
+    }
+    return true;
+  });
+
+  // Stats
+  const total   = rows.length;
+  const alerta  = rows.filter(r => Number(r['KPIs Cumplidos (de 8)']) <= 4).length;
+  const seg     = rows.filter(r => r['Tipo Visita'] === 'Visita de seguimiento').length;
+  const sinFoto = rows.filter(r => !r['URL Foto']).length;
+
+  document.getElementById('statsRow').innerHTML = `
+    <div class="stat amber"><div class="stat-n">${total}</div><div class="stat-l">Total visitas</div></div>
+    <div class="stat red"><div class="stat-n">${alerta}</div><div class="stat-l">PDVs en alerta ≤4</div></div>
+    <div class="stat yellow"><div class="stat-n">${seg}</div><div class="stat-l">Visitas seguimiento</div></div>
+    <div class="stat green"><div class="stat-n">${total - alerta}</div><div class="stat-l">PDVs en meta</div></div>
+  `;
+
+  if (!rows.length) {
+    document.getElementById('tblWrap').innerHTML = '<div class="empty"><div class="icon">📋</div>Sin registros con los filtros seleccionados.</div>';
+    return;
+  }
+
+  // Sort newest first
+  rows = [...rows].reverse();
+
+  const html = `
+  <table>
+    <thead>
+      <tr>
+        <th>Fecha / Hora</th>
+        <th>Coordinador</th>
+        <th>Zona</th>
+        <th>PDV</th>
+        <th>Tipo</th>
+        <th>KPIs</th>
+        <th>KPIs Críticos</th>
+        <th>Acción Acordada</th>
+        <th>Manager</th>
+        <th>Novedades</th>
+        <th>Operación</th>
+        <th>Personal</th>
+        <th>GPS</th>
+        <th>Foto</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${rows.map(r => {
+        const kpi = Number(r['KPIs Cumplidos (de 8)']);
+        const kpiClass = kpi <= 4 ? 'kpi-bad' : kpi <= 6 ? 'kpi-w' : 'kpi-ok';
+        const zonaTag  = r['Zona'] === 'NORTE' ? 'tag-norte' : 'tag-sur';
+        const tipoTag  = r['Tipo Visita']?.includes('seguimiento') ? 'tag-seg' : 'tag-ruta';
+        const lat = r['GPS Lat']; const lng = r['GPS Lng'];
+        const gpsLink = lat && lng
+          ? `<a href="https://maps.google.com/?q=${lat},${lng}" target="_blank" style="color:var(--amber);font-size:11px">📍 Ver</a>`
+          : '<span style="color:var(--dim)">—</span>';
+        const foto = r['URL Foto']
+          ? `<a class="foto-link" href="${r['URL Foto']}" target="_blank">📷 Ver</a>`
+          : '<span style="color:var(--dim)">—</span>';
+        return `
+          <tr>
+            <td style="white-space:nowrap;font-size:12px;color:var(--muted)">${r['Fecha y Hora'] || '—'}</td>
+            <td style="white-space:nowrap">${r['Coordinador'] || '—'}</td>
+            <td><span class="tag ${zonaTag}">${r['Zona'] || '—'}</span></td>
+            <td style="font-weight:600">${r['PDV'] || '—'}</td>
+            <td><span class="tag ${tipoTag}">${r['Tipo Visita']?.replace('Visita de ','') || '—'}</span></td>
+            <td style="text-align:center"><span class="kpi-pill ${kpiClass}">${isNaN(kpi)?'—':kpi}</span></td>
+            <td style="font-size:12px;color:var(--muted)">${r['KPIs Críticos'] || '—'}</td>
+            <td style="font-size:12px">${r['Acción Comercial'] || '—'}</td>
+            <td style="font-size:12px">${r['Habló con Manager'] || '—'}</td>
+            <td style="font-size:12px;color:${r['Novedades']?.includes('Sin') ? 'var(--green)' : 'var(--yellow)'}">${r['Novedades'] || '—'}</td>
+            <td style="font-size:12px">${r['Operación PDV'] || '—'}</td>
+            <td style="font-size:12px">${r['Personal'] || '—'}</td>
+            <td>${gpsLink}</td>
+            <td>${foto}</td>
+          </tr>`;
+      }).join('')}
+    </tbody>
+  </table>`;
+
+  document.getElementById('tblWrap').innerHTML = html;
+}
+
+load();
+</script>
+</body>
+</html>
