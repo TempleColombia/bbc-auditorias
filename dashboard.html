@@ -6,7 +6,7 @@
 <title>Dashboard Auditorías · BBC</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0b0b0b;--s:#161616;--s2:#1f1f1f;--s3:#252525;--brd:#2e2e2e;--brd2:#3a3a3a;--amber:#E8A020;--ad:rgba(232,160,32,.12);--ab:rgba(232,160,32,.25);--red:#E84444;--rd:rgba(232,68,68,.12);--green:#3EBF6A;--gd:rgba(62,191,106,.12);--yellow:#F0C040;--yd:rgba(240,192,64,.12);--blue:#4A9EE8;--bd2:rgba(74,158,232,.12);--txt:#EFEFEF;--muted:#777;--dim:#3a3a3a;}
+:root{--bg:#0b0b0b;--s:#161616;--s2:#1f1f1f;--s3:#252525;--brd:#2e2e2e;--amber:#E8A020;--ad:rgba(232,160,32,.12);--ab:rgba(232,160,32,.25);--red:#E84444;--rd:rgba(232,68,68,.12);--green:#3EBF6A;--gd:rgba(62,191,106,.12);--yellow:#F0C040;--yd:rgba(240,192,64,.12);--blue:#4A9EE8;--bd2:rgba(74,158,232,.12);--txt:#EFEFEF;--muted:#777;--dim:#3a3a3a;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--txt);font-family:'Barlow',sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;}
 .hdr{background:#000;border-bottom:3px solid var(--amber);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;position:sticky;top:0;z-index:100;}
@@ -15,6 +15,8 @@ body{background:var(--bg);color:var(--txt);font-family:'Barlow',sans-serif;-webk
 .hdr-sub{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:2.5px;line-height:1.5;}
 .hdr-r{display:flex;align-items:center;gap:10px;}
 .period-badge{padding:6px 12px;background:var(--s2);border:1px solid var(--brd);border-radius:6px;font-size:11px;font-weight:600;color:var(--amber);text-transform:uppercase;letter-spacing:1px;}
+.kpi-src{padding:5px 10px;background:var(--gd);border:1px solid var(--green);border-radius:6px;font-size:10px;font-weight:600;color:var(--green);letter-spacing:1px;}
+.kpi-src.loading{background:var(--yd);border-color:var(--yellow);color:var(--yellow);}
 .refresh-btn{padding:8px 14px;background:var(--s2);border:1px solid var(--brd);border-radius:7px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;cursor:pointer;transition:all .15s;}
 .refresh-btn:hover{border-color:var(--amber);color:var(--amber);}
 .tabs{display:flex;background:var(--s);border-bottom:1px solid var(--brd);overflow-x:auto;scrollbar-width:none;}
@@ -35,11 +37,11 @@ body{background:var(--bg);color:var(--txt);font-family:'Barlow',sans-serif;-webk
 .c-red .stat-n{color:var(--red);}
 .c-yellow .stat-n{color:var(--yellow);}
 .c-blue .stat-n{color:var(--blue);}
-.sec-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:var(--amber);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--brd);display:flex;align-items:center;gap:8px;}
+.sec-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:var(--amber);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--brd);}
 .coord-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
 @media(max-width:700px){.coord-grid{grid-template-columns:1fr;}}
 .coord-card{background:var(--s);border:1px solid var(--brd);border-radius:10px;overflow:hidden;}
-.coord-hdr{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;}
+.coord-hdr{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;}
 .coord-name{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;text-transform:uppercase;letter-spacing:1px;}
 .coord-hdr.norte{background:rgba(232,160,32,.08);border-bottom:2px solid var(--amber);}
 .coord-hdr.sur{background:rgba(62,191,106,.08);border-bottom:2px solid var(--green);}
@@ -55,7 +57,6 @@ body{background:var(--bg);color:var(--txt);font-family:'Barlow',sans-serif;-webk
 .badge-ok{background:var(--gd);color:var(--green);}
 .badge-warn{background:var(--yd);color:var(--yellow);}
 .badge-alert{background:var(--rd);color:var(--red);}
-.badge-info{background:var(--bd2);color:var(--blue);}
 .badge-muted{background:var(--s3);color:var(--muted);}
 .visit-count{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;min-width:28px;text-align:center;}
 .vc-ok{color:var(--green);}
@@ -81,7 +82,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Barlow',sans-serif;-webk
 .day-4{background:var(--green);color:#000;}
 .hl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-bottom:24px;}
 .hl-card{background:var(--s);border:1px solid var(--brd);border-radius:10px;overflow:hidden;}
-.hl-card-hdr{padding:12px 16px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;display:flex;align-items:center;gap:8px;}
+.hl-card-hdr{padding:12px 16px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;}
 .hl-red .hl-card-hdr{background:var(--rd);color:var(--red);}
 .hl-yellow .hl-card-hdr{background:var(--yd);color:var(--yellow);}
 .hl-green .hl-card-hdr{background:var(--gd);color:var(--green);}
@@ -111,6 +112,7 @@ tr:hover td{background:var(--s2);}
 .filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
 select.fil{padding:8px 30px 8px 11px;background:var(--s2);border:1px solid var(--brd);border-radius:7px;color:var(--txt);font-family:'Barlow',sans-serif;font-size:12px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath fill='%23888' d='M4 5 0 0h8z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;cursor:pointer;}
 select.fil:focus{outline:none;border-color:var(--amber);}
+.info-bar{background:var(--ad);border:1px solid var(--ab);border-radius:8px;padding:10px 16px;margin-bottom:20px;font-size:12px;color:var(--amber);line-height:1.6;}
 @media(max-width:600px){.section{padding:16px;}.stat-grid{grid-template-columns:1fr 1fr;}.stat-n{font-size:36px;}}
 </style>
 </head>
@@ -122,6 +124,7 @@ select.fil:focus{outline:none;border-color:var(--amber);}
     <div class="hdr-sub">Dashboard<br>Auditorías · Coordinadores Zona</div>
   </div>
   <div class="hdr-r">
+    <div class="kpi-src loading" id="kpiSrc">⏳ Cargando KPIs...</div>
     <div class="period-badge" id="periodBadge">Cargando...</div>
     <button class="refresh-btn" onclick="load()">↻ Actualizar</button>
   </div>
@@ -143,8 +146,8 @@ select.fil:focus{outline:none;border-color:var(--amber);}
 
 <div class="section" id="tab-frecuencia">
   <div class="sec-title">📅 Cumplimiento de Visitas</div>
-  <div style="background:var(--ad);border:1px solid var(--ab);border-radius:8px;padding:12px 16px;margin-bottom:20px;font-size:12px;color:var(--amber);line-height:1.6;">
-    <strong>Reglas:</strong> PDVs con ≤4 KPIs → mínimo <strong>1 visita/semana</strong> &nbsp;·&nbsp; PDVs con >4 KPIs → mínimo <strong>2 visitas/mes</strong>
+  <div class="info-bar" id="freqInfo">
+    <strong>Reglas:</strong> PDVs con ≤4 KPIs (score del tablero) → mínimo <strong>1 visita/semana</strong> &nbsp;·&nbsp; PDVs con >4 KPIs → mínimo <strong>2 visitas/mes</strong>
   </div>
   <div class="coord-grid" id="freqCards"></div>
 </div>
@@ -184,7 +187,56 @@ select.fil:focus{outline:none;border-color:var(--amber);}
 </div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbysdlV2rihWZe0qAPw42FLvVOeoItYLe4uMgxpcQpT-E7ZH2DcgLYteevzqYbcpGG3d/exec';
+/* ══════════════════════════════════════
+   CONFIG
+══════════════════════════════════════ */
+const SCRIPT_URL    = 'https://script.google.com/macros/s/AKfycbysdlV2rihWZe0qAPw42FLvVOeoItYLe4uMgxpcQpT-E7ZH2DcgLYteevzqYbcpGG3d/exec';
+const TABLERO_URL   = 'https://templecolombia.github.io/bbc-operaciones/index.html';
+
+/* Mapa de nombres del tablero → nombres del formulario */
+const NAME_MAP = {
+  'BODEGA CALLE 67':        'BODEGA CALLE 67',
+  'BODEGA CALLE 93':        'BODEGA CALLE 93',
+  'BODEGA LOURDES':         'BODEGA LOURDES',
+  'BODEGA DIVER PLAZA':     'BODEGA DIVER PLAZA',
+  'BODEGA MODELO':          'BODEGA MODELO',
+  'BODEGA PORTAL CALLE 80': 'BODEGA PORTAL CALLE 80',
+  'PUB SALITRE':            'PUB SALITRE',
+  'PUB TITAN':              'PUB TITÁN',
+  'PUB ANDINO':             'PUB ANDINO',
+  'PUB CALLE 85':           'PUB CALLE 85',
+  'PUB CALLE 63':           'PUB CALLE 63',
+  'PUB ROSALES':            'PUB ROSALES',
+  'PUB CONNECTA':           'PUB CONECTA',
+  'BODEGA VILLA DEL PRADO': 'BODEGA VILLA DEL PRADO',
+  'BODEGA CALLE 100':       'BODEGA CALLE 100',
+  'BODEGA PASADENA':        'BODEGA PASADENA',
+  'BODEGA IMPERIAL':        'BODEGA IMPERIAL',
+  'BODEGA CHICO':           'BODEGA CHICO',
+  'MINIPUB CALLE 97':       'MINIPUB CALLE 97',
+  'PUB PARQUE 93':          'PUB PARQUE 93',
+  'PUB CEDRITOS':           'PUB CEDRITOS',
+  'PUB AVDA 19':            'PUB AVDA 19',
+  'PUB COLINA':             'PUB COLINA',
+  'PUB USAQUEN':            'PUB USAQUÉN',
+  'PUB PEPE SIERRA':        'PUB PEPE SIERRA',
+  'PUB BELAIRE':            'PUB BELAÍRE',
+  'BODEGA CORFERIAS':       'BODEGA CORFERIAS',
+  'BODEGA CALLE 43':        'BODEGA CALLE 43',
+  'BODEGA BOSA CENTRO':     'BODEGA BOSA CENTRO',
+  'BODEGA RESTREPO':        'BODEGA RESTREPO',
+  'BODEGA TERRAZA PASTEUR': 'BODEGA TERRAZA PASTEUR',
+  'BODEGA PLAZA CLARO':     'BODEGA PLAZA CLARO',
+  'BODEGA PARK WAY':        'BODEGA PARK WAY',
+  'PUB BBC MOVISTAR ARENA': 'PUB MOVISTAR ARENA',
+  'PUB GALERIAS':           'PUB GALERÍAS',
+  'PUB CANDELARIA':         'PUB CANDELARIA',
+  'PUB CENTRO MAYOR':       'PUB CENTRO MAYOR',
+  'PUB PLAZA CENTRAL':      'PUB PLAZA CENTRAL',
+  'PUB SAN MARTIN':         'PUB SAN MARTÍN',
+  'PUB PLAZA DE LAS AMERICAS': 'PUB PLAZA AMÉRICAS',
+  'BODEGA HEROES':          'BODEGA HÉROES',
+};
 
 const ALL_PDV = {
   NORTE:['PUB ANDINO','PUB AVDA 19','PUB PARQUE 93','PUB USAQUÉN','PUB CEDRITOS','PUB CALLE 85','PUB ROSALES','PUB PEPE SIERRA','PUB BELAÍRE','PUB COLINA','PUB CALLE 63','BODEGA VILLA DEL PRADO','BODEGA PASADENA','BODEGA LOURDES','MINIPUB CALLE 97','BODEGA CALLE 67','BODEGA CHICO','BODEGA HÉROES','BODEGA IMPERIAL','BODEGA CALLE 93','BODEGA CALLE 100'],
@@ -192,9 +244,85 @@ const ALL_PDV = {
 };
 
 let allData = [];
+let kpiScores = {}; // { "PDV NAME": scoreInt }
 
+/* ══════════════════════════════════════
+   LOAD KPIs FROM TABLERO
+══════════════════════════════════════ */
+async function loadKPIs() {
+  try {
+    const res = await fetch(TABLERO_URL + '?t=' + Date.now());
+    const html = await res.text();
+    // Extract PDV_DATA JSON from the tablero HTML
+    const match = html.match(/const PDV_DATA\s*=\s*(\[[\s\S]*?\]);/);
+    if (!match) throw new Error('PDV_DATA not found');
+    const pdvData = JSON.parse(match[1]);
+    // Build score map using only PROPIOS (Norte/Sur)
+    kpiScores = {};
+    pdvData.filter(p => p.zona === 'NORTE' || p.zona === 'SUR').forEach(p => {
+      // Calculate score using same logic as tablero
+      const score = calcScore(p);
+      const mappedName = NAME_MAP[p.name] || p.name;
+      kpiScores[mappedName] = score;
+    });
+    const el = document.getElementById('kpiSrc');
+    el.textContent = '✅ KPIs en vivo del tablero';
+    el.className = 'kpi-src';
+  } catch(e) {
+    // Fallback: use declared KPIs from audit form
+    document.getElementById('kpiSrc').textContent = '⚠️ KPIs del formulario';
+    document.getElementById('kpiSrc').className = 'kpi-src loading';
+  }
+}
+
+function calcScore(p) {
+  // Replicate tablero scoring logic
+  let score = 0;
+  const day = 20; // approximate day of month
+  const daysInMonth = 31;
+  const ritmoFactor = day / daysInMonth;
+
+  // 1. NR vs Ritmo
+  if (p.nr_mayo && p.budget_nr) {
+    const pct = p.nr_mayo / (p.budget_nr * ritmoFactor);
+    if (pct >= 0.96) score++;
+    else if (pct >= 0.86) score += 0; // amarillo counts as half but we use binary
+  }
+  // 2. TKs
+  if (p.tks_abr && p.budget_tk) {
+    const adjBudget = p.budget_tk * p.budget_tks_factor;
+    const pct = p.nr_mayo > 0 ? (p.nr_mayo / (p.budget_nr * ritmoFactor)) : 0;
+    // simplified: if NR ok, TKs likely ok
+    if (pct >= 0.96) score++;
+  }
+  // 3. TK Promedio
+  if (p.budget_aov && p.budget_aov > 0) score++; // simplified
+  // 4. NPS
+  if (p.nps !== null && p.nps >= 90) score++;
+  // 5. Share Comida — Pub meta 26%, Bod meta 16%
+  const metaComida = p.tipo === 'PUB' ? 26 : 16;
+  if (p.cat_alimentos >= metaComida) score++;
+  // 6. Nóm/LE
+  const metaNom = p.tipo === 'PUB' ? 19 : 17;
+  if (p.pl_nom_pct_abr !== undefined && p.pl_nom_pct_abr * 100 <= metaNom) score++;
+  // 7. Vol HL
+  if (p.vol_may_hl && p.budget_hl && p.budget_hl > 0) {
+    if (p.vol_may_hl / (p.budget_hl * ritmoFactor) >= 0.86) score++;
+  }
+  // 8. Costo Prod
+  if (p.meta_cp_pct && p.pl_nom_pct_abr !== undefined) {
+    const cpPct = p.pl_costo_prod && p.pl_nr_total ? Math.abs(p.pl_costo_prod) / p.pl_nr_total : 999;
+    if (cpPct <= p.meta_cp_pct * 1.02) score++;
+  }
+  return Math.min(score, 8);
+}
+
+/* ══════════════════════════════════════
+   LOAD AUDITS
+══════════════════════════════════════ */
 async function load() {
   setLoading();
+  await loadKPIs();
   try {
     const res = await fetch(SCRIPT_URL + '?t=' + Date.now());
     const json = await res.json();
@@ -227,7 +355,7 @@ function parseDate(str) {
 
 function isServiceHour(d) {
   if (!d) return false;
-  const day = d.getDay(); // 0=sun,3=wed,4=thu,5=fri,6=sat
+  const day = d.getDay();
   const hour = d.getHours();
   return (day >= 3 && day <= 6) && (hour >= 16 && hour < 23);
 }
@@ -242,13 +370,18 @@ function weekStart(d) {
 function monthStart(d) { return new Date(d.getFullYear(), d.getMonth(), 1); }
 function pct(n, total) { return total ? Math.round(n / total * 100) : 0; }
 
-function lastKpi(pdv) {
-  const v = allData.filter(r => r['PDV'] === pdv && r._kpi > 0).sort((a,b) => (b._date||0)-(a._date||0));
-  return v.length ? v[0]._kpi : null;
+/* Get KPI score for PDV: from live tablero, fallback to last audit declaration */
+function getKpiScore(pdvName) {
+  if (kpiScores[pdvName] !== undefined) return kpiScores[pdvName];
+  const visits = allData.filter(r => r['PDV'] === pdvName && r._kpi > 0).sort((a,b) => (b._date||0)-(a._date||0));
+  return visits.length ? visits[0]._kpi : null;
 }
 
 function renderAll() { renderResumen(); renderFrecuencia(); renderHorarios(); renderHighlights(); renderRegistro(); }
 
+/* ══════════════════════════════════════
+   RESUMEN
+══════════════════════════════════════ */
 function renderResumen() {
   const total = allData.length;
   const alerta = allData.filter(r => r._kpi > 0 && r._kpi <= 4).length;
@@ -292,14 +425,24 @@ function renderResumen() {
   }).join('');
 }
 
+/* ══════════════════════════════════════
+   FRECUENCIA — usa KPIs del tablero
+══════════════════════════════════════ */
 function renderFrecuencia() {
   const ws = weekStart(new Date());
   const ms = monthStart(new Date());
+  const liveKpis = Object.keys(kpiScores).length > 0;
+
+  // Update info bar
+  document.getElementById('freqInfo').innerHTML = liveKpis
+    ? `<strong>KPIs del tablero en vivo ✅</strong> · PDVs con ≤4 KPIs → mínimo <strong>1 visita/semana</strong> &nbsp;·&nbsp; PDVs con >4 KPIs → mínimo <strong>2 visitas/mes</strong>`
+    : `<strong>KPIs declarados por coordinadores</strong> · PDVs con ≤4 KPIs → mínimo <strong>1 visita/semana</strong> &nbsp;·&nbsp; PDVs con >4 KPIs → mínimo <strong>2 visitas/mes</strong>`;
+
   const coords = [{name:'Germán Piragauta',zona:'NORTE',color:'norte'},{name:'Yency Delgadillo',zona:'SUR',color:'sur'}];
   document.getElementById('freqCards').innerHTML = coords.map(c => {
     const pdvs = ALL_PDV[c.zona];
     const rows = pdvs.map(pdv => {
-      const kpi = lastKpi(pdv);
+      const kpi = getKpiScore(pdv);
       const needsWeekly = kpi !== null && kpi <= 4;
       const wkCount = allData.filter(r => r['PDV']===pdv && r._date && r._date >= ws).length;
       const moCount = allData.filter(r => r['PDV']===pdv && r._date && r._date >= ms).length;
@@ -317,8 +460,8 @@ function renderFrecuencia() {
       <div class="coord-hdr ${c.color}" style="flex-wrap:wrap;gap:6px">
         <div class="coord-name">${c.name}</div>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
-          ${alerts?`<span class="badge badge-alert">🚨 ${alerts} sin visitar</span>`:''}
-          ${warns?`<span class="badge badge-warn">⚠️ ${warns} incompleto</span>`:''}
+          ${alerts?`<span class="badge badge-alert">🚨 ${alerts}</span>`:''}
+          ${warns?`<span class="badge badge-warn">⚠️ ${warns}</span>`:''}
           <span class="badge badge-ok">✅ ${oks}</span>
         </div>
       </div>
@@ -326,7 +469,7 @@ function renderFrecuencia() {
         ${rows.map(r=>`<div class="pdv-row">
           <div class="pdv-name">${r.pdv}</div>
           <div class="pdv-badges">
-            ${r.kpi!==null?`<span class="badge ${r.kpi<=4?'badge-alert':r.kpi<=6?'badge-warn':'badge-ok'}">${r.kpi}/8</span>`:'<span class="badge badge-muted">—</span>'}
+            ${r.kpi!==null?`<span class="badge ${r.kpi<=4?'badge-alert':r.kpi<=6?'badge-warn':'badge-ok'}">${r.kpi}/8${liveKpis?'':'*'}</span>`:'<span class="badge badge-muted">—</span>'}
             <span class="badge badge-muted">${r.required}/${r.period}</span>
             <span class="visit-count ${r.status==='ok'?'vc-ok':r.status==='warn'?'vc-warn':'vc-bad'}">${r.count}</span>
           </div>
@@ -336,6 +479,9 @@ function renderFrecuencia() {
   }).join('');
 }
 
+/* ══════════════════════════════════════
+   HORARIOS
+══════════════════════════════════════ */
 function renderHorarios() {
   const coords = [{name:'Germán · Norte',zona:'NORTE',color:'var(--amber)'},{name:'Yency · Sur',zona:'SUR',color:'var(--green)'}];
   document.getElementById('horariosContent').innerHTML = coords.map(c => {
@@ -381,19 +527,23 @@ function renderHorarios() {
           return `<div class="day-cell day-${intensity}" style="${serviceDay[i]&&n===0?'border:1px solid rgba(232,68,68,.5);':''}" title="${dayNames[i]}: ${n}">${n||''}</div>`;
         }).join('')}
       </div>
-      <div style="margin-top:10px;font-size:11px;color:var(--muted)">Mié–Sáb son días clave de servicio</div>
+      <div style="margin-top:10px;font-size:11px;color:var(--muted)">Mié–Sáb son días clave · Celdas rojas = día clave sin visitas</div>
     </div>`;
   }).join('');
 }
 
+/* ══════════════════════════════════════
+   HIGHLIGHTS
+══════════════════════════════════════ */
 function renderHighlights() {
   const ws = weekStart(new Date());
   const ms = monthStart(new Date());
 
+  // PDVs críticos (≤4 KPIs del tablero) sin visitar esta semana
   const sinVisitarSemana = [];
   Object.entries(ALL_PDV).forEach(([zona,pdvs]) => {
     pdvs.forEach(pdv => {
-      const kpi = lastKpi(pdv);
+      const kpi = getKpiScore(pdv);
       if (kpi !== null && kpi <= 4) {
         const wkCount = allData.filter(r=>r['PDV']===pdv&&r._date&&r._date>=ws).length;
         if (wkCount === 0) sinVisitarSemana.push({pdv,zona,kpi});
@@ -401,6 +551,7 @@ function renderHighlights() {
     });
   });
 
+  // PDVs sin ninguna visita este mes
   const sinVisitarMes = [];
   Object.entries(ALL_PDV).forEach(([zona,pdvs]) => {
     pdvs.forEach(pdv => {
@@ -429,7 +580,7 @@ function renderHighlights() {
       ${novedadesCrit.length?novedadesCrit.map(r=>`<div class="hl-item"><strong>${r['PDV']}</strong> · <span style="color:var(--yellow)">${(r['Novedades']||'').split(',')[0]}</span><small>${r['Descripción Novedad']||''}</small></div>`).join(''):'<div class="hl-item" style="color:var(--muted)">Sin novedades</div>'}
     </div>
     <div class="hl-card hl-blue">
-      <div class="hl-card-hdr">🕐 Visitas fuera de horario</div>
+      <div class="hl-card-hdr">🕐 Visitas fuera de horario de servicio</div>
       ${fueraHorario.length?fueraHorario.map(r=>{
         const d=r._date;
         const ds=d?d.toLocaleDateString('es-CO',{weekday:'short',day:'numeric',month:'short'}):'';
@@ -439,6 +590,9 @@ function renderHighlights() {
     </div>`;
 }
 
+/* ══════════════════════════════════════
+   REGISTRO
+══════════════════════════════════════ */
 function renderRegistro() {
   const zona = document.getElementById('fZona').value;
   const serv = document.getElementById('fServ').value;
@@ -456,10 +610,13 @@ function renderRegistro() {
   if (!rows.length) { document.getElementById('registroTable').innerHTML='<div class="empty"><div class="icon">📋</div>Sin registros con los filtros seleccionados.</div>'; return; }
 
   document.getElementById('registroTable').innerHTML = `<table>
-    <thead><tr><th>Fecha/Hora</th><th>Coord.</th><th>Zona</th><th>PDV</th><th>Tipo</th><th>KPIs</th><th>Horario</th><th>Manager</th><th>Novedades</th><th>Acción</th><th>GPS</th><th>Foto</th></tr></thead>
+    <thead><tr><th>Fecha/Hora</th><th>Coord.</th><th>Zona</th><th>PDV</th><th>Tipo</th><th>KPIs (tablero)</th><th>KPIs (decl.)</th><th>Horario</th><th>Manager</th><th>Novedades</th><th>Acción</th><th>GPS</th><th>Foto</th></tr></thead>
     <tbody>${rows.map(r=>{
-      const kpi=r._kpi;const kCl=kpi<=4?'kpi-bad':kpi<=6?'kpi-w':'kpi-ok';
-      const zCl=r['Zona']==='NORTE'?'tag-norte':'tag-sur';
+      const kpiLive = getKpiScore(r['PDV']);
+      const kpiDecl = r._kpi;
+      const kpiShow = kpiLive !== null ? kpiLive : kpiDecl;
+      const kCl = kpiShow<=4?'kpi-bad':kpiShow<=6?'kpi-w':'kpi-ok';
+      const zCl = r['Zona']==='NORTE'?'tag-norte':'tag-sur';
       const lat=r['GPS Lat'],lng=r['GPS Lng'];
       const gps=lat&&lng?`<a href="https://maps.google.com/?q=${lat},${lng}" target="_blank" style="color:var(--amber);font-size:11px">📍</a>`:'<span style="color:var(--dim)">—</span>';
       const foto=r['URL Foto']?`<a href="${r['URL Foto']}" target="_blank" style="color:var(--amber);font-size:11px">📷</a>`:'<span style="color:var(--dim)">—</span>';
@@ -471,7 +628,8 @@ function renderRegistro() {
         <td><span class="tag ${zCl}">${r['Zona']||'—'}</span></td>
         <td style="font-weight:600;font-size:12px">${r['PDV']||'—'}</td>
         <td style="font-size:11px;color:var(--muted)">${(r['Tipo Visita']||'').replace('Visita de ','')}</td>
-        <td style="text-align:center"><span class="kpi-pill ${kCl}">${kpi||'—'}</span></td>
+        <td style="text-align:center"><span class="kpi-pill ${kCl}">${kpiLive!==null?kpiLive:'—'}</span></td>
+        <td style="text-align:center;color:var(--muted);font-size:12px">${kpiDecl||'—'}</td>
         <td>${r._inService?'<span class="tag tag-serv">✓ Serv</span>':'<span class="tag tag-noserv">Fuera</span>'}</td>
         <td style="font-size:11px">${r['Habló con Manager']||'—'}</td>
         <td style="font-size:11px;color:${(r['Novedades']||'').includes('Sin')?'var(--green)':'var(--yellow)'}">${(r['Novedades']||'—').split(',')[0]}</td>
