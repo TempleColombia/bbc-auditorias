@@ -226,17 +226,32 @@ textarea::placeholder { color: var(--dim); }
 
 /* ─── PHOTO ──────────────────────────────────────── */
 .photo-btn {
-  width: 100%; padding: 22px 16px;
+  width: 100%; padding: 18px 16px;
   background: var(--surface); border: 2px dashed var(--border); border-radius: 12px;
   color: var(--muted); font-size: 15px; font-family: 'Barlow', sans-serif;
   cursor: pointer; transition: all .2s; text-align: center;
 }
 .photo-btn:focus, .photo-btn:active { border-color: var(--amber); color: var(--amber); }
 #photoInput { display: none; }
-#photoPreview {
-  width: 100%; border-radius: 10px; margin-top: 10px;
-  display: none; max-height: 220px; object-fit: cover;
-  border: 2px solid var(--border);
+.photo-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px;
+}
+.photo-thumb-wrap {
+  position: relative; border-radius: 8px; overflow: hidden;
+  aspect-ratio: 1; background: var(--surface2); border: 1px solid var(--border);
+}
+.photo-thumb-wrap img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.photo-del {
+  position: absolute; top: 4px; right: 4px;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: rgba(0,0,0,.7); border: none; color: #fff;
+  font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  line-height: 1;
+}
+.photo-count {
+  margin-top: 8px; font-size: 12px; color: var(--muted); text-align: center;
 }
 
 /* ─── CONDITIONAL ────────────────────────────────── */
@@ -544,13 +559,14 @@ textarea::placeholder { color: var(--dim); }
   </div>
 
   <div class="field">
-    <label class="field-label">Foto de evidencia <span style="color:var(--red)">*</span></label>
+    <label class="field-label">Fotos de evidencia <span style="color:var(--red)">*</span> &nbsp;<span style="opacity:.45">máx. 5</span></label>
     <button type="button" class="photo-btn" id="photoBtn" onclick="document.getElementById('photoInput').click()">
-      📷 &nbsp;Tomar o subir foto
+      📷 &nbsp;Agregar foto
     </button>
-    <input type="file" id="photoInput" accept="image/*" capture="environment" onchange="prevPhoto(this)">
-    <img id="photoPreview" src="" alt="Vista previa">
-    <div class="err" id="e-foto">La foto es obligatoria para enviar.</div>
+    <input type="file" id="photoInput" accept="image/*" capture="environment" onchange="addPhoto(this)">
+    <div class="photo-grid" id="photoGrid"></div>
+    <div class="photo-count" id="photoCount"></div>
+    <div class="err" id="e-foto">Al menos una foto es obligatoria.</div>
   </div>
 
   <div class="field">
@@ -614,7 +630,7 @@ let cur = 1;
 let gps = { lat: '', lng: '', acc: '' };
 let ts = '';
 let kpiVal = null;
-let photoB64 = null;
+let photos = []; // array of base64 strings
 
 /* ── INIT ─────────────────────────────────────── */
 window.addEventListener('DOMContentLoaded', () => {
@@ -717,8 +733,9 @@ function chkOp() {
 }
 
 /* ── PHOTO ────────────────────────────────────── */
-function prevPhoto(input) {
+function addPhoto(input) {
   if (!input.files?.[0]) return;
+  if (photos.length >= 5) { alert('Máximo 5 fotos por visita.'); return; }
   const reader = new FileReader();
   reader.onload = e => {
     const img = new Image();
@@ -730,15 +747,40 @@ function prevPhoto(input) {
       else if (h > MAX) { w = w * MAX / h; h = MAX; }
       c.width = w; c.height = h;
       c.getContext('2d').drawImage(img, 0, 0, w, h);
-      photoB64 = c.toDataURL('image/jpeg', .78);
-      const pv = document.getElementById('photoPreview');
-      pv.src = photoB64; pv.style.display = 'block';
-      document.getElementById('photoBtn').textContent = '✅  Foto lista — toca para cambiar';
+      const b64 = c.toDataURL('image/jpeg', .78);
+      photos.push(b64);
+      renderPhotoGrid();
       document.getElementById('e-foto').classList.remove('on');
     };
     img.src = e.target.result;
   };
   reader.readAsDataURL(input.files[0]);
+  input.value = ''; // allow re-selecting same file
+}
+
+function deletePhoto(idx) {
+  photos.splice(idx, 1);
+  renderPhotoGrid();
+}
+
+function renderPhotoGrid() {
+  const grid = document.getElementById('photoGrid');
+  const count = document.getElementById('photoCount');
+  const btn = document.getElementById('photoBtn');
+  grid.innerHTML = photos.map((b64, i) => `
+    <div class="photo-thumb-wrap">
+      <img src="${b64}" alt="Foto ${i+1}">
+      <button type="button" class="photo-del" onclick="deletePhoto(${i})">✕</button>
+    </div>`).join('');
+  if (photos.length > 0) {
+    count.textContent = `${photos.length} foto${photos.length > 1 ? 's' : ''} agregada${photos.length > 1 ? 's' : ''}`;
+    btn.textContent = photos.length < 5 ? '📷  Agregar otra foto' : '✅  5 fotos (máximo)';
+    btn.style.opacity = photos.length >= 5 ? '.5' : '1';
+  } else {
+    count.textContent = '';
+    btn.textContent = '📷  Agregar foto';
+    btn.style.opacity = '1';
+  }
 }
 
 /* ── VALIDATION ───────────────────────────────── */
@@ -773,7 +815,7 @@ function validate(s) {
     document.querySelector('input[name="pers"]:checked') ? pass('e-pers') : fail('e-pers');
   }
   if (s === 6) {
-    photoB64 ? pass('e-foto') : fail('e-foto');
+    photos.length > 0 ? pass('e-foto') : fail('e-foto');
   }
   return ok;
 }
@@ -833,7 +875,11 @@ function collect() {
     personal: document.querySelector('input[name="pers"]:checked')?.value || '',
     problemaServicio: document.getElementById('probServ').value.trim(),
     observacion: document.getElementById('obs').value.trim(),
-    foto: photoB64 || ''
+    foto: photos[0] || '',
+    foto2: photos[1] || '',
+    foto3: photos[2] || '',
+    foto4: photos[3] || '',
+    foto5: photos[4] || '',
   };
 }
 
@@ -878,7 +924,8 @@ function resetAll() {
   document.getElementById('kpiAlert').className = 'kpi-alert';
   document.getElementById('photoPreview').style.display = 'none';
   document.getElementById('photoBtn').textContent = '📷 \u00a0Tomar o subir foto';
-  kpiVal = null; photoB64 = null;
+  kpiVal = null; photos = [];
+  renderPhotoGrid();
   cur = 1;
   document.getElementById('step1').classList.add('active');
   // Refresh timestamp + GPS
