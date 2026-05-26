@@ -604,7 +604,174 @@ function mostrarToastLargo(msg,color){
   t.classList.add('show');setTimeout(()=>{t.classList.remove('show');t.style.whiteSpace='nowrap';},5000);
 }
 
-function calcTotal(){
+function generarReporte(){
+  const d = JSON.parse(localStorage.getItem('bbc_reporte_ultimo')||'{}');
+  if(!d.pdv){mostrarToast('Sin datos de reporte','#ef4444');return;}
+
+  const MOD_NOMBRES = ['Experiencia','Marketing & Uniformes','Finanzas & Caja','Inventario','Operaciones & Personal','Mantenimiento','Ventas'];
+  const MOD_MAX = [15,15,15,15,15,15,10];
+  const MOD_ICONS = ['🍺','👕','💰','📦','🧹','🔩','📈'];
+
+  const estadoColor = d.estado==='VERDE'?'#22c55e':d.estado==='AMARILLO'?'#eab308':'#ef4444';
+  const estadoBg = d.estado==='VERDE'?'#052e16':d.estado==='AMARILLO'?'#422006':'#450a0a';
+
+  // Plan de acción desde hallazgos
+  const hallazgos = (d.hallazgos||'').split('\n').filter(h=>h.trim());
+  const planItems = hallazgos.map((h,i)=>`
+    <tr>
+      <td style="padding:8px 12px;border-bottom:1px solid #2a2a2e;font-size:12px">${i+1}. ${h}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid #2a2a2e;font-size:12px;color:#888">Coordinador</td>
+      <td style="padding:8px 12px;border-bottom:1px solid #2a2a2e;font-size:12px;color:#f5a623">Pendiente</td>
+    </tr>`).join('');
+
+  // Observaciones por módulo
+  const modObs = MODULOS.map((mod,i)=>{
+    const notas = mod.items
+      .filter(item=>d.obs[item.id]&&d.obs[item.id].nota)
+      .map(item=>`<li style="font-size:11px;color:#bbb;margin-bottom:3px">• ${item.label}: ${d.obs[item.id].nota}</li>`)
+      .join('');
+    const score = d.scores[i]||0;
+    const pct = score/MOD_MAX[i];
+    const c = pct>=0.85?'#22c55e':pct>=0.70?'#eab308':'#ef4444';
+    return `<div style="margin-bottom:12px;background:#141416;border:1px solid #2a2a2e;border-radius:10px;overflow:hidden">
+      <div style="padding:10px 14px;background:#1e1e21;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:13px;font-weight:600">${MOD_ICONS[i]} ${MOD_NOMBRES[i]}</span>
+        <span style="font-family:monospace;font-size:14px;font-weight:700;color:${c}">${score}/${MOD_MAX[i]}</span>
+      </div>
+      ${notas?`<ul style="padding:8px 14px;list-style:none">${notas}</ul>`:''}
+    </div>`;
+  }).join('');
+
+  const html = `<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reporte Auditoría — ${d.pdv}</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0a0a0b;color:#f0f0f0;font-family:'DM Sans',sans-serif;font-size:14px;padding:0}
+@media print{body{background:#fff;color:#000}.no-print{display:none!important}.print-section{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div style="max-width:680px;margin:0 auto;padding:24px 20px">
+
+  <!-- Header -->
+  <div class="no-print" style="margin-bottom:20px;display:flex;gap:10px">
+    <button onclick="window.print()" style="flex:1;padding:12px;background:#f5a623;color:#000;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">🖨️ Imprimir / Guardar PDF</button>
+    <button onclick="compartir()" style="flex:1;padding:12px;background:#1e1e21;color:#f0f0f0;border:1px solid #2a2a2e;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">📤 Compartir</button>
+  </div>
+
+  <!-- Logo + título -->
+  <div style="background:#141416;border:1px solid #2a2a2e;border-radius:14px;padding:20px;margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <div style="width:40px;height:40px;background:#f5a623;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px">🍺</div>
+      <div>
+        <div style="font-size:11px;color:#777;text-transform:uppercase;letter-spacing:.06em">Reporte de Auditoría</div>
+        <div style="font-size:18px;font-weight:700">BBC Colombia</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div><div style="font-size:10px;color:#777;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px">Punto de venta</div><div style="font-size:15px;font-weight:600">${d.pdv}</div></div>
+      <div><div style="font-size:10px;color:#777;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px">Tipo</div><div style="font-size:14px">${d.tipo}</div></div>
+      <div><div style="font-size:10px;color:#777;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px">Zona</div><div style="font-size:14px">${d.zona}</div></div>
+      <div><div style="font-size:10px;color:#777;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px">Coordinador</div><div style="font-size:14px">${d.coord}</div></div>
+      <div><div style="font-size:10px;color:#777;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px">Fecha</div><div style="font-size:14px;font-family:monospace">${d.fecha}</div></div>
+      <div><div style="font-size:10px;color:#777;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px">Auditora</div><div style="font-size:14px">Julieth Jimenez</div></div>
+    </div>
+  </div>
+
+  <!-- Puntaje total -->
+  <div style="background:${estadoBg};border:1px solid ${estadoColor}33;border-radius:14px;padding:20px;margin-bottom:16px;text-align:center">
+    <div style="font-size:11px;color:#777;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Puntaje total</div>
+    <div style="font-family:monospace;font-size:56px;font-weight:700;color:${estadoColor};line-height:1">${d.total}</div>
+    <div style="font-size:13px;color:${estadoColor};margin-top:6px;font-weight:600">/ 100 — ${d.estado}</div>
+    <!-- Barra -->
+    <div style="height:8px;background:#2a2a2e;border-radius:4px;margin-top:14px;overflow:hidden">
+      <div style="height:100%;width:${d.total}%;background:${estadoColor};border-radius:4px"></div>
+    </div>
+  </div>
+
+  <!-- Puntajes por módulo -->
+  <div style="background:#141416;border:1px solid #2a2a2e;border-radius:14px;padding:16px;margin-bottom:16px">
+    <div style="font-size:11px;color:#f5a623;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px">📊 Puntajes por módulo</div>
+    ${MODULOS.map((mod,i)=>{
+      const score = d.scores[i]||0;
+      const pct = score/MOD_MAX[i];
+      const c = pct>=0.85?'#22c55e':pct>=0.70?'#eab308':'#ef4444';
+      return `<div style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <span style="font-size:12px">${MOD_ICONS[i]} ${MOD_NOMBRES[i]}</span>
+          <span style="font-family:monospace;font-size:13px;font-weight:700;color:${c}">${score}/${MOD_MAX[i]}</span>
+        </div>
+        <div style="height:5px;background:#2a2a2e;border-radius:3px;overflow:hidden">
+          <div style="height:100%;width:${Math.round(pct*100)}%;background:${c};border-radius:3px"></div>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>
+
+  <!-- Observaciones por módulo -->
+  ${modObs?`<div style="margin-bottom:16px">
+    <div style="font-size:11px;color:#f5a623;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">📝 Observaciones por módulo</div>
+    ${modObs}
+  </div>`:''}
+
+  <!-- Hallazgos críticos -->
+  ${hallazgos.length>0?`<div style="background:#141416;border:1px solid #2a2a2e;border-radius:14px;padding:16px;margin-bottom:16px">
+    <div style="font-size:11px;color:#ef4444;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">⚠️ Hallazgos críticos</div>
+    ${hallazgos.map((h,i)=>`<div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #2a2a2e;font-size:13px">
+      <span style="color:#f5a623;flex-shrink:0;font-weight:600">${i+1}.</span>
+      <span>${h}</span>
+    </div>`).join('')}
+  </div>`:''}
+
+  <!-- Plan de acción -->
+  ${planItems?`<div style="background:#141416;border:1px solid #2a2a2e;border-radius:14px;overflow:hidden;margin-bottom:16px">
+    <div style="padding:14px 16px;background:#1e1e21;border-bottom:1px solid #2a2a2e">
+      <div style="font-size:11px;color:#f5a623;font-weight:600;text-transform:uppercase;letter-spacing:.06em">📋 Plan de acción</div>
+    </div>
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr>
+        <th style="padding:8px 12px;font-size:10px;color:#777;text-align:left;background:#1a1a1c;text-transform:uppercase">Hallazgo</th>
+        <th style="padding:8px 12px;font-size:10px;color:#777;text-align:left;background:#1a1a1c;text-transform:uppercase">Responsable</th>
+        <th style="padding:8px 12px;font-size:10px;color:#777;text-align:left;background:#1a1a1c;text-transform:uppercase">Estado</th>
+      </tr></thead>
+      <tbody>${planItems}</tbody>
+    </table>
+  </div>`:''}
+
+  <!-- Notas -->
+  ${d.notas?`<div style="background:#141416;border:1px solid #2a2a2e;border-radius:14px;padding:16px;margin-bottom:16px">
+    <div style="font-size:11px;color:#f5a623;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">📌 Notas adicionales</div>
+    <div style="font-size:13px;color:#bbb;line-height:1.6">${d.notas}</div>
+  </div>`:''}
+
+  <!-- Footer -->
+  <div style="text-align:center;padding:16px;color:#444;font-size:11px;border-top:1px solid #2a2a2e">
+    BBC Colombia · Auditorías Operaciones · ${d.fecha}
+  </div>
+</div>
+
+<script>
+function compartir(){
+  if(navigator.share){
+    navigator.share({title:'Reporte BBC — ${d.pdv}',text:'Reporte de auditoría ${d.pdv} — ${d.total}/100 ${d.estado}',url:window.location.href});
+  } else {
+    navigator.clipboard.writeText(window.location.href);
+    alert('Link copiado al portapapeles');
+  }
+}
+<\/script>
+</body></html>`;
+
+  const blob = new Blob([html], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  window.open(url,'_blank');
+}
+
   let total=0;
   const scores=[];
   MODULOS.forEach(mod=>{
@@ -820,11 +987,42 @@ async function enviar(){
     try{localStorage.removeItem(DRAFT_KEY);}catch(e){}
     document.getElementById('draft-banner').classList.remove('show');
 
-    // Bloqueo permanente — solo se libera con "Empezar nueva"
+    // Bloqueo permanente + mostrar botón de reporte
     btn.textContent='✓ Auditoría enviada';
     btn.style.background='#22c55e';
     btn.style.cursor='not-allowed';
-    // No re-habilitamos el botón automáticamente
+
+    // Guardar datos del reporte para generar PDF
+    const datosReporte = {
+      pdv: txt('f_pdv'), zona, coord, tipo,
+      fecha: formatTs(tsInicio),
+      gps: gpsData.address,
+      total, estado,
+      scores: scores.slice(),
+      hallazgos: txt('hallazgos'),
+      notas: txt('notas'),
+      obs: {}
+    };
+    // Capturar observaciones por módulo
+    MODULOS.forEach(mod=>{
+      mod.items.forEach(item=>{
+        const r = respuestas[item.id];
+        const n = document.getElementById('n_'+item.id);
+        if(r && r !== '') datosReporte.obs[item.id] = {resp: r, nota: n?n.value:''};
+      });
+    });
+    localStorage.setItem('bbc_reporte_ultimo', JSON.stringify(datosReporte));
+
+    // Mostrar botón de reporte en la barra inferior
+    const bottomBar = document.querySelector('.bottom-bar');
+    const btnReporte = document.createElement('button');
+    btnReporte.className = 'btn';
+    btnReporte.style.background = '#1a1a2e';
+    btnReporte.style.border = '1px solid var(--accent)';
+    btnReporte.style.color = 'var(--accent)';
+    btnReporte.textContent = '📄 Ver reporte';
+    btnReporte.onclick = generarReporte;
+    bottomBar.insertBefore(btnReporte, btn);
 
   }catch(e){
     mostrarToast('Error — verifica conexión','#ef4444');
