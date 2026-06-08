@@ -160,7 +160,7 @@ select.fil:focus{outline:none;border-color:var(--amber);}
 
 <!-- FRECUENCIA -->
 <div class="section" id="tab-frecuencia">
-  <div class="sec-title">📅 Cumplimiento de Visitas — Mayo 2026</div>
+  <div class="sec-title" id="freqTitle">📅 Cumplimiento de Visitas</div>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
     <div style="background:var(--rd);border-radius:9px;padding:14px 16px;display:flex;align-items:center;gap:12px;">
@@ -372,7 +372,10 @@ function renderResumen() {
 
 /* ── FRECUENCIA ── */
 function renderFrecuencia() {
-  const ms = monthStart(new Date());
+  const now = new Date();
+  const mes = now.toLocaleDateString('es-CO',{month:'long',year:'numeric'}).toUpperCase();
+  document.getElementById('freqTitle').textContent = '📅 Cumplimiento de Visitas — ' + mes;
+  const ms = monthStart(now);
   const allPDVs = [...ALL_PDV.NORTE, ...ALL_PDV.SUR];
   const critical = allPDVs.filter(p => (KPI_SCORES[p] ?? 8) <= 4).length;
   const normal   = allPDVs.filter(p => (KPI_SCORES[p] ?? 8) > 4).length;
