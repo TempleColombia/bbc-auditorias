@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>BBC · Hora de Servicio</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0e0e0f;--surface:#1a1a1c;--surface2:#242427;--border:#2e2e32;--text:#f0f0f0;--muted:#888;--accent:#f5a623;--green:#22c55e;--radius:14px;--font:'DM Sans',sans-serif;--mono:'DM Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;min-height:100vh}
+.app-header{position:sticky;top:0;z-index:100;background:rgba(14,14,15,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
+.logo-row{display:flex;align-items:center;gap:10px}
+.logo-dot{width:26px;height:26px;background:#f5a623;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.app-title{font-size:14px;font-weight:600}.app-sub{font-size:11px;color:var(--muted)}
+.score-chip{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-family:var(--mono);font-size:13px}
+.back-btn{font-size:13px;color:var(--accent);text-decoration:none;display:flex;align-items:center;gap:4px}
+.container{padding:12px 16px 100px;max-width:520px;margin:0 auto}
+.gps-banner{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+.gps-dot{width:9px;height:9px;border-radius:50%;background:#888;flex-shrink:0}
+.gps-dot.ok{background:var(--green)}.gps-dot.loading{background:var(--accent);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.gps-label{font-size:11px;color:var(--muted);margin-bottom:1px}.gps-val{font-size:12px;font-family:var(--mono)}
+.ts-strip{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:9px 13px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.ts-label{font-size:11px;color:var(--muted)}.ts-val{font-size:12px;font-family:var(--mono);color:var(--accent)}
+.pdv-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:10px}
+.pdv-card h2{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px}
+.pdv-auto{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-top:10px;display:none}
+.pdv-auto-row{display:flex;gap:16px;flex-wrap:wrap}
+.pdv-auto-item{font-size:12px;color:var(--muted)}
+.pdv-auto-item span{color:var(--text);font-weight:500;display:block;margin-top:1px}
+select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:14px;font-family:var(--font);color:var(--text);outline:none;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+select:focus{border-color:var(--accent)}
+.section{margin-bottom:10px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);background:var(--surface)}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none}
+.sec-hdr:active{background:var(--surface2)}
+.sec-left{display:flex;align-items:center;gap:10px}
+.sec-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px}
+.ic1{background:#1e2a1a}.ic2{background:#1a1e2e}.ic3{background:#2a2a1a}.ic4{background:#2a1e1a}
+.sec-name{font-size:14px;font-weight:600}.sec-max{font-size:11px;color:var(--muted)}
+.sec-score{font-family:var(--mono);font-size:13px;color:var(--accent);min-width:48px;text-align:right}
+.chevron{color:var(--muted);font-size:16px;transition:transform .25s}.chevron.open{transform:rotate(180deg)}
+.sec-body{display:none;padding:0 16px 16px;border-top:1px solid var(--border)}.sec-body.open{display:block}
+.item-block{margin-top:10px;background:var(--surface2);border-radius:10px;padding:10px 12px}
+.item-label{font-size:12px;color:var(--text);font-weight:500;margin-bottom:8px}
+.item-opts{display:flex;gap:6px;margin-bottom:4px}
+.opt-btn{flex:1;padding:8px 4px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-size:12px;font-family:var(--font);font-weight:500;cursor:pointer;transition:all .15s;text-align:center}
+.opt-btn.sel-ok{background:#14532d;border-color:#22c55e;color:#86efac}
+.opt-btn.sel-no{background:#7f1d1d;border-color:#ef4444;color:#fca5a5}
+.opt-btn.sel-na{background:#2a2a1a;border-color:#555;color:#aaa}
+.note-toggle{font-size:11px;color:var(--muted);cursor:pointer;text-decoration:underline}
+.note-area{margin-top:6px;display:none}.note-area.open{display:block}
+.note-area textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:13px;font-family:var(--font);color:var(--text);resize:none;height:52px;outline:none}
+.note-area textarea:focus{border-color:var(--accent)}
+.sec-divider{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:14px;margin-bottom:2px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.mod-score-bar{margin-top:14px;padding-top:12px;border-top:1px solid var(--border)}
+.mod-score-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.mod-score-label{font-size:12px;color:var(--muted)}.mod-score-val{font-family:var(--mono);font-size:16px;color:var(--accent)}
+.score-bar-bg{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.score-bar-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .4s}
+.field{margin-top:12px}
+.field label{display:block;font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.field textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;font-size:13px;font-family:var(--font);color:var(--text);outline:none;resize:none;line-height:1.5}
+.field textarea:focus{border-color:var(--accent)}
+.total-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 16px;margin-bottom:14px}
+.total-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.total-num{font-family:var(--mono);font-size:48px;font-weight:500;line-height:1}
+.estado-chip{padding:5px 14px;border-radius:8px;font-size:13px;font-weight:600}
+.chip-verde{background:#14532d;color:#86efac}.chip-amarillo{background:#422006;color:#fde68a}.chip-rojo{background:#450a0a;color:#fca5a5}
+.total-bar-bg{height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+.total-bar-fill{height:100%;background:var(--accent);border-radius:4px;transition:width .4s}
+.mods-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px}
+.mod-chip{background:var(--surface2);border-radius:8px;padding:7px 4px;text-align:center}
+.mod-chip-name{font-size:9px;color:var(--muted);margin-bottom:3px}
+.mod-chip-val{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--accent)}
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;padding:10px 16px;background:rgba(14,14,15,.97);backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;gap:8px;z-index:100}
+.btn{flex:1;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font)}
+.btn-draft{background:var(--surface2);color:var(--muted)}
+.btn-send{background:var(--accent);color:#000}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#22c55e;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;display:none;z-index:200;white-space:nowrap}
+.toast.show{display:block}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="logo-row">
+    <a href="index.html" class="back-btn">‹</a>
+    <div class="logo-dot">🕐</div>
+    <div><div class="app-title">Hora de Servicio</div><div class="app-sub">Visita en franja Mié–Sáb 17:00–23:00</div></div>
+  </div>
+  <div class="score-chip" id="score-chip">—/100</div>
+</div>
+
+<div class="container">
+  <!-- GPS -->
+  <div class="gps-banner">
+    <div class="gps-dot loading" id="gps-dot"></div>
+    <div><div class="gps-label">Ubicación GPS</div><div class="gps-val" id="gps-val">Obteniendo ubicación...</div></div>
+  </div>
+
+  <!-- Timestamp -->
+  <div class="ts-strip">
+    <span class="ts-label">Inicio de auditoría</span>
+    <span class="ts-val" id="ts-val">—</span>
+    <span style="font-size:11px;color:var(--muted)">🔒 No editable</span>
+  </div>
+
+  <!-- PDV -->
+  <div class="pdv-card">
+    <h2>Punto de Venta</h2>
+    <select id="f_pdv" onchange="onPDV()">
+      <option value="">— Selecciona un PDV —</option>
+    </select>
+    <div class="pdv-auto" id="pdv-auto">
+      <div class="pdv-auto-row">
+        <div class="pdv-auto-item">Zona<span id="a-zona">—</span></div>
+        <div class="pdv-auto-item">Coordinador<span id="a-coord">—</span></div>
+        <div class="pdv-auto-item">Tipo<span id="a-tipo">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="modulos-container"></div>
+
+  <!-- Hallazgos -->
+  <div class="section">
+    <div class="sec-hdr" onclick="toggleSec(this)">
+      <div class="sec-left">
+        <div class="sec-icon ic3">⚠️</div>
+        <div><div class="sec-name">Hallazgos & notas</div><div class="sec-max">Observaciones críticas</div></div>
+      </div>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="sec-body">
+      <div class="field" style="margin-top:12px">
+        <label>Hallazgos críticos</label>
+        <textarea id="hallazgos" rows="3" placeholder="Un hallazgo por línea..."></textarea>
+      </div>
+      <div class="field">
+        <label>Notas adicionales</label>
+        <textarea id="notas" rows="2" placeholder="Observaciones generales..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Total -->
+  <div class="total-section">
+    <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Puntaje Total</div>
+    <div class="total-row">
+      <div class="total-num" id="total-num">—</div>
+      <div class="estado-chip" id="estado-chip">—</div>
+    </div>
+    <div class="total-bar-bg"><div class="total-bar-fill" id="total-bar" style="width:0%"></div></div>
+    <div class="mods-summary" id="mods-summary"></div>
+  </div>
+</div>
+
+<div class="bottom-bar">
+  <button class="btn btn-draft" onclick="guardarBorrador()">💾 Borrador</button>
+  <button class="btn btn-send" id="btn-enviar" onclick="enviar()">Guardar en Sheets</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyItpuGWvi4mPxo5_D7-w8ELpLxioIo31_z4M2cbOkSOcYo0OPbaqrD8KNvkRrU9oxXTA/exec';
+const TIPO_AUDITORIA = 'HORARIO_SERVICIO';
+const DRAFT_KEY = 'bbc_draft_horario';
+
+const MODULOS = [
+  { id:1, nombre:'Servicio & Menú', icon:'🍺', cls:'ic1', max:35, items:[
+    {id:'h_menu', label:'Menú disponible y precios actualizados', tipo:'yn'},
+    {id:'h_cat', label:'Categorías completas del menú (cervezas, licores, comida)', tipo:'yn'},
+    {id:'h_oferta', label:'Ofrecimiento activo de nuevas opciones (refill, otra ronda, para llevar)', tipo:'yn'},
+    {id:'h_aviso', label:'Aviso BBC iluminado', tipo:'yn'},
+    {id:'h_actitud', label:'Actitud y cordialidad en el servicio', tipo:'yn'},
+    {id:'h_uniforme', label:'Uniformes completos (servicio y cocina)', tipo:'yn'},
+    {id:'h_aseo_per', label:'Aseo personal y sin accesorios', tipo:'yn'},
+  ]},
+  { id:2, nombre:'Limpieza', icon:'🧹', cls:'ic2', max:20, items:[
+    {id:'h_lim_coc', label:'Limpieza de cocina', tipo:'yn'},
+    {id:'h_lim_bar', label:'Limpieza de barra', tipo:'yn'},
+    {id:'h_lim_sal', label:'Limpieza de salón', tipo:'yn'},
+    {id:'h_lim_ban', label:'Limpieza de baños', tipo:'yn'},
+  ]},
+  { id:3, nombre:'Operación', icon:'⚙️', cls:'ic3', max:25, items:[
+    {id:'h_imp_bar', label:'Impresora de barra funcionando', tipo:'yn'},
+    {id:'h_imp_coc', label:'Impresora de cocina funcionando', tipo:'yn'},
+    {id:'h_pres_plat', label:'Presentación de platos y servicio correcta', tipo:'yn'},
+    {id:'h_factura', label:'Facturación al momento de cobrar', tipo:'yn'},
+    {id:'h_personal', label:'Personal completo para la operación', tipo:'yn'},
+    {id:'h_consig', label:'Sin consignaciones pendientes', tipo:'yn'},
+  ]},
+  { id:4, nombre:'Mantenimiento', icon:'🔧', cls:'ic4', max:20, items:[
+    {id:'h_sillas', label:'Sillas y mesas en buen estado', tipo:'yn'},
+    {id:'h_pisos', label:'Pisos y paredes OK', tipo:'yn'},
+    {id:'h_luces', label:'Luces completas y funcionando', tipo:'yn'},
+    {id:'h_eq_coc', label:'Equipos de cocina funcionando', tipo:'yn'},
+    {id:'h_eq_bar', label:'Equipos de barra funcionando', tipo:'yn'},
+  ]},
+];
+
+const PDV_DATA = [
+  // Propios Norte - Germán
+  {n:'CALLE 85',z:'NORTE Propios',c:'BBC',t:'PUB'},
+  {n:'CHICO',z:'NORTE Propios',c:'BBC',t:'BODEGA'},
+  {n:'CALLE 100',z:'NORTE Propios',c:'BBC',t:'BODEGA'},
+  {n:'CEDRITOS',z:'NORTE Propios',c:'BBC',t:'PUB'},
+  {n:'COLINA',z:'NORTE Propios',c:'BBC',t:'PUB'},
+  {n:'USAQUEN',z:'NORTE Propios',c:'BBC',t:'PUB'},
+  {n:'BELAIRE',z:'NORTE Propios',c:'BBC',t:'PUB'},
+  {n:'PEPE SIERRA',z:'NORTE Propios',c:'BBC',t:'PUB'},
+  {n:'AVDA 19',z:'NORTE Propios',c:'BBC',t:'PUB'},
+  // Propios Sur - Yency
+  {n:'ANDINO',z:'SUR Propios',c:'BBC',t:'PUB'},
+  {n:'PARK WAY',z:'SUR Propios',c:'BBC',t:'BODEGA'},
+  {n:'CANDELARIA',z:'SUR Propios',c:'BBC',t:'PUB'},
+  {n:'CORFERIAS',z:'SUR Propios',c:'BBC',t:'BODEGA'},
+  {n:'CALLE 43',z:'SUR Propios',c:'BBC',t:'BODEGA'},
+  {n:'TERRAZA PASTEUR',z:'SUR Propios',c:'BBC',t:'BODEGA'},
+  {n:'PLAZA CENTRAL',z:'SUR Propios',c:'BBC',t:'PUB'},
+  {n:'PLAZA DE LAS AMÉRICAS',z:'SUR Propios',c:'BBC',t:'PUB'},
+  {n:'GALERÍAS',z:'SUR Propios',c:'BBC',t:'PUB'},
+  {n:'MOVISTAR',z:'SUR Propios',c:'BBC',t:'PUB'},
+  {n:'PLAZA CLARO',z:'SUR Propios',c:'BBC',t:'BODEGA'},
+  // Centro Propios
+  {n:'BOD CALLE 93',z:'CENTRO Propios',c:'BBC',t:'BODEGA'},
+  {n:'SALITRE',z:'CENTRO Propios',c:'BBC',t:'PUB'},
+  {n:'ANDINO',z:'CENTRO Propios',c:'BBC',t:'PUB'},
+  {n:'TITAN',z:'CENTRO Propios',c:'BBC',t:'PUB'},
+  {n:'PORTAL 80',z:'CENTRO Propios',c:'BBC',t:'BODEGA'},
+  // Centro FRQ - Javier
+  {n:'POLA INVESTMENT GROUP - BODEGA CALLE 90',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'POLA INVESTMENT BODEGA CALLE 100 WTC',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'POLA INVESTMENT BOGOTÁ SALITRE',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'PUB SANTAFE KUZUDAMA SAS',z:'Centro FRQ',c:'JAVIER',t:'PUB'},
+  {n:'PUB CHAPINERO KUZUDAMA SAS',z:'Centro FRQ',c:'JAVIER',t:'PUB'},
+  {n:'BEER PALS JAVERIANA',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'BEER PALS SAS CL 109',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'INDUSTRIAS VANDELAY S.A.S CHIA',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'INDUSTRIAS VANDELAY UNICENTRO BOGOTA',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'ZONA BBC S.A.S. - GRANADA HILLS',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'ZONA BBC SAS CALLE 150',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'ZONA BBC BOGOTA CALLE 140',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'INVERSIONES AHG - GRAN ESTACION',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'INVERSIONES AHG CENTRO EMPRESARIAL 127',z:'Centro FRQ',c:'JAVIER',t:'PUB'},
+  {n:'OIKOS BODEGA BBC TOCANCIPA',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  // Sur Fraq - Milena
+  {n:'ARTESANALES PREMIUM CALI CHIPICHAPE',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'ARTESANALES PREMIUM FLORA CALI',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'ARTESANALES PREMIUM CALI GRANADA',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'ARTESANALES PREMIUM CALI RÍO CALI',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'GRUPO INGERLIN PUERTO 125',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'GRUPO INGERLIN SAS - LAS PALMAS',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'GRUPO INGERLIN JARDIN PLAZA',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'GRUPO INGERLIN SAS - SAN FERNANDO',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'GESSAG SAS PALMIRA LLANOGRANDE',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'RESILIENCIA POPAYAN CENTRO HISTORICO',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'RESILIENCIA POPAYAN NORTE',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'RESILIENCIA FC S.A.S. - POPAYAN',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'INVERSIONES AHG IBAGUE VERGEL PLAZA',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'BIRRAPEDIA SAS - TULUA',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'BAP COMPANY FLORENCIA CUNDUY',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'BREWERY SAS PASTO ESTUDIANTES',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'INVERSIONES AHG LA FLORIDA',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  // Andes Fraq - Natalia
+  {n:'AMANTA SAS - ARMENIA',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'AMANTA SAS PEREIRA',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'VALBUENA BROTHERS SAS - LAURELES MEDELLIN',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'VALBUENA BROTHERS SQUARE',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'VALBUENA BROTHERS CIUDAD DE RIO',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'VALBUENA BROTHERS - MEDELLIN AMSTERDAM',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'VALBUENA BROTHERS PROVENZA',z:'Andes Fraq',c:'NATALIA',t:'PUB'},
+  {n:'PUB VALBUENA BROTHERS SAS - ESTRADA MED',z:'Andes Fraq',c:'NATALIA',t:'PUB'},
+  {n:'MERA CERON BODEGA MEDELLIN LA 70',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'BODEGA SABANETA MERA CERON',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'PERLA DEL LUPULO BODEGA UNICENTRO PEREIRA',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'BODEGA VILLA DEL ROSARIO INV APONTE SAS',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'PUB MANIZALES',z:'Andes Fraq',c:'NATALIA',t:'PUB'},
+  {n:'MALTAURBANA SAS MANIZALES',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+];
+
+let gpsData={lat:'',lng:'',address:'Sin GPS'};
+let tsInicio='';
+let respuestas={};
+let scores=[];
+
+// Init
+window.onload=function(){
+  tsInicio=formatTs(new Date());
+  document.getElementById('ts-val').textContent=tsInicio;
+  initGPS();
+  buildPDV();
+  buildModulos();
+  loadDraft();
+};
+
+function formatTs(d){
+  if(!(d instanceof Date)) d=new Date(d);
+  return d.toLocaleDateString('es-CO')+' '+d.toLocaleTimeString('es-CO');
+}
+
+function initGPS(){
+  if(!navigator.geolocation){document.getElementById('gps-val').textContent='GPS no disponible';return;}
+  navigator.geolocation.getCurrentPosition(pos=>{
+    gpsData.lat=pos.coords.latitude.toFixed(6);
+    gpsData.lng=pos.coords.longitude.toFixed(6);
+    gpsData.address=gpsData.lat+', '+gpsData.lng;
+    document.getElementById('gps-val').textContent=gpsData.address;
+    document.getElementById('gps-dot').className='gps-dot ok';
+    fetch('https://nominatim.openstreetmap.org/reverse?lat='+gpsData.lat+'&lon='+gpsData.lng+'&format=json')
+      .then(r=>r.json()).then(d=>{if(d.display_name){gpsData.address=d.display_name;document.getElementById('gps-val').textContent=d.display_name.substring(0,60)+'...';}}).catch(()=>{});
+  },()=>{document.getElementById('gps-val').textContent='Error de GPS';document.getElementById('gps-dot').className='gps-dot err';});
+}
+
+function buildPDV(){
+  const sel=document.getElementById('f_pdv');
+  PDV_DATA.sort((a,b)=>a.n.localeCompare(b.n)).forEach(p=>{
+    const o=document.createElement('option');
+    o.value=p.n;o.dataset.z=p.z;o.dataset.c=p.c;o.dataset.t=p.t;
+    o.textContent=p.n;sel.appendChild(o);
+  });
+}
+
+function onPDV(){
+  const sel=document.getElementById('f_pdv');
+  const opt=sel.options[sel.selectedIndex];
+  if(!opt.value)return;
+  document.getElementById('a-zona').textContent=opt.dataset.z||'—';
+  document.getElementById('a-coord').textContent=opt.dataset.c||'—';
+  document.getElementById('a-tipo').textContent=opt.dataset.t||'—';
+  document.getElementById('pdv-auto').style.display='block';
+}
+
+function buildModulos(){
+  const cont=document.getElementById('modulos-container');
+  scores=new Array(MODULOS.length).fill(0);
+  MODULOS.forEach((mod,mi)=>{
+    const sec=document.createElement('div');
+    sec.className='section';
+    let itemsHTML='';
+    mod.items.forEach(item=>{
+      itemsHTML+=`<div class="item-block">
+        <div class="item-label">${item.label}</div>
+        <div class="item-opts">
+          <button class="opt-btn" onclick="resp('${item.id}','ok',this,${mi})">✓ Sí/Ok</button>
+          <button class="opt-btn" onclick="resp('${item.id}','no',this,${mi})">✗ No</button>
+          <button class="opt-btn" onclick="resp('${item.id}','na',this,${mi})">— N/A</button>
+        </div>
+        <span class="note-toggle" onclick="toggleNote('n_${item.id}')">+ nota</span>
+        <div class="note-area" id="na_${item.id}"><textarea id="n_${item.id}" placeholder="Observación..."></textarea></div>
+      </div>`;
+    });
+    sec.innerHTML=`<div class="sec-hdr" onclick="toggleSec(this)">
+      <div class="sec-left">
+        <div class="sec-icon ${mod.cls}">${mod.icon}</div>
+        <div><div class="sec-name">${mod.nombre}</div><div class="sec-max">/${mod.max} pts</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="sec-score" id="score-m${mi}">0/${mod.max}</div>
+        <span class="chevron">▾</span>
+      </div>
+    </div>
+    <div class="sec-body">
+      ${itemsHTML}
+      <div class="mod-score-bar">
+        <div class="mod-score-row"><span class="mod-score-label">Puntaje módulo</span><span class="mod-score-val" id="mval-${mi}">0/${mod.max}</span></div>
+        <div class="score-bar-bg"><div class="score-bar-fill" id="mbar-${mi}" style="width:0%"></div></div>
+      </div>
+    </div>`;
+    cont.appendChild(sec);
+  });
+}
+
+function resp(id,val,btn,mi){
+  respuestas[id]=val;
+  const parent=btn.parentElement;
+  parent.querySelectorAll('.opt-btn').forEach(b=>{b.className='opt-btn';});
+  btn.classList.add(val==='ok'?'sel-ok':val==='no'?'sel-no':'sel-na');
+  calcTotal();
+}
+
+function toggleNote(id){
+  const area=document.getElementById('na_'+id.replace('n_',''));
+  area.classList.toggle('open');
+}
+
+function toggleSec(hdr){
+  const body=hdr.nextElementSibling;
+  const chev=hdr.querySelector('.chevron');
+  body.classList.toggle('open');
+  chev.classList.toggle('open');
+}
+
+function calcTotal(){
+  let total=0;
+  MODULOS.forEach((mod,mi)=>{
+    let ok=0,aplicables=0;
+    mod.items.forEach(item=>{
+      const r=respuestas[item.id];
+      if(r==='ok'){ok++;aplicables++;}
+      else if(r==='no'){aplicables++;}
+    });
+    const s=aplicables>0?Math.round(ok/aplicables*mod.max):0;
+    scores[mi]=s;
+    total+=s;
+    document.getElementById('score-m'+mi).textContent=s+'/'+mod.max;
+    document.getElementById('mval-'+mi).textContent=s+'/'+mod.max;
+    document.getElementById('mbar-'+mi).style.width=(aplicables>0?ok/aplicables*100:0)+'%';
+  });
+  const maxTotal=MODULOS.reduce((a,m)=>a+m.max,0);
+  document.getElementById('total-num').textContent=total;
+  document.getElementById('total-bar').style.width=(total/maxTotal*100)+'%';
+  document.getElementById('score-chip').textContent=total+'/'+maxTotal;
+  const estado=total>=Math.round(maxTotal*.85)?'VERDE':total>=Math.round(maxTotal*.70)?'AMARILLO':'ROJO';
+  const chip=document.getElementById('estado-chip');
+  chip.textContent=(estado==='VERDE'?'🟢':estado==='AMARILLO'?'🟡':'🔴')+' '+estado;
+  chip.className='estado-chip chip-'+estado.toLowerCase();
+
+  // Mini resumen módulos
+  const ms=document.getElementById('mods-summary');
+  ms.innerHTML=MODULOS.map((m,i)=>`<div class="mod-chip"><div class="mod-chip-name">${m.nombre.split(' ')[0]}</div><div class="mod-chip-val">${scores[i]}/${m.max}</div></div>`).join('');
+}
+
+function txt(id){const e=document.getElementById(id);return e?e.value.trim():'';}
+
+async function enviar(){
+  const btn=document.getElementById('btn-enviar');
+  const pdv=txt('f_pdv');
+  if(!pdv){mostrarToast('Selecciona un PDV','#ef4444');return;}
+  const sinResp=[];
+  MODULOS.forEach(mod=>mod.items.forEach(item=>{if(!respuestas[item.id])sinResp.push(item.label);}));
+  if(sinResp.length>0){mostrarToast('Faltan '+sinResp.length+' ítems por responder','#ef4444');return;}
+
+  btn.textContent='Enviando...';btn.disabled=true;
+  const tsEnvio=formatTs(new Date());
+  const sel=document.getElementById('f_pdv');
+  const opt=sel.options[sel.selectedIndex];
+  const zona=opt.dataset.z||'';
+  const coord=opt.dataset.c||'';
+  const tipo=opt.dataset.t||'';
+  let total=0;scores.forEach(s=>total+=s);
+  const maxTotal=MODULOS.reduce((a,m)=>a+m.max,0);
+  const estado=total>=Math.round(maxTotal*.85)?'VERDE':total>=Math.round(maxTotal*.70)?'AMARILLO':'ROJO';
+
+  const fila=[
+    tsInicio,tsEnvio,gpsData.lat,gpsData.lng,gpsData.address,
+    pdv,zona,coord,tipo,TIPO_AUDITORIA
+  ];
+  MODULOS.forEach((mod,mi)=>{
+    mod.items.forEach(item=>{
+      fila.push(respuestas[item.id]||'');
+      fila.push(txt('n_'+item.id)||'');
+    });
+    fila.push(scores[mi]);
+  });
+  fila.push(total,estado,txt('hallazgos'),txt('notas'));
+
+  try{
+    const r=await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({tipo:TIPO_AUDITORIA,row:fila})});
+    const d=await r.json();
+    if(d.ok){
+      mostrarToast('✓ Guardado correctamente');
+      btn.textContent='✓ Auditoría enviada';btn.style.background='#22c55e';btn.style.cursor='not-allowed';
+    } else {
+      mostrarToast('Error: '+d.reason,'#ef4444');
+      btn.textContent='Guardar en Sheets';btn.disabled=false;
+    }
+  }catch(e){mostrarToast('Error de red','#ef4444');btn.textContent='Guardar en Sheets';btn.disabled=false;}
+}
+
+function guardarBorrador(){
+  const draft={respuestas,scores,pdv:txt('f_pdv'),hallazgos:txt('hallazgos'),notas:txt('notas'),ts:tsInicio};
+  try{localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));mostrarToast('Borrador guardado');}catch(e){}
+}
+
+function loadDraft(){
+  try{
+    const d=JSON.parse(localStorage.getItem(DRAFT_KEY)||'{}');
+    if(!d.pdv) return;
+    document.getElementById('f_pdv').value=d.pdv;onPDV();
+    respuestas=d.respuestas||{};
+    Object.entries(respuestas).forEach(([id,val])=>{
+      const btns=document.querySelectorAll(`[onclick*="'${id}'"]`);
+      btns.forEach(btn=>{if(btn.onclick&&btn.onclick.toString().includes("'"+val+"'"))btn.classList.add(val==='ok'?'sel-ok':val==='no'?'sel-no':'sel-na');});
+    });
+    if(d.hallazgos)document.getElementById('hallazgos').value=d.hallazgos;
+    if(d.notas)document.getElementById('notas').value=d.notas;
+    calcTotal();
+  }catch(e){}
+}
+
+function mostrarToast(msg,color='#22c55e'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.style.background=color;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+</script>
+</body>
+</html>
