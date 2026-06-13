@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>BBC · Visita Virtual</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0e0e0f;--surface:#1a1a1c;--surface2:#242427;--border:#2e2e32;--text:#f0f0f0;--muted:#888;--accent:#f5a623;--green:#22c55e;--radius:14px;--font:'DM Sans',sans-serif;--mono:'DM Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;min-height:100vh}
+.app-header{position:sticky;top:0;z-index:100;background:rgba(14,14,15,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
+.logo-row{display:flex;align-items:center;gap:10px}
+.back-btn{font-size:13px;color:var(--accent);text-decoration:none}
+.logo-dot{width:26px;height:26px;background:#3b82f6;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.app-title{font-size:14px;font-weight:600}.app-sub{font-size:11px;color:var(--muted)}
+.score-chip{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-family:var(--mono);font-size:13px}
+.container{padding:12px 16px 100px;max-width:520px;margin:0 auto}
+.gps-banner{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+.gps-dot{width:9px;height:9px;border-radius:50%;background:#888;flex-shrink:0}
+.gps-dot.ok{background:var(--green)}.gps-dot.loading{background:var(--accent);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.gps-label{font-size:11px;color:var(--muted);margin-bottom:1px}.gps-val{font-size:12px;font-family:var(--mono)}
+.ts-strip{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:9px 13px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.ts-label{font-size:11px;color:var(--muted)}.ts-val{font-size:12px;font-family:var(--mono);color:var(--accent)}
+.pdv-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:10px}
+.pdv-card h2{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px}
+.pdv-auto{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-top:10px;display:none}
+.pdv-auto-row{display:flex;gap:16px;flex-wrap:wrap}
+.pdv-auto-item{font-size:12px;color:var(--muted)}
+.pdv-auto-item span{color:var(--text);font-weight:500;display:block;margin-top:1px}
+select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:14px;font-family:var(--font);color:var(--text);outline:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+select:focus{border-color:var(--accent)}
+.section{margin-bottom:10px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);background:var(--surface)}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none}
+.sec-hdr:active{background:var(--surface2)}
+.sec-left{display:flex;align-items:center;gap:10px}
+.sec-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px}
+.ic1{background:#1e2a1a}.ic2{background:#1a1e2e}.ic3{background:#2a1e1a}.ic4{background:#1e1a2a}.ic5{background:#1a2a28}.ic6{background:#2a1a22}.ic7{background:#1a2226}.ic8{background:#2a2a1a}
+.sec-name{font-size:14px;font-weight:600}.sec-max{font-size:11px;color:var(--muted)}
+.sec-score{font-family:var(--mono);font-size:13px;color:var(--accent);min-width:48px;text-align:right}
+.chevron{color:var(--muted);font-size:16px;transition:transform .25s}.chevron.open{transform:rotate(180deg)}
+.sec-body{display:none;padding:0 16px 16px;border-top:1px solid var(--border)}.sec-body.open{display:block}
+
+/* Escala 1-5 */
+.item-block{margin-top:10px;background:var(--surface2);border-radius:10px;padding:10px 12px}
+.item-label{font-size:12px;color:var(--text);font-weight:500;margin-bottom:8px}
+.scale-row{display:flex;gap:5px;margin-bottom:6px}
+.scale-btn{flex:1;padding:10px 2px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-size:14px;font-family:var(--mono);font-weight:700;cursor:pointer;transition:all .15s;text-align:center}
+.scale-btn.s1{background:#450a0a;border-color:#ef4444;color:#fca5a5}
+.scale-btn.s2{background:#422006;border-color:#f97316;color:#fed7aa}
+.scale-btn.s3{background:#422006;border-color:#eab308;color:#fde68a}
+.scale-btn.s4{background:#14532d;border-color:#86efac;color:#86efac}
+.scale-btn.s5{background:#052e16;border-color:#22c55e;color:#22c55e}
+.scale-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-bottom:4px;padding:0 2px}
+.note-toggle{font-size:11px;color:var(--muted);cursor:pointer;text-decoration:underline}
+.note-area{margin-top:6px;display:none}.note-area.open{display:block}
+.note-area textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:13px;font-family:var(--font);color:var(--text);resize:none;height:52px;outline:none}
+.mod-score-bar{margin-top:14px;padding-top:12px;border-top:1px solid var(--border)}
+.mod-score-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.mod-score-label{font-size:12px;color:var(--muted)}.mod-score-val{font-family:var(--mono);font-size:16px;color:var(--accent)}
+.score-bar-bg{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.score-bar-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .4s}
+.compromisos-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:10px}
+.comp-title{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;font-weight:600}
+.comp-row{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;margin-bottom:8px;background:var(--surface2);border-radius:10px;padding:10px 12px}
+.comp-input{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:13px;font-family:var(--font);color:var(--text);outline:none;width:100%}
+.comp-input:focus{border-color:var(--accent)}
+.comp-mini{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 8px;font-size:12px;font-family:var(--font);color:var(--text);outline:none;width:100px}
+.comp-mini:focus{border-color:var(--accent)}
+.field{margin-top:12px}
+.field label{display:block;font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.field textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;font-size:13px;font-family:var(--font);color:var(--text);outline:none;resize:none;line-height:1.5}
+.total-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 16px;margin-bottom:14px}
+.total-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.total-num{font-family:var(--mono);font-size:48px;font-weight:500;line-height:1}
+.estado-chip{padding:5px 14px;border-radius:8px;font-size:13px;font-weight:600}
+.chip-verde{background:#14532d;color:#86efac}.chip-amarillo{background:#422006;color:#fde68a}.chip-rojo{background:#450a0a;color:#fca5a5}
+.total-bar-bg{height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+.total-bar-fill{height:100%;background:var(--accent);border-radius:4px;transition:width .4s}
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;padding:10px 16px;background:rgba(14,14,15,.97);backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;gap:8px;z-index:100}
+.btn{flex:1;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font)}
+.btn-draft{background:var(--surface2);color:var(--muted)}
+.btn-send{background:#3b82f6;color:#fff}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#22c55e;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;display:none;z-index:200;white-space:nowrap}
+.toast.show{display:block}
+.escala-ref{background:var(--surface2);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--muted);margin-bottom:12px;line-height:1.6}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="logo-row">
+    <a href="index.html" class="back-btn">‹</a>
+    <div class="logo-dot">💻</div>
+    <div><div class="app-title">Visita Virtual</div><div class="app-sub">Seguimiento comercial · Escala 1–5</div></div>
+  </div>
+  <div class="score-chip" id="score-chip">—/40</div>
+</div>
+
+<div class="container">
+
+  <div class="escala-ref">
+    📊 <strong>Escala:</strong> 1 = Crítico · 2 = Por mejorar · 3 = Aceptable · 4 = Bueno · 5 = Excelente
+  </div>
+
+  <!-- GPS -->
+  <div class="gps-banner">
+    <div class="gps-dot loading" id="gps-dot"></div>
+    <div><div class="gps-label">Ubicación</div><div class="gps-val" id="gps-val">Obteniendo...</div></div>
+  </div>
+
+  <div class="ts-strip">
+    <span class="ts-label">Inicio de visita</span>
+    <span class="ts-val" id="ts-val">—</span>
+    <span style="font-size:11px;color:var(--muted)">🔒 No editable</span>
+  </div>
+
+  <div class="pdv-card">
+    <h2>Punto de Venta</h2>
+    <select id="f_pdv" onchange="onPDV()">
+      <option value="">— Selecciona un PDV —</option>
+    </select>
+    <div class="pdv-auto" id="pdv-auto">
+      <div class="pdv-auto-row">
+        <div class="pdv-auto-item">Zona<span id="a-zona">—</span></div>
+        <div class="pdv-auto-item">Coordinador<span id="a-coord">—</span></div>
+        <div class="pdv-auto-item">Tipo<span id="a-tipo">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="modulos-container"></div>
+
+  <!-- Compromisos -->
+  <div class="compromisos-section">
+    <div class="comp-title">📋 Compromisos y acciones de cierre</div>
+    <div id="compromisos-list">
+      <div class="comp-row">
+        <input class="comp-input" placeholder="Acción / Compromiso" id="c1_acc">
+        <input class="comp-mini" placeholder="Responsable" id="c1_resp">
+        <input class="comp-mini" placeholder="Fecha" id="c1_fecha" type="date">
+      </div>
+      <div class="comp-row">
+        <input class="comp-input" placeholder="Acción / Compromiso" id="c2_acc">
+        <input class="comp-mini" placeholder="Responsable" id="c2_resp">
+        <input class="comp-mini" placeholder="Fecha" id="c2_fecha" type="date">
+      </div>
+      <div class="comp-row">
+        <input class="comp-input" placeholder="Acción / Compromiso" id="c3_acc">
+        <input class="comp-mini" placeholder="Responsable" id="c3_resp">
+        <input class="comp-mini" placeholder="Fecha" id="c3_fecha" type="date">
+      </div>
+    </div>
+    <div class="field" style="margin-top:8px">
+      <label>Notas generales</label>
+      <textarea id="notas" rows="2" placeholder="Observaciones de la visita..."></textarea>
+    </div>
+  </div>
+
+  <!-- Total -->
+  <div class="total-section">
+    <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Calificación Global</div>
+    <div class="total-row">
+      <div class="total-num" id="total-num">—</div>
+      <div class="estado-chip" id="estado-chip">—</div>
+    </div>
+    <div class="total-bar-bg"><div class="total-bar-fill" id="total-bar" style="width:0%"></div></div>
+  </div>
+</div>
+
+<div class="bottom-bar">
+  <button class="btn btn-draft" onclick="guardarBorrador()">💾 Borrador</button>
+  <button class="btn btn-send" id="btn-enviar" onclick="enviar()">Guardar en Sheets</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyItpuGWvi4mPxo5_D7-w8ELpLxioIo31_z4M2cbOkSOcYo0OPbaqrD8KNvkRrU9oxXTA/exec';
+const TIPO_AUDITORIA = 'VIRTUAL';
+const DRAFT_KEY = 'bbc_draft_virtual';
+
+const SECCIONES = [
+  {id:'s1',nombre:'Cierre y Resultados del Mes',icon:'📊',cls:'ic1',preguntas:[
+    'Cuál es el NR acumulado vs. la meta proporcional al día de corte?',
+    'Cuál es el volumen en HL acumulado vs. meta?',
+    'Cuál es el ticket promedio actual vs. el mes anterior?',
+    'Cuántas transacciones (TKS) se han registrado en el período?',
+  ]},
+  {id:'s2',nombre:'Cumplimiento de Metas',icon:'🎯',cls:'ic2',preguntas:[
+    'El PDV está en ritmo para cumplir la meta mensual de NR?',
+    'El PDV está en ritmo para cumplir la meta de volumen (HL)?',
+    'Cómo es la participación de CERVEZAS BBC vs. meta de mezcla?',
+    'Cómo es la participación de ALIMENTOS vs. meta de mezcla?',
+    'Cómo es la participación del KPI o cerveza de temporada del mes?',
+    'Hay alguna categoría rezagada que requiera acción inmediata?',
+  ]},
+  {id:'s3',nombre:'Revisión de Pendientes del Sistema',icon:'⚙️',cls:'ic3',preguntas:[
+    'Hay pedidos pendientes de surtir o confirmar?',
+    'Existe alguna devolución sin procesar?',
+    'Hay pendientes que no permitan la acumulación?',
+    'El líder del PDV conoce cómo consultar sus reportes en el sistema?',
+  ]},
+  {id:'s4',nombre:'Disponibilidad de Productos',icon:'📦',cls:'ic4',preguntas:[
+    'Hay rupturas de stock en referencias clave (SKUs principales)?',
+    'El equipo de chiller está funcionando correctamente?',
+    'Los productos están correctamente etiquetados y con precio visible?',
+    'Se requiere ajuste en el pedido para la siguiente semana?',
+  ]},
+  {id:'s5',nombre:'Campañas y Próximos Eventos',icon:'🎪',cls:'ic5',preguntas:[
+    'El PDV tiene visibilidad de las campañas activas (material POP, promociones)?',
+    'El equipo del PDV conoce las mecánicas de las promociones vigentes?',
+    'Hay eventos o fechas especiales próximas que requieran preparación?',
+    'Se cumplieron los compromisos de la última campaña?',
+  ]},
+  {id:'s6',nombre:'Novedades del Personal',icon:'👥',cls:'ic6',preguntas:[
+    'Ha habido cambios de personal en el PDV desde la última visita?',
+    'El personal nuevo tiene la inducción sobre productos BBC?',
+    'Hay necesidades de capacitación identificadas en el equipo?',
+    'El clima laboral es adecuado para la operación del PDV?',
+  ]},
+  {id:'s7',nombre:'Pendientes Generales',icon:'📋',cls:'ic7',preguntas:[
+    'Quedaron compromisos de la visita anterior sin cumplir?',
+    'Hay solicitudes del líder del PDV que deban escalar al equipo BBC?',
+    'Hay temas de infraestructura o mantenimiento que afecten la operación?',
+    'Se requiere alguna acción de soporte comercial o logístico?',
+  ]},
+  {id:'s8',nombre:'Crecimiento KPI vs. Año Anterior',icon:'📈',cls:'ic8',preguntas:[
+    'Cuál es el crecimiento en NR vs. el mismo período del año anterior?',
+    'Cuál es el crecimiento en volumen (HL) vs. el mismo período del año anterior?',
+    'Cuál es la variación en ticket promedio vs. el año anterior?',
+    'Cuál es la tendencia de TKS (transacciones) vs. el año anterior?',
+    'Qué acciones se implementarán para sostener/mejorar el crecimiento?',
+  ]},
+];
+
+const PDV_DATA = [
+  {n:'POLA INVESTMENT GROUP - BODEGA CALLE 90',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'POLA INVESTMENT BODEGA CALLE 100 WTC',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'POLA INVESTMENT BOGOTÁ SALITRE',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'PUB SANTAFE KUZUDAMA SAS',z:'Centro FRQ',c:'JAVIER',t:'PUB'},
+  {n:'PUB CHAPINERO KUZUDAMA SAS',z:'Centro FRQ',c:'JAVIER',t:'PUB'},
+  {n:'BEER PALS JAVERIANA',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'BEER PALS SAS CL 109',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'INDUSTRIAS VANDELAY S.A.S CHIA',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'INDUSTRIAS VANDELAY UNICENTRO BOGOTA',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'ZONA BBC S.A.S. - GRANADA HILLS',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'ZONA BBC SAS CALLE 150',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'ZONA BBC BOGOTA CALLE 140',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'INVERSIONES AHG - GRAN ESTACION',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'INVERSIONES AHG CENTRO EMPRESARIAL 127',z:'Centro FRQ',c:'JAVIER',t:'PUB'},
+  {n:'OIKOS BODEGA BBC TOCANCIPA',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'ARTESANALES PREMIUM CALI CHIPICHAPE',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'ARTESANALES PREMIUM FLORA CALI',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'ARTESANALES PREMIUM CALI GRANADA',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'ARTESANALES PREMIUM CALI RÍO CALI',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'GRUPO INGERLIN PUERTO 125',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'GRUPO INGERLIN SAS - LAS PALMAS',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'GRUPO INGERLIN JARDIN PLAZA',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'GRUPO INGERLIN SAS - SAN FERNANDO',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'GESSAG SAS PALMIRA LLANOGRANDE',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'RESILIENCIA POPAYAN CENTRO HISTORICO',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'RESILIENCIA POPAYAN NORTE',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'RESILIENCIA FC S.A.S. - POPAYAN',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'INVERSIONES AHG IBAGUE VERGEL PLAZA',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'BIRRAPEDIA SAS - TULUA',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'AMANTA SAS - ARMENIA',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'AMANTA SAS PEREIRA',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'VALBUENA BROTHERS SAS - LAURELES MEDELLIN',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'VALBUENA BROTHERS SQUARE',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'VALBUENA BROTHERS CIUDAD DE RIO',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'VALBUENA BROTHERS - MEDELLIN AMSTERDAM',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'VALBUENA BROTHERS PROVENZA',z:'Andes Fraq',c:'NATALIA',t:'PUB'},
+  {n:'PUB VALBUENA BROTHERS SAS - ESTRADA MED',z:'Andes Fraq',c:'NATALIA',t:'PUB'},
+  {n:'MERA CERON BODEGA MEDELLIN LA 70',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'BODEGA SABANETA MERA CERON',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'PERLA DEL LUPULO BODEGA UNICENTRO PEREIRA',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'BODEGA VILLA DEL ROSARIO INV APONTE SAS',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'PUB MANIZALES',z:'Andes Fraq',c:'NATALIA',t:'PUB'},
+  {n:'MALTAURBANA SAS MANIZALES',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'INVERSIONES AHG LA FLORIDA',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+];
+
+let gpsData={lat:'',lng:'',address:'Visita virtual'};
+let tsInicio='';
+let califs={};
+
+window.onload=function(){
+  tsInicio=formatTs(new Date());
+  document.getElementById('ts-val').textContent=tsInicio;
+  initGPS();buildPDV();buildModulos();
+};
+
+function formatTs(d){if(!(d instanceof Date))d=new Date(d);return d.toLocaleDateString('es-CO')+' '+d.toLocaleTimeString('es-CO');}
+
+function initGPS(){
+  if(!navigator.geolocation){document.getElementById('gps-val').textContent='Sin GPS (virtual)';return;}
+  navigator.geolocation.getCurrentPosition(pos=>{
+    gpsData.lat=pos.coords.latitude.toFixed(6);gpsData.lng=pos.coords.longitude.toFixed(6);
+    gpsData.address=gpsData.lat+', '+gpsData.lng;
+    document.getElementById('gps-val').textContent='Ubicación registrada';
+    document.getElementById('gps-dot').className='gps-dot ok';
+  },()=>{document.getElementById('gps-val').textContent='Visita virtual (sin GPS)';});
+}
+
+function buildPDV(){
+  const sel=document.getElementById('f_pdv');
+  PDV_DATA.sort((a,b)=>a.n.localeCompare(b.n)).forEach(p=>{
+    const o=document.createElement('option');o.value=p.n;o.dataset.z=p.z;o.dataset.c=p.c;o.dataset.t=p.t;o.textContent=p.n;sel.appendChild(o);
+  });
+}
+
+function onPDV(){
+  const sel=document.getElementById('f_pdv');const opt=sel.options[sel.selectedIndex];
+  if(!opt.value)return;
+  document.getElementById('a-zona').textContent=opt.dataset.z||'—';
+  document.getElementById('a-coord').textContent=opt.dataset.c||'—';
+  document.getElementById('a-tipo').textContent=opt.dataset.t||'—';
+  document.getElementById('pdv-auto').style.display='block';
+}
+
+function buildModulos(){
+  const cont=document.getElementById('modulos-container');
+  SECCIONES.forEach((sec,si)=>{
+    const div=document.createElement('div');div.className='section';
+    let pregsHTML='';
+    sec.preguntas.forEach((p,pi)=>{
+      const id=`${sec.id}_q${pi}`;
+      pregsHTML+=`<div class="item-block">
+        <div class="item-label">${p}</div>
+        <div class="scale-labels"><span>1 Crítico</span><span>2</span><span>3</span><span>4</span><span>5 Excelente</span></div>
+        <div class="scale-row">
+          ${[1,2,3,4,5].map(n=>`<button class="scale-btn" onclick="calif('${id}',${n},this,${si})">${n}</button>`).join('')}
+        </div>
+        <span class="note-toggle" onclick="toggleNote('na_${id}')">+ comentario</span>
+        <div class="note-area" id="na_${id}"><textarea id="n_${id}" placeholder="Comentarios / compromisos..."></textarea></div>
+      </div>`;
+    });
+    div.innerHTML=`<div class="sec-hdr" onclick="toggleSec(this)">
+      <div class="sec-left">
+        <div class="sec-icon ${sec.cls}">${sec.icon}</div>
+        <div><div class="sec-name">${sec.nombre}</div><div class="sec-max">${sec.preguntas.length} preguntas</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="sec-score" id="sc-${si}">—</div>
+        <span class="chevron">▾</span>
+      </div>
+    </div>
+    <div class="sec-body">${pregsHTML}
+      <div class="mod-score-bar">
+        <div class="mod-score-row"><span class="mod-score-label">Promedio sección</span><span class="mod-score-val" id="mv-${si}">—/5</span></div>
+        <div class="score-bar-bg"><div class="score-bar-fill" id="mb-${si}" style="width:0%"></div></div>
+      </div>
+    </div>`;
+    cont.appendChild(div);
+  });
+}
+
+function calif(id,val,btn,si){
+  califs[id]=val;
+  btn.parentElement.querySelectorAll('.scale-btn').forEach(b=>{b.className='scale-btn';});
+  btn.classList.add('s'+val);
+  calcTotal();
+}
+
+function toggleNote(id){document.getElementById(id).classList.toggle('open');}
+function toggleSec(hdr){const body=hdr.nextElementSibling;const chev=hdr.querySelector('.chevron');body.classList.toggle('open');chev.classList.toggle('open');}
+
+function calcTotal(){
+  let sumTotal=0,countTotal=0;
+  SECCIONES.forEach((sec,si)=>{
+    let sum=0,count=0;
+    sec.preguntas.forEach((p,pi)=>{const id=`${sec.id}_q${pi}`;if(califs[id]){sum+=califs[id];count++;}});
+    const prom=count>0?(sum/count):0;
+    document.getElementById('sc-'+si).textContent=count>0?prom.toFixed(1)+'/5':'—';
+    document.getElementById('mv-'+si).textContent=count>0?prom.toFixed(1)+'/5':'—';
+    document.getElementById('mb-'+si).style.width=count>0?(prom/5*100)+'%':'0%';
+    if(count>0){sumTotal+=sum;countTotal+=count;}
+  });
+  const promGlobal=countTotal>0?sumTotal/countTotal:0;
+  const escala100=Math.round(promGlobal/5*100);
+  document.getElementById('total-num').textContent=countTotal>0?promGlobal.toFixed(1):'—';
+  document.getElementById('total-bar').style.width=(promGlobal/5*100)+'%';
+  document.getElementById('score-chip').textContent=countTotal>0?promGlobal.toFixed(1)+'/5':'—/5';
+  const estado=promGlobal>=4?'VERDE':promGlobal>=3?'AMARILLO':'ROJO';
+  const chip=document.getElementById('estado-chip');
+  chip.textContent=(estado==='VERDE'?'🟢':estado==='AMARILLO'?'🟡':'🔴')+' '+estado;
+  chip.className='estado-chip chip-'+estado.toLowerCase();
+}
+
+function txt(id){const e=document.getElementById(id);return e?e.value.trim():'';}
+
+async function enviar(){
+  const btn=document.getElementById('btn-enviar');
+  const pdv=txt('f_pdv');if(!pdv){mostrarToast('Selecciona un PDV','#ef4444');return;}
+  btn.textContent='Enviando...';btn.disabled=true;
+  const tsEnvio=formatTs(new Date());
+  const sel=document.getElementById('f_pdv');const opt=sel.options[sel.selectedIndex];
+  const zona=opt.dataset.z||'';const coord=opt.dataset.c||'';const tipo=opt.dataset.t||'';
+
+  let sumTotal=0,countTotal=0;
+  SECCIONES.forEach(sec=>sec.preguntas.forEach((p,pi)=>{const id=`${sec.id}_q${pi}`;if(califs[id]){sumTotal+=califs[id];countTotal++;}}));
+  const promGlobal=countTotal>0?(sumTotal/countTotal):0;
+  const estado=promGlobal>=4?'VERDE':promGlobal>=3?'AMARILLO':'ROJO';
+
+  const fila=[tsInicio,tsEnvio,gpsData.lat,gpsData.lng,gpsData.address,pdv,zona,coord,tipo,TIPO_AUDITORIA];
+  SECCIONES.forEach(sec=>{
+    sec.preguntas.forEach((p,pi)=>{
+      const id=`${sec.id}_q${pi}`;
+      fila.push(califs[id]||'');
+      fila.push(txt('n_'+id)||'');
+    });
+  });
+  // Compromisos
+  [1,2,3].forEach(i=>{fila.push(txt('c'+i+'_acc'));fila.push(txt('c'+i+'_resp'));fila.push(txt('c'+i+'_fecha'));});
+  fila.push(promGlobal.toFixed(2),estado,txt('notas'));
+
+  try{
+    const r=await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({tipo:TIPO_AUDITORIA,row:fila})});
+    const d=await r.json();
+    if(d.ok){
+      mostrarToast('✓ Guardado correctamente');
+      btn.textContent='✓ Visita enviada';btn.style.background='#22c55e';btn.style.cursor='not-allowed';
+    } else {
+      mostrarToast('Error: '+d.reason,'#ef4444');btn.textContent='Guardar en Sheets';btn.disabled=false;
+    }
+  }catch(e){mostrarToast('Error de red','#ef4444');btn.textContent='Guardar en Sheets';btn.disabled=false;}
+}
+
+function guardarBorrador(){mostrarToast('Función próximamente');}
+
+function mostrarToast(msg,color='#22c55e'){
+  const t=document.getElementById('toast');t.textContent=msg;t.style.background=color;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+</script>
+</body>
+</html>
