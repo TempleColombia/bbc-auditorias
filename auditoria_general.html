@@ -155,8 +155,130 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15
       <div style="font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Selecciona el PDV</div>
       <select id="f_pdv" onchange="autocompletar();guardar()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;font-size:14px;font-family:var(--font);color:var(--text);outline:none;appearance:none;-webkit-appearance:none;background-image:url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\' viewBox=\'0 0 12 8\'%3E%3Cpath d=\'M1 1l5 5 5-5\' stroke=\'%23888\' stroke-width=\'1.5\' fill=\'none\' stroke-linecap=\'round\'/%3E%3C/svg%3E');background-repeat:no-repeat;background-position:right 12px center;padding-right:34px">
         <option value="">— Selecciona un PDV —</option>
-        <optgroup label="Propios Centro — BBC">
-          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="BODEGA">CALLE 67</option>
+        <optgroup label="Propios Norte — Germán">
+          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="BODEGA">BODEGA CALLE 100</option>
+          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="BODEGA">BODEGA CALLE 67</option>
+          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="BODEGA">BODEGA CALLE 93</option>
+          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="BODEGA">BODEGA CHICO</option>
+          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="BODEGA">BODEGA HEROES</option>
+          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="BODEGA">BODEGA IMPERIAL</option>
+          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="BODEGA">BODEGA LOURDES</option>
+          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="BODEGA">BODEGA PASADENA</option>
+          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="BODEGA">BODEGA VILLA DEL PRADO</option>
+          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="BODEGA">MINIPUB CALLE 97</option>
+          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="PUB">PUB ANDINO</option>
+          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="PUB">PUB AVDA 19</option>
+          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="PUB">PUB BELAIRE</option>
+          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="PUB">PUB CALLE 63</option>
+          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="PUB">PUB CALLE 85</option>
+          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="PUB">PUB CEDRITOS</option>
+          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="PUB">PUB COLINA</option>
+          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="PUB">PUB PARQUE 93</option>
+          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="PUB">PUB PEPE SIERRA</option>
+          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="PUB">PUB ROSALES</option>
+          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="PUB">PUB USAQUEN</option>
+        </optgroup>
+        <optgroup label="Propios Sur — Yency">
+          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="BODEGA">BODEGA BOSA CENTRO</option>
+          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="BODEGA">BODEGA CALLE 43</option>
+          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="BODEGA">BODEGA CORFERIAS</option>
+          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="BODEGA">BODEGA DIVER PLAZA</option>
+          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="BODEGA">BODEGA MODELO</option>
+          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="BODEGA">BODEGA PARK WAY</option>
+          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="BODEGA">BODEGA PLAZA CLARO</option>
+          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="BODEGA">BODEGA PORTAL CALLE 80</option>
+          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="BODEGA">BODEGA RESTREPO</option>
+          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="BODEGA">BODEGA TERRAZA PASTEUR</option>
+          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="PUB">PUB BBC MOVISTAR ARENA</option>
+          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="PUB">PUB CANDELARIA</option>
+          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="PUB">PUB CENTRO MAYOR</option>
+          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="PUB">PUB CONECTA</option>
+          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="PUB">PUB GALERIAS</option>
+          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="PUB">PUB PLAZA CENTRAL</option>
+          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="PUB">PUB PLAZA DE LAS AMERICAS</option>
+          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="PUB">PUB SALITRE</option>
+          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="PUB">PUB SAN MARTIN</option>
+          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="PUB">PUB TITAN</option>
+        </optgroup>
+        <optgroup label="Centro FRQ — Javier">
+          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">BEER PALS JAVERIANA</option>
+          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">BEER PALS SAS CL 109</option>
+          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">BODEGA GRAN ESTACION</option>
+          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">BODEGA KUZUDAMA MALL PLAZA</option>
+          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">DUYAN INVERSIONES SAS SOACHA TERREROS</option>
+          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">EL BREWER BODEGA BOGOTA COLINA 152</option>
+          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">GRUPO PROYECATRICO SAS - NUESTRO BOGOTA</option>
+          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">HARBOUR TOWN BOGOTA ALSACIA</option>
+          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">HARBOUR TOWN SAS HAYUELOS</option>
+          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">INDUSTRIAS VANDELAY SAS CHIA</option>
+          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">INDUSTRIAS VANDELAY UNICENTRO BOGOTA</option>
+          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">INVERSIONES AHG BOGOTA CALLE 165</option>
+          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="PUB">INVERSIONES AHG CENTRO EMPRESARIAL 127</option>
+          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">INVERSIONES AHG UNICENTRO OCCIDENTE</option>
+          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">OIKOS BODEGA BBC TOCANCIPA</option>
+          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">OLD STYLE BOGOTA TEQUENDAMA</option>
+          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">POLA INVESTMENT BODEGA CALLE 100 WTC</option>
+          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">POLA INVESTMENT BOGOTA SALITRE</option>
+          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">POLA INVESTMENT GROUP - BODEGA CALLE 90</option>
+          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="PUB">PUB CHAPINERO KUZUDAMA SAS</option>
+          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="PUB">PUB SANTAFE KUZUDAMA SAS</option>
+          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="PUB">PUB VILLA DEL RIO AHG</option>
+          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">VILLA DE LEYVA - POLA INVESTMENT GROUP</option>
+          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="PUB">VOLANDO ALTO SAS PUB CALLE 19</option>
+          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">ZONA BBC BOGOTA CALLE 140</option>
+          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">ZONA BBC BOGOTA PORTO ALEGRE</option>
+          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">ZONA BBC SAS - GRANADA HILLS</option>
+          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">ZONA BBC SAS CALLE 150</option>
+        </optgroup>
+        <optgroup label="Sur Fraq — Milena">
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">ARTESANALES PREMIUM CALI CHIPICHAPE</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">ARTESANALES PREMIUM CALI GRANADA</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">ARTESANALES PREMIUM CALI RIO CALI</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">ARTESANALES PREMIUM FLORA CALI</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">ARTESANALES PREMIUN CALI AEROPUERTO</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">BAP COMPANY FLORENCIA CUNDUY</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">BAP COMPANY ZOMAC SAS</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">BREWERY BODEGA SEBASTIAN PASTO</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">BREWERY SAS PASTO ESTUDIANTES</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">GESSAG SAS PALMIRA LLANOGRANDE</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">GRUPO INGERLIN CALI PARQUE DEL PERRO</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">GRUPO INGERLIN JARDIN PLAZA</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">GRUPO INGERLIN PUERTO 125</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">GRUPO INGERLIN SAS - LAS PALMAS</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">GRUPO INGERLIN SAS - SAN FERNANDO</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">RESILIENCIA FC SAS - POPAYAN</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">RESILIENCIA POPAYAN CENTRO HISTORICO</option>
+          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">RESILIENCIA POPAYAN NORTE</option>
+        </optgroup>
+        <optgroup label="Andes Fraq — Natalia">
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">AMANTA SAS - ARMENIA</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">AMANTA SAS ARMENIA PORTAL QUINDIO</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">AMANTA SAS PALO DE AGUA</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">AMANTA SAS PERIERA</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">BBC CARTAGO AMANTA SAS</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">BBC MEDELLIN</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">BIRRAPEDIA SAS - TULUA</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">BODEGA SABANETA MERA CERON</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">BODEGA VILLA DEL ROSARIO INV APONTE SAS</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">BURBANO CONTRERAS NAVAS - CUCUTA</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">INVERSIONES AHG - CC ACQUA IBAGUE</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="PUB">INVERSIONES AHG - PUB BUCARAMANGA</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">INVERSIONES AHG IBAGUE VERGEL PLAZA</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">INVERSIONES AHG LA FLORIDA</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">MALTAURBANA SAS MANIZALES</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">MERA CERON BODEGA MEDELLIN LA 70</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">PERLA DEL LUPULO BODEGA UNICENTRO PEREIRA</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="PUB">PUB BARRANQUILLA CANTOR COMPANY</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="PUB">PUB MANIZALES</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="PUB">PUB VALBUENA BROTHERS SAS - ESTRADA MED</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">SANTAMARTA</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">VALBUENA BROTHERS - MEDELLIN AMSTERDAM</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">VALBUENA BROTHERS CIUDAD DE RIO</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">VALBUENA BROTHERS COMPANY CC LLANOGRANDE</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">VALBUENA BROTHERS SAS - LAURELES MEDELLIN</option>
+          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">VALBUENA BROTHERS SQUARE</option>
+        </optgroup>
+      </select>
           <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="BODEGA">ARBOLEDA / HEROES</option>
           <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="BODEGA">BOD CALLE 93</option>
           <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="BODEGA">LOURDES</option>
@@ -170,115 +292,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15
           <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="PUB">CALLE 63</option>
           <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="PUB">ROSALES</option>
           <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="PUB">CONNECTA</option>
-        </optgroup>
-        <optgroup label="Propios Norte — BBC">
-          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="BODEGA">VILLA DEL PRADO</option>
-          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="BODEGA">CALLE 100</option>
-          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="BODEGA">PASADENA</option>
-          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="BODEGA">IMPERIAL</option>
-          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="BODEGA">CHICO</option>
-          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="BODEGA">MINI CALLE 97</option>
-          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="PUB">PARQUE 93</option>
-          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="PUB">CEDRITOS</option>
-          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="PUB">AVDA 19</option>
-          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="PUB">COLINA</option>
-          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="PUB">USAQUEN</option>
-          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="PUB">PEPE SIERRA</option>
-          <option data-zona="NORTE Propios" data-coord="BBC" data-tipo="PUB">BELAIRE</option>
-        </optgroup>
-        <optgroup label="Propios Sur — BBC">
-          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="BODEGA">CORFERIAS</option>
-          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="BODEGA">CALLE 43</option>
-          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="BODEGA">BOSA CENTRO</option>
-          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="BODEGA">RESTREPO</option>
-          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="BODEGA">TERRAZA PASTEUR</option>
-          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="BODEGA">PLAZA CLARO</option>
-          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="BODEGA">PARK WAY</option>
-          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="PUB">MOVISTAR</option>
-          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="PUB">GALERÍAS</option>
-          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="PUB">CANDELARIA</option>
-          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="PUB">CENTRO MAYOR</option>
-          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="PUB">PLAZA CENTRAL</option>
-          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="PUB">SAN MARTIN</option>
-          <option data-zona="SUR Propios" data-coord="BBC" data-tipo="PUB">PLAZA DE LAS AMÉRICAS</option>
-        </optgroup>
-        <optgroup label="Centro FRQ — Harrison">
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">BEER PALS JAVERIANA</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">BEER PALS SAS CL 109</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">BODEGA KUZUDAMA MALL PLAZA</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">DUYAN INVERSIONES SAS SOACHA TERREROS</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">EL BREWER BODEGA BOGOTA COLINA 152</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">GRUPO PROYECATRICO SAS - NUESTRO BOGOTA</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">HARBOUR TOWN BOGOTA ALSACIA</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">HARBOUR TOWN SAS HAYUELOS</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">INDUSTRIAS VANDELAY S.A.S CHIA</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">INDUSTRIAS VANDELAY UNICENTRO BOGOTA</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">INVERSIONES AHG - GRAN ESTACION</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">INVERSIONES AHG BOGOTÁ CALLE 165</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="PUB">INVERSIONES AHG CENTRO EMPRESARIAL 127</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">INVERSIONES AHG UNICENTRO OCCIDENTE</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">OIKOS BODEGA BBC TOCANCIPA</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">OLD STYLE BOGOTA TEQUENDAMA</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">POLA INVESTMENT BODEGA CALLE 100 WTC</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">POLA INVESTMENT BOGOTÁ SALITRE</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">POLA INVESTMENT GROUP - BODEGA CALLE 90</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="PUB">PUB CHAPINERO KUZUDAMA SAS</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="PUB">PUB SANTAFE KUZUDAMA SAS</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="PUB">PUB VILLA DEL RIO AHG</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">VILLA DE LEYVA - POLA INVESTMENT GROUP</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="PUB">VOLANDO ALTO SAS PUB CALLE 19</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">ZONA BBC BOGOTA CALLE 140</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">ZONA BBC BOGOTA PORTO ALEGRE</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">ZONA BBC S.A.S. - GRANADA HILLS</option>
-          <option data-zona="Centro FRQ" data-coord="HARRISON" data-tipo="BODEGA">ZONA BBC SAS CALLE 150</option>
-        </optgroup>
-        <optgroup label="Sur Fraq — Milena">
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">ARTESANALES PREMIUM CALI CHIPICHAPE</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">ARTESANALES PREMIUM CALI GRANADA</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">ARTESANALES PREMIUM CALI RÍO CALI</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">ARTESANALES PREMIUM FLORA CALI</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">ARTESANALES PREMIUN CALI AEROPUERTO</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">BAP COMPANY FLORENCIA CUNDUY</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">BAP COMPANY ZOMAC S.A.S</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">BIRRAPEDIA SAS - TULUA</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">BREWERY BODEGA SEBASTIAN PASTO</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">BREWERY SAS PASTO ESTUDIANTES</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">GESSAG SAS PALMIRA LLANOGRANDE</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">GRUPO INGERLIN CALI PARQUE DEL PERRO</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">GRUPO INGERLIN JARDIN PLAZA</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">GRUPO INGERLIN PUERTO 125</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">GRUPO INGERLIN SAS - LAS PALMAS</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">GRUPO INGERLIN SAS - SAN FERNANDO</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">INVERSIONES AHG - CC ACQUA IBAGUE</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">INVERSIONES AHG IBAGUE VERGEL PLAZA</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">RESILIENCIA FC S.A.S. - POPAYAN</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">RESILIENCIA POPAYAN CENTRO HISTORICO</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">RESILIENCIA POPAYAN NORTE</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="PUB">SANTAMARTA</option>
-        </optgroup>
-        <optgroup label="Andes Fraq — Natalia">
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">AMANTA SAS - ARMENIA</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">AMANTA SAS ARMENIA PORTAL QUINDIO</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">AMANTA SAS PALO DE AGUA</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">AMANTA SAS PERIERA</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">BBC CARTAGO AMANTA SAS</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">BODEGA SABANETA MERA CERON</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">BODEGA VILLA DEL ROSARIO INV APONTE SAS</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">BURBANO CONTRERAS NAVAS - CUCUTA</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="PUB">INVERSIONES AHG - PUB BUCARAMANGA</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">INVERSIONES AHG LA FLORIDA</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">MALTAURBANA SAS MANIZALES</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">MERA CERON BODEGA MEDELLIN LA 70</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">PERLA DEL LUPULO BODEGA UNICENTRO PEREIRA</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="PUB">PUB BARRANQUILLA CANTOR COMPANY</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="PUB">PUB MANIZALES</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="PUB">PUB VALBUENA BROTHERS SAS - ESTRADA MED</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">VALBUENA BROTHERS - MEDELLIN AMSTERDAM</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">VALBUENA BROTHERS CIUDAD DE RIO</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">VALBUENA BROTHERS COMPANY CC LLANOGRANDE</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="PUB">VALBUENA BROTHERS PROVENZA</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">VALBUENA BROTHERS SAS - LAURELES MEDELLIN</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">VALBUENA BROTHERS SQUARE</option>
         </optgroup>
       </select>
     </div>
