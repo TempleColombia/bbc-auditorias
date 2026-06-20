@@ -1,1048 +1,783 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>BBC Auditorías</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#0e0e0f;--surface:#1a1a1c;--surface2:#242427;--border:#2e2e32;--text:#f0f0f0;--muted:#888;--accent:#f5a623;--green:#22c55e;--radius:14px;--font:'DM Sans',sans-serif;--mono:'DM Mono',monospace}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;min-height:100vh}
-.app-header{position:sticky;top:0;z-index:100;background:rgba(14,14,15,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
-.logo-row{display:flex;align-items:center;gap:10px}
-.logo-dot{width:26px;height:26px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center}
-.logo-dot svg{width:14px;height:14px;fill:#000}
-.app-title{font-size:14px;font-weight:600}
-.app-sub{font-size:11px;color:var(--muted)}
-.score-chip{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-family:var(--mono);font-size:13px;font-weight:500}
-.progress-bar{height:3px;background:var(--border)}
-.progress-fill{height:100%;background:var(--accent);transition:width 0.4s;width:0%}
-.draft-banner{background:#1a1f12;border:1px solid #2d3d1a;border-radius:10px;padding:10px 14px;margin:12px 16px 0;display:none;align-items:center;justify-content:space-between;gap:10px}
-.draft-banner.show{display:flex}
-.draft-text{font-size:12px;color:#a3c47a}
-.draft-clear{font-size:11px;color:var(--muted);cursor:pointer;text-decoration:underline;white-space:nowrap}
-.container{padding:12px 16px 100px;max-width:520px;margin:0 auto}
-.gps-banner{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
-.gps-dot{width:9px;height:9px;border-radius:50%;background:#888;flex-shrink:0}
-.gps-dot.ok{background:var(--green)}.gps-dot.err{background:#ef4444}.gps-dot.loading{background:var(--accent);animation:pulse 1s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.gps-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:1px}
-.gps-val{font-size:12px;color:var(--text);font-family:var(--mono)}
-.ts-strip{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:9px 13px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
-.ts-label{font-size:11px;color:var(--muted)}.ts-val{font-size:12px;font-family:var(--mono);color:var(--accent);font-weight:500}.ts-lock{font-size:11px;color:var(--muted)}
-.pdv-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:10px}
-.pdv-card h2{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px}
-.pdv-auto{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-top:10px;display:none}
-.pdv-auto-row{display:flex;gap:16px;flex-wrap:wrap}
-.pdv-auto-item{font-size:12px;color:var(--muted)}
-.pdv-auto-item span{color:var(--text);font-weight:500;display:block;margin-top:1px}
-.section{margin-bottom:10px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);background:var(--surface)}
-.sec-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none}
-.sec-hdr:active{background:var(--surface2)}
-.sec-left{display:flex;align-items:center;gap:10px}
-.sec-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
-.ic1{background:#1e2a1a}.ic2{background:#1a1e2e}.ic3{background:#2a1e1a}.ic4{background:#1e1a2a}.ic5{background:#1a2a28}.ic6{background:#2a1a22}.ic7{background:#1a2226}.ic0{background:#2a2a1a}.icf{background:#1a2020}
-.sec-name{font-size:14px;font-weight:600}.sec-max{font-size:11px;color:var(--muted);margin-top:1px}
-.sec-score{font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:500;min-width:48px;text-align:right}
-.chevron{color:var(--muted);font-size:16px;transition:transform .25s}.chevron.open{transform:rotate(180deg)}
-.sec-body{display:none;padding:0 16px 16px;border-top:1px solid var(--border)}.sec-body.open{display:block}
+// ── BBC Auditorías — Apps Script v5 ──
 
-/* Item block */
-.item-block{margin-top:10px;background:var(--surface2);border-radius:10px;padding:10px 12px}
-.item-label{font-size:12px;color:var(--text);font-weight:500;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
-.item-label span{font-size:10px;color:var(--muted)}
-/* Toggle buttons */
-.item-opts{display:flex;gap:6px;margin-bottom:6px}
-.opt-btn{flex:1;padding:8px 4px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-size:12px;font-family:var(--font);font-weight:500;cursor:pointer;transition:all .15s;text-align:center}
-.opt-btn:active{transform:scale(.97)}
-.opt-btn.sel-ok{background:#14532d;border-color:#22c55e;color:#86efac}
-.opt-btn.sel-no{background:#7f1d1d;border-color:#ef4444;color:#fca5a5}
-.opt-btn.sel-na{background:#2a2a1a;border-color:#555;color:#aaa}
-.note-toggle{font-size:11px;color:var(--muted);cursor:pointer;text-decoration:underline;display:inline-block}
-.note-area{margin-top:6px;display:none}
-.note-area textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:13px;font-family:var(--font);color:var(--text);resize:none;height:52px;outline:none;line-height:1.5}
-.note-area textarea:focus{border-color:var(--accent)}
-.note-area.open{display:block}
+const SHEET_ID = '15snwnCCKLXjPlYSP6UN-TWiMqQJTr-OBYzp6mYIdv_Y';
 
-/* Module score bar */
-.mod-score-bar{margin-top:14px;padding-top:12px;border-top:1px solid var(--border)}
-.mod-score-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-.mod-score-label{font-size:12px;color:var(--muted)}
-.mod-score-val{font-family:var(--mono);font-size:16px;font-weight:500;color:var(--accent)}
-.score-bar-bg{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
-.score-bar-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .4s}
+// Índices correctos (0-based) en la hoja Auditorías
+const IDX = {
+  tsInicio:0, tsEnvio:1, lat:2, lng:3, dir:4,
+  pdv:5, zona:6, coord:7, tipo:8,
+  // M1 Experiencia: ítems 9-17, puntaje en 18
+  s1:18,
+  // M2 Marketing: ítems 19-28, puntaje en 29
+  s2:29,
+  // M3 Finanzas: ítems 30-39, puntaje en 40
+  s3:40,
+  // M4 Inventario: ítems 41-52, puntaje en 53
+  s4:53,
+  // M5 Operaciones: ítems 54-78, puntaje en 79 (incluye legales+sanit)
+  s5:79,
+  // M6 Mantenimiento: ítems 80-93, puntaje en 94
+  s6:94,
+  // M7 Ventas: ítems 95-106, puntaje en 107
+  s7:107,
+  total:108, estado:109, hallazgos:110, notas:111, fotos:112
+};
 
-/* Info fields */
-.info-field{margin-top:10px}
-.info-field label{display:block;font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
-.info-field input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:9px 11px;font-size:14px;font-family:var(--mono);color:var(--text);outline:none}
-.info-field input:focus{border-color:var(--accent)}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.sec-divider{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:14px;margin-bottom:2px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+const MOD_NOMBRES = ['Experiencia','Marketing','Finanzas','Inventario','Operaciones','Mantenimiento','Ventas'];
+const MOD_MAX     = [15, 15, 15, 15, 15, 15, 10];
+const MOD_IDX     = [IDX.s1, IDX.s2, IDX.s3, IDX.s4, IDX.s5, IDX.s6, IDX.s7];
 
-/* Photos */
-.photo-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px}
-.photo-slot{aspect-ratio:1;border-radius:9px;border:1.5px dashed var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden}
-.photo-slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:8px}
-.photo-slot .add-icon{font-size:20px;color:var(--muted)}
-.photo-slot .rm{position:absolute;top:2px;right:2px;width:18px;height:18px;background:rgba(0,0,0,.75);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;z-index:2;cursor:pointer}
-.photo-input{display:none}
-.photo-count{font-size:11px;color:var(--muted);margin-top:5px}
-.field{margin-top:12px}
-.field label{display:block;font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
-.field textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;font-size:13px;font-family:var(--font);color:var(--text);outline:none;resize:none;line-height:1.5}
-.field textarea:focus{border-color:var(--accent)}
+// ── MASTER DE PDVs POR ZONA (fuente: MASTER_POC_JUNIO_2026) ──
+var MASTER_ZONAS = {
+  'Propios BBC':   41,   // NORTE (21) + SUR (20) propios
+  'Centro FRQ':    29,   // Javier Oviedo
+  'Sur Fraq':      22,   // Milena Rengifo
+  'Andes Fraq':    22    // Natalia Jimenez
+};
 
-/* Total */
-.total-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 16px;margin-bottom:14px}
-.total-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.total-num{font-family:var(--mono);font-size:48px;font-weight:500;line-height:1}
-.estado-badge{padding:8px 16px;border-radius:20px;font-size:13px;font-weight:600}
-.verde{background:#14532d;color:#86efac}.amarillo{background:#713f12;color:#fde68a}.rojo{background:#7f1d1d;color:#fca5a5}
-.module-scores{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
-.mod-item{background:var(--surface2);border-radius:9px;padding:9px 11px}
-.mod-label{font-size:10px;color:var(--muted)}.mod-val{font-family:var(--mono);font-size:14px;font-weight:500;margin-top:1px}
-.total-bar-bg{height:8px;background:var(--border);border-radius:4px;overflow:hidden}
-.total-bar-fill{height:100%;border-radius:4px;transition:width .5s;background:var(--accent)}
+// Mapeo para agrupar zonas en el cumplimiento
+var ZONA_GRUPO = {
+  'NORTE Propios': 'Propios BBC',
+  'SUR Propios':   'Propios BBC',
+  'CENTRO Propios':'Propios BBC',
+  'Centro FRQ':    'Centro FRQ',
+  'Sur Fraq':      'Sur Fraq',
+  'Andes Fraq':    'Andes Fraq',
+  'Santanderes':   'Andes Fraq',
+  'Regional Norte':'Andes Fraq',
+  'Regional Sur':  'Sur Fraq',
+  'Regional Andes':'Andes Fraq',
+  'Regional Centro':'Centro FRQ'
+};
 
-/* Tasks */
-.tasks-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:14px;display:none}
-.tasks-hdr{padding:12px 16px;font-size:13px;font-weight:600;border-bottom:1px solid var(--border)}
-.task-item{padding:11px 16px;border-bottom:1px solid var(--border)}.task-item:last-child{border-bottom:none}
-.task-h{font-size:13px;line-height:1.4;margin-bottom:5px}
-.task-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.tag{font-size:10px;padding:3px 8px;border-radius:5px;font-weight:500}
-.tag-r{background:var(--surface2);color:var(--muted)}.tag-a{background:#7f1d1d;color:#fca5a5}.tag-m{background:#713f12;color:#fde68a}.tag-f{color:var(--muted);font-size:10px}
-.bottom-bar{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(14,14,15,.96);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:10px 16px;display:flex;gap:8px}
-.btn{flex:1;padding:13px;border-radius:11px;font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .15s}
-.btn:active{transform:scale(.97)}
-.btn-send{background:var(--accent);color:#000}.btn-send:disabled{opacity:.4;cursor:not-allowed}
-.toast{position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-16px);background:var(--green);color:#000;padding:10px 18px;border-radius:11px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;pointer-events:none;z-index:200;white-space:nowrap}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-</style>
-</head>
-<body>
 
-<div class="app-header">
-  <div class="logo-row">
-    <div class="logo-dot"><svg viewBox="0 0 16 16"><path d="M8 2l1.5 4.5H14l-3.7 2.7 1.4 4.3L8 11l-3.7 2.5 1.4-4.3L2 6.5h4.5z"/></svg></div>
-    <div><div class="app-title">BBC Auditorías</div><div class="app-sub">7 módulos · 100 pts · automático</div></div>
-  </div>
-  <div class="score-chip" id="header-score">0 / 100</div>
-</div>
-<div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
-
-<div class="draft-banner" id="draft-banner">
-  <span class="draft-text">📋 Borrador guardado — continuando donde lo dejaste</span>
-  <span class="draft-clear" onclick="limpiarBorrador()">Empezar nueva</span>
-</div>
-
-<div class="container">
-  <div class="gps-banner">
-    <div class="gps-dot loading" id="gps-dot"></div>
-    <div style="flex:1"><div class="gps-label">Ubicación GPS</div><div class="gps-val" id="gps-val">Obteniendo ubicación…</div></div>
-  </div>
-  <div class="ts-strip">
-    <div><div class="ts-label">Inicio de auditoría</div><div class="ts-val" id="ts-val">—</div></div>
-    <div class="ts-lock">🔒 No editable</div>
-  </div>
-
-  <!-- PDV -->
-  <div class="pdv-card">
-    <h2>Punto de venta</h2>
-    <div style="margin-top:0">
-      <div style="font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Selecciona el PDV</div>
-      <select id="f_pdv" onchange="autocompletar();guardar()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;font-size:14px;font-family:var(--font);color:var(--text);outline:none;appearance:none;-webkit-appearance:none;background-image:url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\' viewBox=\'0 0 12 8\'%3E%3Cpath d=\'M1 1l5 5 5-5\' stroke=\'%23888\' stroke-width=\'1.5\' fill=\'none\' stroke-linecap=\'round\'/%3E%3C/svg%3E');background-repeat:no-repeat;background-position:right 12px center;padding-right:34px">
-        <option value="">— Selecciona un PDV —</option>
-        <optgroup label="Propios Norte — Germán">
-          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="BODEGA">BODEGA CALLE 100</option>
-          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="BODEGA">BODEGA CALLE 67</option>
-          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="BODEGA">BODEGA CALLE 93</option>
-          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="BODEGA">BODEGA CHICO</option>
-          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="BODEGA">BODEGA HEROES</option>
-          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="BODEGA">BODEGA IMPERIAL</option>
-          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="BODEGA">BODEGA LOURDES</option>
-          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="BODEGA">BODEGA PASADENA</option>
-          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="BODEGA">BODEGA VILLA DEL PRADO</option>
-          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="BODEGA">MINIPUB CALLE 97</option>
-          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="PUB">PUB ANDINO</option>
-          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="PUB">PUB AVDA 19</option>
-          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="PUB">PUB BELAIRE</option>
-          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="PUB">PUB CALLE 63</option>
-          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="PUB">PUB CALLE 85</option>
-          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="PUB">PUB CEDRITOS</option>
-          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="PUB">PUB COLINA</option>
-          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="PUB">PUB PARQUE 93</option>
-          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="PUB">PUB PEPE SIERRA</option>
-          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="PUB">PUB ROSALES</option>
-          <option data-zona="NORTE Propios" data-coord="GERMAN" data-tipo="PUB">PUB USAQUEN</option>
-        </optgroup>
-        <optgroup label="Propios Sur — Yency">
-          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="BODEGA">BODEGA BOSA CENTRO</option>
-          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="BODEGA">BODEGA CALLE 43</option>
-          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="BODEGA">BODEGA CORFERIAS</option>
-          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="BODEGA">BODEGA DIVER PLAZA</option>
-          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="BODEGA">BODEGA MODELO</option>
-          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="BODEGA">BODEGA PARK WAY</option>
-          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="BODEGA">BODEGA PLAZA CLARO</option>
-          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="BODEGA">BODEGA PORTAL CALLE 80</option>
-          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="BODEGA">BODEGA RESTREPO</option>
-          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="BODEGA">BODEGA TERRAZA PASTEUR</option>
-          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="PUB">PUB BBC MOVISTAR ARENA</option>
-          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="PUB">PUB CANDELARIA</option>
-          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="PUB">PUB CENTRO MAYOR</option>
-          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="PUB">PUB CONECTA</option>
-          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="PUB">PUB GALERIAS</option>
-          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="PUB">PUB PLAZA CENTRAL</option>
-          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="PUB">PUB PLAZA DE LAS AMERICAS</option>
-          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="PUB">PUB SALITRE</option>
-          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="PUB">PUB SAN MARTIN</option>
-          <option data-zona="SUR Propios" data-coord="YENCY" data-tipo="PUB">PUB TITAN</option>
-        </optgroup>
-        <optgroup label="Centro FRQ — Javier">
-          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">BEER PALS JAVERIANA</option>
-          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">BEER PALS SAS CL 109</option>
-          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">BODEGA GRAN ESTACION</option>
-          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">BODEGA KUZUDAMA MALL PLAZA</option>
-          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">DUYAN INVERSIONES SAS SOACHA TERREROS</option>
-          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">EL BREWER BODEGA BOGOTA COLINA 152</option>
-          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">GRUPO PROYECATRICO SAS - NUESTRO BOGOTA</option>
-          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">HARBOUR TOWN BOGOTA ALSACIA</option>
-          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">HARBOUR TOWN SAS HAYUELOS</option>
-          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">INDUSTRIAS VANDELAY SAS CHIA</option>
-          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">INDUSTRIAS VANDELAY UNICENTRO BOGOTA</option>
-          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">INVERSIONES AHG BOGOTA CALLE 165</option>
-          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="PUB">INVERSIONES AHG CENTRO EMPRESARIAL 127</option>
-          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">INVERSIONES AHG UNICENTRO OCCIDENTE</option>
-          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">OIKOS BODEGA BBC TOCANCIPA</option>
-          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">OLD STYLE BOGOTA TEQUENDAMA</option>
-          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">POLA INVESTMENT BODEGA CALLE 100 WTC</option>
-          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">POLA INVESTMENT BOGOTA SALITRE</option>
-          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">POLA INVESTMENT GROUP - BODEGA CALLE 90</option>
-          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="PUB">PUB CHAPINERO KUZUDAMA SAS</option>
-          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="PUB">PUB SANTAFE KUZUDAMA SAS</option>
-          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="PUB">PUB VILLA DEL RIO AHG</option>
-          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">VILLA DE LEYVA - POLA INVESTMENT GROUP</option>
-          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="PUB">VOLANDO ALTO SAS PUB CALLE 19</option>
-          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">ZONA BBC BOGOTA CALLE 140</option>
-          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">ZONA BBC BOGOTA PORTO ALEGRE</option>
-          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">ZONA BBC SAS - GRANADA HILLS</option>
-          <option data-zona="Centro FRQ" data-coord="JAVIER" data-tipo="BODEGA">ZONA BBC SAS CALLE 150</option>
-        </optgroup>
-        <optgroup label="Sur Fraq — Milena">
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">ARTESANALES PREMIUM CALI CHIPICHAPE</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">ARTESANALES PREMIUM CALI GRANADA</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">ARTESANALES PREMIUM CALI RIO CALI</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">ARTESANALES PREMIUM FLORA CALI</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">ARTESANALES PREMIUN CALI AEROPUERTO</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">BAP COMPANY FLORENCIA CUNDUY</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">BAP COMPANY ZOMAC SAS</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">BREWERY BODEGA SEBASTIAN PASTO</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">BREWERY SAS PASTO ESTUDIANTES</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">GESSAG SAS PALMIRA LLANOGRANDE</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">GRUPO INGERLIN CALI PARQUE DEL PERRO</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">GRUPO INGERLIN JARDIN PLAZA</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">GRUPO INGERLIN PUERTO 125</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">GRUPO INGERLIN SAS - LAS PALMAS</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">GRUPO INGERLIN SAS - SAN FERNANDO</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">RESILIENCIA FC SAS - POPAYAN</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">RESILIENCIA POPAYAN CENTRO HISTORICO</option>
-          <option data-zona="Sur Fraq" data-coord="MILENA" data-tipo="BODEGA">RESILIENCIA POPAYAN NORTE</option>
-        </optgroup>
-        <optgroup label="Andes Fraq — Natalia">
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">AMANTA SAS - ARMENIA</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">AMANTA SAS ARMENIA PORTAL QUINDIO</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">AMANTA SAS PALO DE AGUA</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">AMANTA SAS PERIERA</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">BBC CARTAGO AMANTA SAS</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">BBC MEDELLIN</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">BIRRAPEDIA SAS - TULUA</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">BODEGA SABANETA MERA CERON</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">BODEGA VILLA DEL ROSARIO INV APONTE SAS</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">BURBANO CONTRERAS NAVAS - CUCUTA</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">INVERSIONES AHG - CC ACQUA IBAGUE</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="PUB">INVERSIONES AHG - PUB BUCARAMANGA</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">INVERSIONES AHG IBAGUE VERGEL PLAZA</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">INVERSIONES AHG LA FLORIDA</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">MALTAURBANA SAS MANIZALES</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">MERA CERON BODEGA MEDELLIN LA 70</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">PERLA DEL LUPULO BODEGA UNICENTRO PEREIRA</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="PUB">PUB BARRANQUILLA CANTOR COMPANY</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="PUB">PUB MANIZALES</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="PUB">PUB VALBUENA BROTHERS SAS - ESTRADA MED</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">SANTAMARTA</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">VALBUENA BROTHERS - MEDELLIN AMSTERDAM</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">VALBUENA BROTHERS CIUDAD DE RIO</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">VALBUENA BROTHERS COMPANY CC LLANOGRANDE</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">VALBUENA BROTHERS SAS - LAURELES MEDELLIN</option>
-          <option data-zona="Andes Fraq" data-coord="NATALIA" data-tipo="BODEGA">VALBUENA BROTHERS SQUARE</option>
-        </optgroup>
-      </select>
-          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="BODEGA">ARBOLEDA / HEROES</option>
-          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="BODEGA">BOD CALLE 93</option>
-          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="BODEGA">LOURDES</option>
-          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="BODEGA">DIVER PLAZA</option>
-          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="BODEGA">MODELO</option>
-          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="BODEGA">PORTAL 80</option>
-          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="PUB">SALITRE</option>
-          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="PUB">TITAN</option>
-          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="PUB">ANDINO</option>
-          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="PUB">CALLE 85</option>
-          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="PUB">CALLE 63</option>
-          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="PUB">ROSALES</option>
-          <option data-zona="CENTRO Propios" data-coord="BBC" data-tipo="PUB">CONNECTA</option>
-        </optgroup>
-      </select>
-    </div>
-    <div class="pdv-auto" id="pdv-auto">
-      <div class="pdv-auto-row">
-        <div class="pdv-auto-item">Zona<span id="auto-zona">—</span></div>
-        <div class="pdv-auto-item">Coordinador<span id="auto-coord">—</span></div>
-        <div class="pdv-auto-item">Tipo<span id="auto-tipo">—</span></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- MÓDULOS generados dinámicamente -->
-  <div id="modulos-container"></div>
-
-  <!-- Fotos -->
-  <div class="section">
-    <div class="sec-hdr" onclick="toggleSec('f')">
-      <div class="sec-left"><div class="sec-icon icf">📸</div><div><div class="sec-name">Fotos del punto</div><div style="font-size:11px;color:var(--muted)">Máximo 5 fotos</div></div></div>
-      <span class="chevron" id="chf">⌄</span>
-    </div>
-    <div class="sec-body" id="bodyf">
-      <div style="font-size:12px;color:var(--muted);margin-top:8px;margin-bottom:8px">Toca cada cuadro para abrir la cámara.</div>
-      <div class="photo-grid">
-        <div class="photo-slot" onclick="abrirFoto(0)" id="slot0"><span class="add-icon">+</span></div>
-        <div class="photo-slot" onclick="abrirFoto(1)" id="slot1"><span class="add-icon">+</span></div>
-        <div class="photo-slot" onclick="abrirFoto(2)" id="slot2"><span class="add-icon">+</span></div>
-        <div class="photo-slot" onclick="abrirFoto(3)" id="slot3"><span class="add-icon">+</span></div>
-        <div class="photo-slot" onclick="abrirFoto(4)" id="slot4"><span class="add-icon">+</span></div>
-      </div>
-      <input type="file" accept="image/*" capture="environment" class="photo-input" id="pi0" onchange="procesarFoto(0,this)">
-      <input type="file" accept="image/*" capture="environment" class="photo-input" id="pi1" onchange="procesarFoto(1,this)">
-      <input type="file" accept="image/*" capture="environment" class="photo-input" id="pi2" onchange="procesarFoto(2,this)">
-      <input type="file" accept="image/*" capture="environment" class="photo-input" id="pi3" onchange="procesarFoto(3,this)">
-      <input type="file" accept="image/*" capture="environment" class="photo-input" id="pi4" onchange="procesarFoto(4,this)">
-      <div class="photo-count" id="photo-count">0 / 5 fotos</div>
-    </div>
-  </div>
-
-  <!-- Hallazgos -->
-  <div class="section">
-    <div class="sec-hdr" onclick="toggleSec('h')">
-      <div class="sec-left"><div class="sec-icon ic0">⚠️</div><div><div class="sec-name">Hallazgos & notas</div><div style="font-size:11px;color:var(--muted)">Observaciones críticas</div></div></div>
-      <span class="chevron" id="chh">⌄</span>
-    </div>
-    <div class="sec-body" id="bodyh">
-      <div class="field"><label>Hallazgos críticos (uno por línea)</label><textarea id="hallazgos" placeholder="ej: Nevera sin funcionar&#10;Diferencia en caja del 8%" style="height:90px" oninput="guardar()"></textarea></div>
-      <div class="field"><label>Notas adicionales</label><textarea id="notas" placeholder="Contexto del PDV, observaciones generales..." style="height:72px" oninput="guardar()"></textarea></div>
-    </div>
-  </div>
-
-  <!-- Total -->
-  <div class="total-section" id="total-section">
-    <div class="total-row">
-      <div>
-        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Puntaje total</div>
-        <div class="total-num" id="total-num">0</div>
-      </div>
-      <div class="estado-badge" id="estado-badge">—</div>
-    </div>
-    <div class="total-bar-bg" style="margin-bottom:14px"><div class="total-bar-fill" id="total-bar" style="width:0%"></div></div>
-    <div class="module-scores" id="module-scores-grid"></div>
-  </div>
-
-  <div class="tasks-section" id="tasks-section">
-    <div class="tasks-hdr">📋 Tareas de mejora</div>
-    <div id="tasks-body"></div>
-  </div>
-</div>
-
-<div class="bottom-bar">
-  <button class="btn btn-send" id="btn-enviar" onclick="enviar()">Guardar en Sheets →</button>
-</div>
-<div class="toast" id="toast"></div>
-
-<script>
-const SCRIPT_URL='https://script.google.com/macros/s/AKfycbyItpuGWvi4mPxo5_D7-w8ELpLxioIo31_z4M2cbOkSOcYo0OPbaqrD8KNvkRrU9oxXTA/exec';
-const DRAFT_KEY='bbc_v6';
-
-// ── DEFINICIÓN DE MÓDULOS ──
-// tipo: 'yn' = sí/no, 'info' = campo informativo (no puntúa)
-const MODULOS = [
-  { id:1, nombre:'Experiencia', icon:'🍺', cls:'ic1', max:15, items:[
-    {id:'m1_menu_pct', label:'Menú disponible (%)', tipo:'pct'},
-    {id:'m1_precios', label:'Precios actualizados', tipo:'yn'},
-    {id:'m1_cat', label:'Categorías completas', tipo:'yn'},
-    {id:'m1_cristal', label:'Cristalería completa', tipo:'yn'},
-    {id:'m1_menaje', label:'Menaje cocina completo', tipo:'yn'},
-  ]},
-  { id:2, nombre:'Marketing & Uniformes', icon:'👕', cls:'ic2', max:15, items:[
-    {id:'m2_av_ent', label:'Avisos BBC entrada', tipo:'yn'},
-    {id:'m2_av_int', label:'Avisos BBC interior', tipo:'yn'},
-    {id:'m2_unif_b', label:'Uniforme barra correcto', tipo:'yn'},
-    {id:'m2_unif_c', label:'Uniforme cocina correcto', tipo:'yn'},
-    {id:'m2_aseo', label:'Aseo y accesorios ok', tipo:'yn'},
-  ]},
-  { id:3, nombre:'Finanzas & Caja', icon:'💰', cls:'ic3', max:15, items:[
-    {id:'m3_caja', label:'Caja cuadra', tipo:'yn'},
-    {id:'m3_dif', label:'Diferencia en caja (%)', tipo:'pct_neg'},
-    {id:'m3_cons', label:'Consignaciones al día', tipo:'yn'},
-    {id:'m3_comp', label:'Comprobantes organizados', tipo:'yn'},
-    {id:'m3_pos', label:'POS funcionando', tipo:'yn'},
-  ]},
-  { id:4, nombre:'Inventario', icon:'📦', cls:'ic4', max:15, items:[
-    {id:'m4_cerv', label:'Cervezas BBC (%)', tipo:'pct'},
-    {id:'m4_lic', label:'Licores (%)', tipo:'pct'},
-    {id:'m4_bsa', label:'Bebidas sin alcohol (%)', tipo:'pct'},
-    {id:'m4_alim', label:'Alimentos (%)', tipo:'pct'},
-    {id:'m4_merch', label:'Merchandising completo', tipo:'yn'},
-    {id:'m4_venc', label:'Sin productos vencidos', tipo:'yn'},
-  ]},
-  { id:5, nombre:'Operaciones & Personal', icon:'🧹', cls:'ic5', max:15, items:[
-    {id:'m5_l_coc', label:'Limpieza cocina', tipo:'yn', grupo:'Limpieza'},
-    {id:'m5_l_bar', label:'Limpieza barra', tipo:'yn'},
-    {id:'m5_l_ban', label:'Limpieza baños', tipo:'yn'},
-    {id:'m5_l_mes', label:'Limpieza mesas', tipo:'yn'},
-    {id:'m5_imp_b', label:'Impresora barra', tipo:'yn', grupo:'Equipos'},
-    {id:'m5_imp_c', label:'Impresora cocina', tipo:'yn'},
-    {id:'m5_frio', label:'Nevera funcionando', tipo:'yn'},
-    {id:'m5_luz', label:'Iluminación ok', tipo:'yn'},
-    {id:'m5_ac', label:'Aire acondicionado', tipo:'yn'},
-    {id:'m5_legales', label:'Legales completos', tipo:'yn', grupo:'Legal'},
-    {id:'m5_sanit', label:'Última fecha de sanitización', tipo:'fecha', grupo:'Sanitización'},
-    {id:'m5_equipo', label:'Equipo completo', tipo:'yn', grupo:'Personal'},
-    {id:'m5_p_coc', label:'Personas en cocina', tipo:'info'},
-    {id:'m5_p_ser', label:'Personas en servicio', tipo:'info'},
-  ]},
-  { id:6, nombre:'Mantenimiento', icon:'🔩', cls:'ic6', max:15, items:[
-    {id:'m6_sillas', label:'Sillas en buen estado', tipo:'yn'},
-    {id:'m6_mesas', label:'Mesas en buen estado', tipo:'yn'},
-    {id:'m6_pisos', label:'Pisos y paredes ok', tipo:'yn'},
-    {id:'m6_luces', label:'Luces completas', tipo:'yn'},
-    {id:'m6_pos', label:'Sistema POS completo', tipo:'yn'},
-    {id:'m6_eq_coc', label:'Equipos cocina ok', tipo:'yn'},
-    {id:'m6_eq_bar', label:'Equipos barra ok', tipo:'yn'},
-  ]},
-  { id:7, nombre:'Ventas', icon:'📈', cls:'ic7', max:10, items:[
-    {id:'m7_conoce_ppto', label:'¿El manager conoce el presupuesto del mes?', tipo:'yn', grupo:'Conocimiento del negocio'},
-    {id:'m7_conoce_ventas', label:'¿Conoce las ventas del mes al día de hoy?', tipo:'yn'},
-    {id:'m7_conoce_gap', label:'¿Sabe si va por encima o debajo del presupuesto?', tipo:'yn'},
-    {id:'m7_conoce_tickets', label:'¿Conoce el número de tickets y ticket promedio?', tipo:'yn'},
-    {id:'m7_conoce_vol', label:'¿Conoce el volumen de ventas y shares del mes?', tipo:'yn'},
-    {id:'m7_equipo_conoce', label:'¿El equipo conoce los indicadores clave?', tipo:'yn', grupo:'Equipo'},
-  ]},
-];
-
-// Estado global
-let gpsData={lat:null,lng:null,address:'No disponible'};
-let tsInicio=null;
-let fotos=[null,null,null,null,null];
-// respuestas: {itemId: 'ok'|'no'|'na'|valor}
-let respuestas={};
-
-// ── BUILD UI ──
-function buildModulos(){
-  const cont=document.getElementById('modulos-container');
-  // Total card primero vacío
-  MODULOS.forEach(mod=>{
-    const sec=document.createElement('div');sec.className='section';
-    sec.innerHTML=`
-      <div class="sec-hdr" onclick="toggleSec(${mod.id})">
-        <div class="sec-left">
-          <div class="sec-icon ${mod.cls}">${mod.icon}</div>
-          <div><div class="sec-name">${mod.nombre}</div><div style="font-size:11px;color:var(--muted)">Módulo ${mod.id} · máx ${mod.max}</div></div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span class="sec-score" id="score-chip-${mod.id}">—</span>
-          <span class="chevron" id="ch${mod.id}">⌄</span>
-        </div>
-      </div>
-      <div class="sec-body" id="body${mod.id}">
-        ${buildItems(mod)}
-        <div class="mod-score-bar">
-          <div class="mod-score-row">
-            <span class="mod-score-label">Puntaje automático</span>
-            <span class="mod-score-val" id="score-val-${mod.id}">0 / ${mod.max}</span>
-          </div>
-          <div class="score-bar-bg"><div class="score-bar-fill" id="score-bar-${mod.id}" style="width:0%"></div></div>
-        </div>
-      </div>`;
-    cont.appendChild(sec);
-  });
-  // Build total grid
-  const grid=document.getElementById('module-scores-grid');
-  MODULOS.forEach(mod=>{
-    const d=document.createElement('div');d.className='mod-item';
-    d.innerHTML=`<div class="mod-label">M${mod.id} ${mod.nombre}</div><div class="mod-val" id="r${mod.id}">—</div>`;
-    grid.appendChild(d);
-  });
+function doGet(e) {
+  var ss = SpreadsheetApp.openById(SHEET_ID);
+  var sh = obtenerHojaAuditorias(ss);
+  var lr = sh.getLastRow();
+  var data = [];
+  if (lr > 1) {
+    data = sh.getRange(2, 1, lr - 1, 120).getValues();
+  }
+  
+  // Procesar datos en el servidor
+  var processed = procesarDatos(data);
+  var html = construirHTML(processed, data);
+  return HtmlService.createHtmlOutput(html)
+    .setTitle('BBC Auditorías — Coordinadores')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1.0');
 }
 
-function buildItems(mod){
-  let html='';
-  let grupoActual='';
-  mod.items.forEach(item=>{
-    if(item.grupo && item.grupo!==grupoActual){
-      grupoActual=item.grupo;
-      html+=`<div class="sec-divider">${item.grupo}</div>`;
+function procesarDatos(data) {
+  var I = {tsEnvio:1,pdv:5,zona:6,coord:7,tipo:8,s1:18,s2:29,s3:40,s4:53,s5:79,s6:94,s7:107,total:108,estado:109,hallazgos:110};
+  var MOD_MAX = [15,15,15,15,15,15,10];
+  var MOD_IDX = [18,29,40,53,79,94,107];
+  var MOD_NOMBRES = ['Experiencia','Marketing','Finanzas','Inventario','Operaciones','Mantenimiento','Ventas'];
+  
+  function g(row,i){ return row[i]?String(row[i]).trim():''; }
+  function n(row,i){ return parseFloat(g(row,i))||0; }
+  function est(row){ return g(row,I.estado).toUpperCase(); }
+  
+  // Última por PDV
+  var ultimas = {};
+  data.forEach(function(r){
+    var p=g(r,I.pdv);
+    if(!ultimas[p]||g(r,I.tsEnvio)>g(ultimas[p],I.tsEnvio)) ultimas[p]=r;
+  });
+  var ranking = Object.values(ultimas).sort(function(a,b){return n(b,I.total)-n(a,I.total);});
+  
+  // KPIs
+  var totales = ranking.map(function(r){return n(r,I.total);});
+  var prom = totales.length?Math.round(totales.reduce(function(a,b){return a+b;},0)/totales.length):0;
+  var verdes = ranking.filter(function(r){return est(r)==='VERDE';}).length;
+  var amars = ranking.filter(function(r){return est(r)==='AMARILLO';}).length;
+  var rojos = ranking.filter(function(r){return est(r)==='ROJO';}).length;
+  
+  // Promedios por módulo
+  var modProms = MOD_IDX.map(function(idx,i){
+    var vals=ranking.map(function(r){return n(r,idx);}).filter(function(v){return v>0;});
+    return vals.length?Math.round(vals.reduce(function(a,b){return a+b;},0)/vals.length):0;
+  });
+  
+  // Módulo más fuerte/débil
+  var modFuerte=0, modDebil=0;
+  modProms.forEach(function(v,i){
+    if(v/MOD_MAX[i]>modProms[modFuerte]/MOD_MAX[modFuerte])modFuerte=i;
+    if(v/MOD_MAX[i]<modProms[modDebil]/MOD_MAX[modDebil])modDebil=i;
+  });
+  
+  // Cumplimiento mensual
+  var hoy = new Date();
+  var mesNum = hoy.getMonth()+1;
+  var anio = hoy.getFullYear();
+  var auditadosMes = {}, totalPorZona = {};
+  data.forEach(function(r){
+    var ts=g(r,I.tsEnvio); var zona=g(r,I.zona); var pdv=g(r,I.pdv);
+    var grupoZona = ZONA_GRUPO[zona] || zona;
+    if(grupoZona&&pdv){
+      if(!totalPorZona[grupoZona])totalPorZona[grupoZona]=new Set();
+      totalPorZona[grupoZona].add(pdv);
     }
-    if(item.tipo==='yn'){
-      html+=`<div class="item-block">
-        <div class="item-label">${item.label}</div>
-        <div class="item-opts">
-          <button class="opt-btn" id="btn-ok-${item.id}" onclick="setResp('${item.id}','ok','${mod.id}')">✓ Sí / Ok</button>
-          <button class="opt-btn" id="btn-no-${item.id}" onclick="setResp('${item.id}','no','${mod.id}')">✗ No</button>
-          <button class="opt-btn" id="btn-na-${item.id}" onclick="setResp('${item.id}','na','${mod.id}')">N/A</button>
-        </div>
-        <span class="note-toggle" onclick="toggleNota(this)">+ Observación</span>
-        <div class="note-area"><textarea id="n_${item.id}" placeholder="Observaciones..." oninput="guardar()"></textarea></div>
-      </div>`;
-    } else if(item.tipo==='pct'||item.tipo==='pct_neg'){
-      html+=`<div class="item-block">
-        <div class="item-label">${item.label} <span>0-100</span></div>
-        <input type="number" id="${item.id}" min="0" max="100" placeholder="—" oninput="setRespPct('${item.id}','${mod.id}')" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 11px;font-size:15px;font-family:var(--mono);color:var(--text);outline:none;margin-bottom:6px">
-        <span class="note-toggle" onclick="toggleNota(this)">+ Observación</span>
-        <div class="note-area"><textarea id="n_${item.id}" placeholder="Observaciones..." oninput="guardar()"></textarea></div>
-      </div>`;
-    } else if(item.tipo==='fecha'){
-      html+=`<div class="item-block">
-        <div class="item-label">${item.label}</div>
-        <input type="date" id="${item.id}" oninput="guardar()" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 11px;font-size:14px;font-family:var(--font);color:var(--text);outline:none;margin-bottom:6px">
-        <span class="note-toggle" onclick="toggleNota(this)">+ Observación</span>
-        <div class="note-area"><textarea id="n_${item.id}" placeholder="Observaciones..." oninput="guardar()"></textarea></div>
-      </div>`;
+    // Detectar mes: formato "dd/mm/yyyy" o "yyyy-mm-dd"
+    var esMes=false;
+    if(ts.indexOf('/')>=0){
+      var p=ts.split('/');
+      if(p.length>=3) esMes=parseInt(p[1])===mesNum&&p[2].substring(0,4)===String(anio);
     } else {
-      // info field
-      html+=`<div class="info-field">
-        <label>${item.label}</label>
-        <input type="text" id="${item.id}" placeholder="—" oninput="guardar()">
-      </div>`;
+      esMes=ts.substring(5,7)===String(mesNum).padStart(2,'0')&&ts.substring(0,4)===String(anio);
+    }
+    if(esMes&&grupoZona&&pdv){
+      if(!auditadosMes[grupoZona])auditadosMes[grupoZona]=new Set();
+      auditadosMes[grupoZona].add(pdv);
     }
   });
-  return html;
-}
-
-// ── LOGIC ──
-function setResp(itemId, val, modId){
-  respuestas[itemId]=val;
-  ['ok','no','na'].forEach(t=>{
-    const btn=document.getElementById('btn-'+t+'-'+itemId);
-    if(btn){btn.className='opt-btn'+(val===t?' sel-'+t:'');}
+  
+  // Zonas únicas y coordinadores
+  var zonas=[...new Set(data.map(function(r){return g(r,I.zona);}).filter(Boolean))].sort();
+  var coords=[...new Set(data.map(function(r){return g(r,I.coord);}).filter(Boolean))].sort();
+  
+  // Alarmas
+  var alarmas=[];
+  Object.values(ultimas).forEach(function(r){
+    var h=g(r,I.hallazgos);
+    if(h){h.split(' | ').forEach(function(hh){if(hh.trim())alarmas.push({pdv:g(r,I.pdv),zona:g(r,I.zona),desc:hh.trim(),tipo:'Hallazgo',fecha:g(r,I.tsEnvio).substring(0,10)});});}
+    MOD_IDX.forEach(function(idx,i){var s=n(r,idx);if(s>0&&s/MOD_MAX[i]<0.70)alarmas.push({pdv:g(r,I.pdv),zona:g(r,I.zona),desc:'Puntaje bajo en '+MOD_NOMBRES[i]+': '+s+'/'+MOD_MAX[i]+' ('+Math.round(s/MOD_MAX[i]*100)+'%)',tipo:MOD_NOMBRES[i],fecha:g(r,I.tsEnvio).substring(0,10)});});
   });
-  calcMod(parseInt(modId));
-  guardar();
-}
+  
+  // ── Análisis de horarios ──
+  // Horario clave: Miércoles-Sábado 17:00-23:00
+  var DIAS_CLAVE = [3,4,5,6]; // Miérc=3, Juev=4, Vier=5, Sáb=6
+  var HORA_INI = 17, HORA_FIN = 23;
+  var DIAS_NOMBRE = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
 
-function setRespPct(itemId, modId){
-  const el=document.getElementById(itemId);
-  const v=parseFloat(el.value);
-  respuestas[itemId]=isNaN(v)?null:v;
-  calcMod(parseInt(modId));
-  guardar();
-}
+  // Coordinadores propios
+  var coordsAnalisis = {
+    'GERMAN': {label:'Germán · Norte', visitas:[]},
+    'BBC':    {label:'Propios BBC',    visitas:[]},
+    'YENCY':  {label:'Yency · Sur',    visitas:[]},
+    'HARRISON':{label:'Harrison · Centro FRQ', visitas:[]},
+    'MILENA': {label:'Milena · Sur Fraq', visitas:[]},
+    'NATALIA':{label:'Natalia · Andes Fraq', visitas:[]}
+  };
 
-function calcMod(modId){
-  const mod=MODULOS.find(m=>m.id===modId);
-  const scorableItems=mod.items.filter(i=>i.tipo==='yn'||i.tipo==='pct'||i.tipo==='pct_neg');
-  let ok=0,total=0;
-  scorableItems.forEach(item=>{
-    const r=respuestas[item.id];
-    if(r===null||r===undefined||r==='')return; // no respondido → no cuenta aún
-    if(r==='na')return; // N/A → excluir
-    total++;
-    if(item.tipo==='yn'){if(r==='ok')ok++;}
-    else if(item.tipo==='pct'){const pct=parseFloat(r)||0;if(pct>=80)ok++;}
-    else if(item.tipo==='pct_neg'){const pct=parseFloat(r)||0;if(pct<5)ok++;} // diferencia de caja <5% = ok
+  function parseFecha(ts) {
+    // Formato: "dd/mm/yyyy HH:MM:SS a. m." o "yyyy-mm-dd HH:MM"
+    if(!ts) return null;
+    try {
+      var fecha;
+      if(ts.indexOf('/')>=0) {
+        var partes = ts.split(' ');
+        var dp = partes[0].split('/');
+        var tp = partes[1] ? partes[1].split(':') : ['0','0'];
+        var hora = parseInt(tp[0]);
+        // Convertir AM/PM
+        if(partes[2] && partes[2].toLowerCase().indexOf('p')>=0 && hora!==12) hora+=12;
+        if(partes[2] && partes[2].toLowerCase().indexOf('a')>=0 && hora===12) hora=0;
+        fecha = new Date(parseInt(dp[2]), parseInt(dp[1])-1, parseInt(dp[0]), hora, parseInt(tp[1]||0));
+      } else {
+        fecha = new Date(ts);
+      }
+      if(isNaN(fecha.getTime())) return null;
+      return fecha;
+    } catch(e){ return null; }
+  }
+
+  data.forEach(function(r){
+    var ts = g(r,I.tsEnvio);
+    var coord = g(r,I.coord).toUpperCase();
+    var fecha = parseFecha(ts);
+    if(!fecha) return;
+
+    var dia = fecha.getDay(); // 0=Dom, 1=Lun... 6=Sáb
+    var hora = fecha.getHours();
+    var enHorarioClave = DIAS_CLAVE.indexOf(dia)>=0 && hora>=HORA_INI && hora<HORA_FIN;
+
+    var coordKey = null;
+    if(coord==='GERMAN'||coord==='GERMÁN') coordKey='GERMAN';
+    else if(coord==='YENCY') coordKey='YENCY';
+    else if(coord==='BBC') coordKey='BBC';
+    else if(coord==='HARRISON') coordKey='HARRISON';
+    else if(coord==='MILENA') coordKey='MILENA';
+    else if(coord==='NATALIA') coordKey='NATALIA';
+
+    if(coordKey && coordsAnalisis[coordKey]) {
+      coordsAnalisis[coordKey].visitas.push({dia:dia, hora:hora, enHorario:enHorarioClave});
+    }
   });
-  const score=total>0?Math.round((ok/total)*mod.max):0;
-  // Update UI
-  const chip=document.getElementById('score-chip-'+modId);
-  const val=document.getElementById('score-val-'+modId);
-  const bar=document.getElementById('score-bar-'+modId);
-  const pct=total>0?(ok/total)*100:0;
-  if(chip)chip.textContent=score+'/'+mod.max;
-  if(val)val.textContent=score+' / '+mod.max+' ('+ok+'/'+total+' ok)';
-  if(bar)bar.style.width=pct+'%';
-  calcTotal();
+
+  // Calcular stats por coordinador
+  var horariosData = {};
+  Object.keys(coordsAnalisis).forEach(function(k){
+    var v = coordsAnalisis[k].visitas;
+    if(v.length===0) return;
+    var enHorario = v.filter(function(x){return x.enHorario;}).length;
+    var fueraHorario = v.length - enHorario;
+    var porDia = [0,0,0,0,0,0,0];
+    v.forEach(function(x){ porDia[x.dia]++; });
+    horariosData[k] = {
+      label: coordsAnalisis[k].label,
+      total: v.length,
+      enHorario: enHorario,
+      fueraHorario: fueraHorario,
+      porDia: porDia
+    };
+  });
+
+  return {
+    ranking:ranking, prom:prom, verdes:verdes, amars:amars, rojos:rojos,
+    modProms:modProms, modFuerte:modFuerte, modDebil:modDebil,
+    zonas:zonas, coords:coords, alarmas:alarmas,
+    auditadosMes:auditadosMes, totalPorZona:totalPorZona,
+    mesNombre:['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][mesNum-1]+' '+anio,
+    I:I, MOD_IDX:MOD_IDX, MOD_MAX:MOD_MAX, MOD_NOMBRES:MOD_NOMBRES,
+    totalAuditorias:ranking.length, ahora:new Date().toLocaleString('es-CO'),
+    horariosData:horariosData, DIAS_NOMBRE:DIAS_NOMBRE, DIAS_CLAVE:DIAS_CLAVE
+  };
 }
 
-function validarCompleto(){
-  // Verifica que todos los ítems yn, pct, pct_neg tengan respuesta
-  const faltantes=[];
-  MODULOS.forEach(mod=>{
-    const itemsFaltantes=[];
-    mod.items.forEach(item=>{
-      if(item.tipo==='yn'){
-        const r=respuestas[item.id];
-        if(!r||r==='')itemsFaltantes.push(item.label);
-      } else if(item.tipo==='pct'||item.tipo==='pct_neg'){
-        const el=document.getElementById(item.id);
-        if(!el||el.value==='')itemsFaltantes.push(item.label);
+function construirHTML(p, rawData) {
+  function g(row,i){ return row[i]?String(row[i]).trim():''; }
+  function n(row,i){ return parseFloat(row[i])||0; }
+  function color(pct){ return pct>=0.85?'#22c55e':pct>=0.70?'#eab308':'#ef4444'; }
+  function badge(e){ return e==='VERDE'?'badge-verde':e==='AMARILLO'?'badge-amarillo':'badge-rojo'; }
+  function emoji(e){ return e==='VERDE'?'🟢':e==='AMARILLO'?'🟡':'🔴'; }
+
+  // ── 1. HEADER KPIs — solo lo esencial ──
+  var kpis = '<div class="kpi-grid">'
+    +'<div class="kpi-card"><div class="kpi-label">Auditados este mes</div><div class="kpi-val" style="color:var(--text)">'+p.totalAuditorias+'</div></div>'
+    +'<div class="kpi-card"><div class="kpi-label">Promedio general</div><div class="kpi-val" style="color:var(--accent)">'+p.prom+'/100</div></div>'
+    +'<div class="kpi-card"><div class="kpi-label">🟢 Verde ≥85</div><div class="kpi-val" style="color:#22c55e">'+p.verdes+'</div></div>'
+    +'<div class="kpi-card"><div class="kpi-label">🟡 Amarillo</div><div class="kpi-val" style="color:#eab308">'+p.amars+'</div></div>'
+    +'<div class="kpi-card"><div class="kpi-label">🔴 Rojo &lt;70</div><div class="kpi-val" style="color:#ef4444">'+p.rojos+'</div></div>'
+    +'</div>';
+
+  // ── 2. CUMPLIMIENTO ──
+  var cumpl = '<div class="section-title">📅 Cumplimiento de auditorías — '+p.mesNombre+'</div>'
+    +'<div class="cumpl-grid">';
+  ['Propios BBC','Centro FRQ','Sur Fraq','Andes Fraq'].forEach(function(grupo){
+    var totalReal = MASTER_ZONAS[grupo] || 0;
+    var auditados = p.auditadosMes[grupo] ? p.auditadosMes[grupo].size : 0;
+    var pct = totalReal > 0 ? Math.round(auditados/totalReal*100) : 0;
+    var c = color(pct/100); var em = pct>=100?'✅':pct>=50?'⚠️':'🔴';
+    var faltan = totalReal - auditados;
+    cumpl += '<div class="cumpl-card">'
+      +'<div class="cumpl-top"><div><div class="cumpl-zona">'+grupo+'</div>'
+      +'<div class="cumpl-sub">'+auditados+' de '+totalReal+' PDVs auditados</div></div>'
+      +'<div style="font-size:24px">'+em+'</div></div>'
+      +'<div class="cumpl-bar-bg"><div style="height:100%;width:'+Math.min(pct,100)+'%;background:'+c+';border-radius:3px"></div></div>'
+      +'<div class="cumpl-bottom"><span style="font-size:20px;font-weight:700;color:'+c+'">'+pct+'%</span>'
+      +(faltan>0?'<span class="cumpl-falta">'+faltan+' pendientes</span>':'<span style="color:#22c55e;font-size:12px;font-weight:600">¡Completo!</span>')
+      +'</div></div>';
+  });
+  cumpl += '</div>';
+
+  // ── 3. HORARIOS ──
+  var horariosHTML = '';
+  var coordsConData = Object.keys(p.horariosData||{});
+  if(coordsConData.length > 0){
+    horariosHTML = '<div class="section-title">🕐 Visitas en horario clave — Mié-Sáb · 17:00-23:00</div>'
+      +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-bottom:24px">';
+    coordsConData.forEach(function(k){
+      var h = p.horariosData[k];
+      var pctEnH = h.total>0?Math.round(h.enHorario/h.total*100):0;
+      var pctFueraH = 100-pctEnH;
+      var cEnH = pctEnH>=60?'#22c55e':'#eab308';
+      var diasGrid = '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:12px">';
+      p.DIAS_NOMBRE.forEach(function(dnom,di){
+        var count = h.porDia[di]||0;
+        var esClave = p.DIAS_CLAVE.indexOf(di)>=0;
+        var bg = count>0?'#14532d':'#0a0a0b';
+        var border = esClave&&count===0?'#ef4444':'#2a2a2e';
+        var textC = count>0?'#86efac':'#444';
+        diasGrid += '<div style="aspect-ratio:1;border-radius:6px;border:1px solid '+border+';background:'+bg+';display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px">'
+          +'<div style="font-size:9px;color:#666">'+dnom+'</div>'
+          +'<div style="font-size:14px;font-weight:700;color:'+textC+'">'+(count>0?count:'')+'</div>'
+          +'</div>';
+      });
+      diasGrid += '</div><div style="font-size:10px;color:#555;margin-top:4px">Mié-Sáb = días clave · Rojo = día clave sin visitas</div>';
+      horariosHTML += '<div style="background:#141416;border:1px solid #2a2a2e;border-radius:14px;padding:16px">'
+        +'<div style="font-size:13px;font-weight:700;color:#f5a623;margin-bottom:14px;text-transform:uppercase;letter-spacing:.04em">'+h.label+'</div>'
+        +'<div style="margin-bottom:6px"><div style="display:flex;justify-content:space-between;font-size:11px;color:#aaa;margin-bottom:4px"><span>En horario (Mié-Sáb 5-11pm)</span><span style="color:'+cEnH+';font-weight:600">'+pctEnH+'%</span></div><div style="height:6px;background:#1e1e21;border-radius:3px;overflow:hidden"><div style="height:100%;width:'+pctEnH+'%;background:'+cEnH+';border-radius:3px"></div></div></div>'
+        +'<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:11px;color:#aaa;margin-bottom:4px"><span>Fuera de horario</span><span style="color:#ef4444">'+pctFueraH+'%</span></div><div style="height:6px;background:#1e1e21;border-radius:3px;overflow:hidden"><div style="height:100%;width:'+pctFueraH+'%;background:#ef4444;border-radius:3px"></div></div></div>'
+        +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px">'
+        +'<div style="background:#052e16;border-radius:8px;padding:10px;text-align:center"><div style="font-size:24px;font-weight:700;color:#22c55e">'+h.enHorario+'</div><div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.04em">En servicio</div></div>'
+        +'<div style="background:#450a0a;border-radius:8px;padding:10px;text-align:center"><div style="font-size:24px;font-weight:700;color:#ef4444">'+h.fueraHorario+'</div><div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.04em">Fuera servicio</div></div>'
+        +'</div>'+diasGrid+'</div>';
+    });
+    horariosHTML += '</div>';
+  }
+
+  // ── 4. SEMÁFORO DE PDVs — lista rápida ──
+  var semaforo = '<div class="section-title">🚦 Estado de PDVs auditados</div>'
+    +'<div class="table-wrap"><table>'
+    +'<thead><tr><th>Estado</th><th>PDV</th><th>Zona</th><th>Puntaje</th><th>Última visita</th><th>Hallazgos</th></tr></thead>'
+    +'<tbody>';
+  // Ordenar: primero rojos, luego amarillos, luego verdes
+  var ordenados = p.ranking.slice().sort(function(a,b){
+    var orden = {'ROJO':0,'AMARILLO':1,'VERDE':2};
+    return (orden[g(a,p.I.estado).toUpperCase()]||0) - (orden[g(b,p.I.estado).toUpperCase()]||0);
+  });
+  ordenados.forEach(function(r){
+    var t=n(r,p.I.total); var e=g(r,p.I.estado).toUpperCase();
+    var h=g(r,p.I.hallazgos);
+    // Filtrar hallazgos — solo texto real, no links ni textos muy largos
+    var hallazgosLimpios = h ? h.split(' | ').filter(function(hh){
+      return hh.trim() && hh.indexOf('http')<0 && hh.length < 150;
+    }).slice(0,2).join(' · ') : '';
+    var bg=e==='VERDE'?'#e8f5e915':e==='AMARILLO'?'#fff8e115':'#ffebee20';
+    semaforo += '<tr style="background:'+bg+'">'
+      +'<td style="text-align:center;font-size:16px">'+emoji(e)+'</td>'
+      +'<td style="font-weight:600;font-size:12px">'+g(r,p.I.pdv)+'</td>'
+      +'<td style="font-size:11px;color:#aaa">'+g(r,p.I.zona)+'</td>'
+      +'<td style="text-align:center;font-family:var(--mono);font-weight:700;font-size:14px">'+t+'</td>'
+      +'<td style="font-size:11px;color:#888">'+g(r,p.I.tsEnvio).substring(0,10)+'</td>'
+      +'<td style="font-size:11px;color:#bbb;max-width:300px">'+hallazgosLimpios+'</td>'
+      +'</tr>';
+  });
+  semaforo += '</tbody></table></div>';
+
+  // ── 4. PENDIENTES CRÍTICOS — solo hallazgos reales agrupados por PDV ──
+  var pendientesHTML = '';
+  var porPDV = {};
+  p.ranking.forEach(function(r){
+    var pdv = g(r,p.I.pdv); var zona = g(r,p.I.zona);
+    var h = g(r,p.I.hallazgos);
+    if(!h) return;
+    var items = h.split(' | ').filter(function(hh){
+      return hh.trim() && hh.indexOf('http')<0 && hh.length<200;
+    });
+    if(items.length===0) return;
+    if(!porPDV[pdv]) porPDV[pdv]={zona:zona,items:[]};
+    items.forEach(function(item){ porPDV[pdv].items.push(item.trim()); });
+  });
+  var pdvsConHallazgos = Object.keys(porPDV);
+  if(pdvsConHallazgos.length > 0){
+    pendientesHTML = '<div class="section-title">⚠️ Pendientes por PDV ('+pdvsConHallazgos.length+' puntos)</div>'
+      +'<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px">';
+    pdvsConHallazgos.forEach(function(pdv){
+      var d = porPDV[pdv];
+      pendientesHTML += '<div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid #eab308;border-radius:10px;padding:12px 16px">'
+        +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'
+        +'<span style="font-size:13px;font-weight:600;color:var(--text)">'+pdv+'</span>'
+        +'<span style="font-size:10px;color:var(--muted);background:var(--surface2);padding:2px 8px;border-radius:5px">'+d.zona+'</span>'
+        +'</div>'
+        +'<ul style="list-style:none;display:flex;flex-direction:column;gap:4px">';
+      d.items.forEach(function(item){
+        pendientesHTML += '<li style="font-size:12px;color:#ccc;padding:4px 0;border-bottom:1px solid var(--border);display:flex;gap:8px">'
+          +'<span style="color:#eab308;flex-shrink:0">→</span>'
+          +'<span>'+item+'</span></li>';
+      });
+      pendientesHTML += '</ul></div>';
+    });
+    pendientesHTML += '</div>';
+  }
+
+  // ── 5. PDVs SIN AUDITAR ESTE MES ──
+  var auditadosIds = new Set();
+  p.ranking.forEach(function(r){
+    var ts = g(r,p.I.tsEnvio);
+    var hoy = new Date(); var mesNum = hoy.getMonth()+1; var anio = hoy.getFullYear();
+    var esMes = false;
+    if(ts.indexOf('/')>=0){var pts=ts.split('/');if(pts.length>=3)esMes=parseInt(pts[1])===mesNum&&pts[2].substring(0,4)===String(anio);}
+    else{esMes=ts.substring(5,7)===String(mesNum).padStart(2,'0')&&ts.substring(0,4)===String(anio);}
+    if(esMes) auditadosIds.add(g(r,p.I.pdv));
+  });
+
+  var css = '<style>:root{--bg:#0a0a0b;--surface:#141416;--surface2:#1e1e21;--border:#2a2a2e;--text:#f0f0f0;--muted:#777;--accent:#f5a623;--font:\'DM Sans\',sans-serif;--mono:\'DM Mono\',monospace}'
+    +'*{box-sizing:border-box;margin:0;padding:0}'
+    +'body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;min-height:100vh}'
+    +'.header{background:#0a0a0b;border-bottom:1px solid var(--border);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}'
+    +'.logo-area{display:flex;align-items:center;gap:12px}'
+    +'.logo-dot{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px}'
+    +'.brand-name{font-size:16px;font-weight:700}'
+    +'.brand-sub{font-size:11px;color:var(--muted)}'
+    +'.update{font-size:11px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);padding:5px 12px;border-radius:20px}'
+    +'.container{padding:20px 24px;max-width:1100px;margin:0 auto}'
+    +'.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:24px}'
+    +'@media(max-width:700px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}'
+    +'.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center}'
+    +'.kpi-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}'
+    +'.kpi-val{font-family:var(--mono);font-size:26px;font-weight:500}'
+    +'.section-title{font-size:12px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;margin-top:4px}'
+    +'.cumpl-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}'
+    +'@media(max-width:800px){.cumpl-grid{grid-template-columns:repeat(2,1fr)}}'
+    +'.cumpl-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px}'
+    +'.cumpl-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}'
+    +'.cumpl-zona{font-size:13px;font-weight:600}'
+    +'.cumpl-sub{font-size:11px;color:var(--muted);margin-top:2px}'
+    +'.cumpl-bar-bg{height:8px;background:var(--border);border-radius:4px;margin-bottom:10px;overflow:hidden}'
+    +'.cumpl-bottom{display:flex;justify-content:space-between;align-items:center}'
+    +'.cumpl-falta{font-size:11px;color:#ef4444;background:#7f1d1d33;padding:3px 10px;border-radius:5px;font-weight:500}'
+    +'.table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border);margin-bottom:24px}'
+    +'table{width:100%;border-collapse:collapse;font-size:12px}'
+    +'th{padding:9px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;background:var(--surface2);border-bottom:1px solid var(--border);white-space:nowrap}'
+    +'td{padding:9px 12px;border-bottom:1px solid var(--border)}'
+    +'tr:last-child td{border-bottom:none}'
+    +'.badge{display:inline-block;padding:2px 8px;border-radius:5px;font-size:10px;font-weight:600}'
+    +'.badge-verde{background:#14532d;color:#86efac}.badge-amarillo{background:#713f12;color:#fde68a}.badge-rojo{background:#7f1d1d;color:#fca5a5}'
+    +'</style>';
+
+  return '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">'
+    +'<meta name="viewport" content="width=device-width,initial-scale=1">'
+    +'<title>BBC Auditorías — Coordinadores</title>'
+    +'<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">'
+    +css+'</head><body>'
+    +'<div class="header">'
+    +'<div class="logo-area"><div class="logo-dot">🍺</div><div><div class="brand-name">BBC Auditorías</div><div class="brand-sub">Dashboard Coordinadores</div></div></div>'
+    +'<div class="update">'+p.ahora+'</div>'
+    +'</div>'
+    +'<div class="container">'
+    +kpis
+    +cumpl
+    +horariosHTML
+    +semaforo
+    +pendientesHTML
+    +'</div>'
+    +'<div style="text-align:center;padding:20px;color:#444;font-size:11px;border-top:1px solid #1a1a1c">BBC Colombia · Sistema de Auditorías · Solo lectura</div>'
+    +'</body></html>';
+}
+
+// ── doPost — recibe los 3 tipos de auditoría ──
+function doPost(e) {
+  try {
+    var data = JSON.parse(e.postData.contents);
+    var ss = SpreadsheetApp.openById(SHEET_ID);
+    var tipo = data.tipo || 'GENERAL';
+    var row = data.row;
+
+    // Seleccionar hoja según tipo
+    var nombreHoja;
+    if(tipo === 'VIRTUAL') nombreHoja = 'Auditorías Virtual';
+    else if(tipo === 'HORARIO_SERVICIO') nombreHoja = 'Auditorías Horario';
+    else nombreHoja = 'Auditorías';
+
+    var sh = ss.getSheetByName(nombreHoja);
+    if(!sh) sh = ss.insertSheet(nombreHoja);
+
+    // Anti-duplicado
+    var tsInicio = row[0];
+    var tsEnvio = row[1];
+    if(sh.getLastRow() > 1) {
+      var existentes = sh.getRange(2, 1, sh.getLastRow()-1, 2).getValues();
+      for(var i = 0; i < existentes.length; i++) {
+        if(existentes[i][0] === tsInicio && existentes[i][1] === tsEnvio) {
+          return ContentService.createTextOutput(JSON.stringify({ok:false,reason:'duplicate'})).setMimeType(ContentService.MimeType.JSON);
+        }
+      }
+    }
+
+    // Guardar fila
+    sh.appendRow(row);
+
+    // Actualizar resumen solo para auditorías generales
+    if(tipo === 'GENERAL' || !tipo) {
+      actualizarResumen(ss);
+      actualizarPorModulo(ss);
+      var pSh = ss.getSheetByName('Pendientes');
+      if(pSh) agregarPendientes(ss, row);
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({ok:true})).setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    return ContentService.createTextOutput(JSON.stringify({ok:false,reason:err.toString()})).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+function doPost(e) {
+  try {
+    var data = JSON.parse(e.postData.contents);
+    var ss = SpreadsheetApp.openById(SHEET_ID);
+    var sh = obtenerHojaAuditorias(ss);
+
+    // Anti-duplicado
+    var tsI = data.row[0], tsE = data.row[1];
+    if (sh.getLastRow() > 1) {
+      var ex = sh.getRange(2,1,sh.getLastRow()-1,2).getValues();
+      for (var i=0;i<ex.length;i++) {
+        if (ex[i][0]===tsI && ex[i][1]===tsE)
+          return ok(false,'duplicate');
+      }
+    }
+
+    // Fotos
+    var links = [];
+    if (data.fotos && data.fotos.length > 0) {
+      var folder = obtenerCarpeta(data.pdv);
+      data.fotos.forEach(function(b64,i){
+        try {
+          var blob = Utilities.newBlob(Utilities.base64Decode(b64.split(',')[1]),'image/jpeg',
+            clean(data.pdv)+'_'+(i+1)+'_'+Date.now()+'.jpg');
+          var f = folder.createFile(blob);
+          f.setSharing(DriveApp.Access.ANYONE_WITH_LINK,DriveApp.Permission.VIEW);
+          links.push(f.getUrl());
+        } catch(e){ links.push('Error'); }
+      });
+    }
+
+    var row = data.row;
+    row.push(links.join(' | ')||'Sin fotos');
+    sh.appendRow(row);
+
+    var lr = sh.getLastRow();
+    var est = String(row[IDX.estado]||'').toUpperCase();
+    sh.getRange(lr,1,1,row.length).setBackground(est==='VERDE'?'#e8f5e9':est==='AMARILLO'?'#fff8e1':'#ffebee');
+
+    agregarPendientes(ss, row);
+    actualizarResumen(ss);
+    actualizarPorModulo(ss);
+
+    return ok(true);
+  } catch(err){ return ok(false,err.toString()); }
+}
+
+function ok(status,msg){ return ContentService.createTextOutput(JSON.stringify({ok:status,msg:msg||''})).setMimeType(ContentService.MimeType.JSON); }
+function clean(s){ return (s||'SIN').replace(/[^a-zA-Z0-9_-]/g,'_'); }
+
+// ── HOJAS ──
+function obtenerHojaAuditorias(ss){
+  var sh=ss.getSheetByName('Auditorías');
+  if(!sh){sh=ss.getSheets()[0];sh.setName('Auditorías');}
+  return sh;
+}
+function obtenerCarpeta(pdv){
+  var r=DriveApp.getFoldersByName('BBC Auditorías — Fotos');
+  var root=r.hasNext()?r.next():DriveApp.createFolder('BBC Auditorías — Fotos');
+  var n='PDV_'+clean(pdv); var s=root.getFoldersByName(n);
+  return s.hasNext()?s.next():root.createFolder(n);
+}
+
+// ── RESUMEN ──
+function actualizarResumen(ss){
+  var dataSh=obtenerHojaAuditorias(ss);
+  var lr=dataSh.getLastRow();
+  var sh=ss.getSheetByName('Resumen');
+  if(!sh)sh=ss.insertSheet('Resumen',1);
+  sh.clearContents();sh.clearFormats();
+  if(lr<2){sh.getRange('A1').setValue('Sin auditorías aún.');return;}
+
+  var data=dataSh.getRange(2,1,lr-1,IDX.fotos+2).getValues();
+  var totales=data.map(function(r){return Number(r[IDX.total])||0;});
+  var prom=totales.length?Math.round(totales.reduce(function(a,b){return a+b;},0)/totales.length):0;
+  var verdes=data.filter(function(r){return ست(r)===('VERDE');}).length;
+  var amars=data.filter(function(r){return ست(r)==='AMARILLO';}).length;
+  var rojos=data.filter(function(r){return ست(r)==='ROJO';}).length;
+
+  // Título
+  sh.getRange('A1:N1').merge().setValue('📊 TABLERO BBC COLOMBIA — '+fmt(new Date()))
+    .setFontSize(14).setFontWeight('bold').setFontColor('#f5a623').setBackground('#0e0e0f').setHorizontalAlignment('center');
+  sh.setRowHeight(1,38);
+
+  // KPIs
+  var kpis=[['Total\nAuditorías',data.length,'#0e2340','#60a5fa'],['Promedio\nGeneral',prom+'/100','#0e2340','#f5a623'],['🟢 Verde\n(≥85)',verdes,'#052e16','#86efac'],['🟡 Amarillo\n(70-84)',amars,'#431407','#fde68a'],['🔴 Rojo\n(<70)',rojos,'#450a0a','#fca5a5']];
+  kpis.forEach(function(k,i){
+    var c=i*2+1;
+    sh.getRange(3,c,1,2).merge().setValue(k[0]).setFontSize(9).setFontColor('#aaa').setBackground(k[2]).setHorizontalAlignment('center');
+    sh.getRange(4,c,1,2).merge().setValue(k[1]).setFontSize(20).setFontWeight('bold').setFontColor(k[3]).setBackground(k[2]).setHorizontalAlignment('center');
+    sh.setRowHeight(3,26);sh.setRowHeight(4,36);
+  });
+
+  // Promedio por módulo
+  sh.getRange('A6:H6').merge().setValue('📈 PROMEDIO POR MÓDULO').setFontSize(11).setFontWeight('bold').setFontColor('#f5a623').setBackground('#0e2340');
+  sh.setRowHeight(6,26);
+  var mH=MOD_NOMBRES.map(function(n,i){return n+'\n/'+MOD_MAX[i];});
+  sh.getRange(7,1,1,7).setValues([mH]).setFontSize(9).setFontWeight('bold').setBackground('#0e2340').setFontColor('#fff').setHorizontalAlignment('center');
+  sh.setRowHeight(7,28);
+  var mProm=MOD_IDX.map(function(idx,i){
+    var vals=data.map(function(r){return Number(r[idx])||0;}).filter(function(v){return v>0;});
+    return vals.length?Math.round(vals.reduce(function(a,b){return a+b;},0)/vals.length):0;
+  });
+  sh.getRange(8,1,1,7).setValues([mProm]).setFontSize(14).setFontWeight('bold').setHorizontalAlignment('center');
+  mProm.forEach(function(v,i){
+    var p=v/MOD_MAX[i];
+    sh.getRange(8,i+1).setBackground(p>=0.85?'#e8f5e9':p>=0.70?'#fff8e1':'#ffebee').setFontColor(p>=0.85?'#166534':p>=0.70?'#92400e':'#991b1b');
+  });
+  sh.setRowHeight(8,32);
+
+  // Ranking
+  sh.getRange('A10:O10').merge().setValue('🏆 RANKING DE PDVs — ÚLTIMA AUDITORÍA').setFontSize(11).setFontWeight('bold').setFontColor('#f5a623').setBackground('#0e2340');
+  sh.setRowHeight(10,26);
+  var rH=['#','PDV','Zona','Coordinador','Tipo','Fecha','Exp','Mkt','Fin','Inv','Ops','Mant','Vtas','Total','Estado'];
+  sh.getRange(11,1,1,15).setValues([rH]).setFontSize(9).setFontWeight('bold').setBackground('#0e2340').setFontColor('#fff').setHorizontalAlignment('center');
+  sh.setRowHeight(11,24);
+
+  var ultimas={};
+  data.forEach(function(r){var p=r[IDX.pdv];if(!ultimas[p]||r[IDX.tsEnvio]>ultimas[p][IDX.tsEnvio])ultimas[p]=r;});
+  var ranking=Object.values(ultimas).sort(function(a,b){return (Number(b[IDX.total])||0)-(Number(a[IDX.total])||0);});
+
+  ranking.forEach(function(r,i){
+    var row=11+1+i;
+    var total=Number(r[IDX.total])||0;
+    var est=ست(r);
+    var bg=est==='VERDE'?'#e8f5e9':est==='AMARILLO'?'#fff8e1':'#ffebee';
+    var emoji=est==='VERDE'?'🟢 VERDE':est==='AMARILLO'?'🟡 AMARILLO':'🔴 ROJO';
+    var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'';
+    var fecha=r[IDX.tsEnvio]?String(r[IDX.tsEnvio]).substring(0,16):'';
+    var sc=MOD_IDX.map(function(idx){return Number(r[idx])||0;});
+    sh.getRange(row,1,1,15).setValues([[medal,r[IDX.pdv],r[IDX.zona],r[IDX.coord],r[IDX.tipo],fecha,sc[0],sc[1],sc[2],sc[3],sc[4],sc[5],sc[6],total,emoji]]);
+    sh.getRange(row,1,1,15).setBackground(bg).setFontSize(10);
+    sh.getRange(row,14).setFontWeight('bold');
+    sh.setRowHeight(row,22);
+  });
+
+  // Anchos
+  sh.setColumnWidth(1,40);sh.setColumnWidth(2,210);sh.setColumnWidth(3,110);sh.setColumnWidth(4,100);sh.setColumnWidth(5,70);sh.setColumnWidth(6,140);
+  [7,8,9,10,11,12,13].forEach(function(c){sh.setColumnWidth(c,70);});
+  sh.setColumnWidth(14,65);sh.setColumnWidth(15,115);
+}
+
+function ست(r){return String(r[IDX.estado]||'').trim().toUpperCase();}
+function fmt(d){return Utilities.formatDate(d,'America/Bogota','dd/MM/yyyy HH:mm');}
+
+// ── POR MÓDULO ──
+function actualizarPorModulo(ss){
+  var dataSh=obtenerHojaAuditorias(ss);
+  var lr=dataSh.getLastRow();
+  var sh=ss.getSheetByName('Por Módulo');
+  if(!sh)sh=ss.insertSheet('Por Módulo',3);
+  sh.clearContents();sh.clearFormats();
+  if(lr<2)return;
+  var data=dataSh.getRange(2,1,lr-1,IDX.fotos+2).getValues();
+
+  sh.getRange('A1:E1').merge().setValue('🔍 ANÁLISIS POR MÓDULO').setFontSize(12).setFontWeight('bold').setFontColor('#f5a623').setBackground('#0e0e0f');
+  sh.setRowHeight(1,32);
+
+  MOD_NOMBRES.forEach(function(nombre,mi){
+    var startRow=3+mi*13;
+    var idx=MOD_IDX[mi];
+    var max=MOD_MAX[mi];
+
+    sh.getRange(startRow,1,1,5).merge().setValue(nombre.toUpperCase()+' — Máx '+max+' pts')
+      .setFontSize(11).setFontWeight('bold').setFontColor('#fff').setBackground('#0e2340');
+    sh.setRowHeight(startRow,26);
+
+    var vals=data.map(function(r){return Number(r[idx])||0;}).filter(function(v){return v>0;});
+    var prom=vals.length?(vals.reduce(function(a,b){return a+b;},0)/vals.length).toFixed(1):0;
+    var v85=vals.filter(function(v){return v/max>=0.85;}).length;
+    var v70=vals.filter(function(v){return v/max>=0.70&&v/max<0.85;}).length;
+    var vBaj=vals.filter(function(v){return v/max<0.70;}).length;
+
+    sh.getRange(startRow+1,1,1,4).setValues([['Promedio red','🟢 ≥85%','🟡 70-84%','🔴 <70%']]).setFontSize(9).setFontColor('#aaa').setBackground('#0e2340');
+    sh.getRange(startRow+2,1,1,4).setValues([[prom+'/'+max,v85,v70,vBaj]]).setFontSize(14).setFontWeight('bold').setBackground('#0e2340').setFontColor('#f0f0f0');
+    sh.setRowHeight(startRow+1,22);sh.setRowHeight(startRow+2,30);
+
+    // PDVs con puntaje bajo — con detalle de hallazgos
+    sh.getRange(startRow+4,1,1,4).setValues([['PDV con puntaje más bajo','Puntaje','% del máx','Hallazgos registrados']])
+      .setFontSize(9).setFontWeight('bold').setBackground('#2a1a1a').setFontColor('#fca5a5');
+    sh.setRowHeight(startRow+4,22);
+
+    var porPDV={};
+    data.forEach(function(r){
+      var pdv=r[IDX.pdv];
+      var s=Number(r[idx])||0;
+      if(!porPDV[pdv]||s<porPDV[pdv].score){
+        porPDV[pdv]={score:s,hallazgos:String(r[IDX.hallazgos]||''),notas:String(r[IDX.notas]||'')};
       }
     });
-    if(itemsFaltantes.length>0){
-      faltantes.push({mod:mod.nombre, items:itemsFaltantes, id:mod.id});
-    }
-  });
-  return faltantes;
-}
-
-function mostrarIncompletos(faltantes){
-  // Abrir el primer módulo incompleto y resaltar ítems
-  if(faltantes.length===0)return;
-  const primero=faltantes[0];
-  // Abrir sección
-  const body=document.getElementById('body'+primero.id);
-  const ch=document.getElementById('ch'+primero.id);
-  if(body&&!body.classList.contains('open')){
-    body.classList.add('open');if(ch)ch.classList.add('open');
-  }
-  // Scroll al módulo
-  const sec=document.getElementById('body'+primero.id);
-  if(sec)sec.scrollIntoView({behavior:'smooth',block:'center'});
-  // Construir mensaje
-  const resumen=faltantes.map(f=>`• ${f.mod}: ${f.items.slice(0,3).join(', ')}${f.items.length>3?' y '+(f.items.length-3)+' más':''}`).join('\n');
-  mostrarToastLargo('⚠️ Faltan respuestas:\n'+resumen,'#ef4444');
-}
-
-function mostrarToastLargo(msg,color){
-  const t=document.getElementById('toast');
-  t.style.whiteSpace='pre-line';t.style.textAlign='left';t.style.maxWidth='320px';
-  t.textContent=msg;t.style.background=color||'var(--green)';
-  t.classList.add('show');setTimeout(()=>{t.classList.remove('show');t.style.whiteSpace='nowrap';},5000);
-}
-
-function generarReporte(){
-  const d = JSON.parse(localStorage.getItem('bbc_reporte_ultimo')||'{}');
-  if(!d.pdv){mostrarToast('Sin datos de reporte','#ef4444');return;}
-
-  const MOD_NOMBRES = ['Experiencia','Marketing & Uniformes','Finanzas & Caja','Inventario','Operaciones & Personal','Mantenimiento','Ventas'];
-  const MOD_MAX = [15,15,15,15,15,15,10];
-  const MOD_ICONS = ['🍺','👕','💰','📦','🧹','🔩','📈'];
-
-  const estadoColor = d.estado==='VERDE'?'#22c55e':d.estado==='AMARILLO'?'#eab308':'#ef4444';
-  const estadoBg = d.estado==='VERDE'?'#052e16':d.estado==='AMARILLO'?'#422006':'#450a0a';
-
-  // Plan de acción desde hallazgos
-  const hallazgos = (d.hallazgos||'').split('\n').filter(h=>h.trim());
-  const planItems = hallazgos.map((h,i)=>`
-    <tr>
-      <td style="padding:8px 12px;border-bottom:1px solid #2a2a2e;font-size:12px">${i+1}. ${h}</td>
-      <td style="padding:8px 12px;border-bottom:1px solid #2a2a2e;font-size:12px;color:#888">Coordinador</td>
-      <td style="padding:8px 12px;border-bottom:1px solid #2a2a2e;font-size:12px;color:#f5a623">Pendiente</td>
-    </tr>`).join('');
-
-  // Observaciones por módulo
-  const modObs = MODULOS.map((mod,i)=>{
-    const notas = mod.items
-      .filter(item=>d.obs[item.id]&&d.obs[item.id].nota)
-      .map(item=>`<li style="font-size:11px;color:#bbb;margin-bottom:3px">• ${item.label}: ${d.obs[item.id].nota}</li>`)
-      .join('');
-    const score = d.scores[i]||0;
-    const pct = score/MOD_MAX[i];
-    const c = pct>=0.85?'#22c55e':pct>=0.70?'#eab308':'#ef4444';
-    return `<div style="margin-bottom:12px;background:#141416;border:1px solid #2a2a2e;border-radius:10px;overflow:hidden">
-      <div style="padding:10px 14px;background:#1e1e21;display:flex;justify-content:space-between;align-items:center">
-        <span style="font-size:13px;font-weight:600">${MOD_ICONS[i]} ${MOD_NOMBRES[i]}</span>
-        <span style="font-family:monospace;font-size:14px;font-weight:700;color:${c}">${score}/${MOD_MAX[i]}</span>
-      </div>
-      ${notas?`<ul style="padding:8px 14px;list-style:none">${notas}</ul>`:''}
-    </div>`;
-  }).join('');
-
-  const html = `<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Reporte Auditoría — ${d.pdv}</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#0a0a0b;color:#f0f0f0;font-family:'DM Sans',sans-serif;font-size:14px;padding:0}
-@media print{body{background:#fff;color:#000}.no-print{display:none!important}.print-section{break-inside:avoid}}
-</style>
-</head>
-<body>
-<div style="max-width:680px;margin:0 auto;padding:24px 20px">
-
-  <!-- Header -->
-  <div class="no-print" style="margin-bottom:20px;display:flex;gap:10px">
-    <button onclick="window.print()" style="flex:1;padding:12px;background:#f5a623;color:#000;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">🖨️ Imprimir / Guardar PDF</button>
-    <button onclick="compartir()" style="flex:1;padding:12px;background:#1e1e21;color:#f0f0f0;border:1px solid #2a2a2e;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">📤 Compartir</button>
-  </div>
-
-  <!-- Logo + título -->
-  <div style="background:#141416;border:1px solid #2a2a2e;border-radius:14px;padding:20px;margin-bottom:16px">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
-      <div style="width:40px;height:40px;background:#f5a623;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px">🍺</div>
-      <div>
-        <div style="font-size:11px;color:#777;text-transform:uppercase;letter-spacing:.06em">Reporte de Auditoría</div>
-        <div style="font-size:18px;font-weight:700">BBC Colombia</div>
-      </div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div><div style="font-size:10px;color:#777;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px">Punto de venta</div><div style="font-size:15px;font-weight:600">${d.pdv}</div></div>
-      <div><div style="font-size:10px;color:#777;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px">Tipo</div><div style="font-size:14px">${d.tipo}</div></div>
-      <div><div style="font-size:10px;color:#777;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px">Zona</div><div style="font-size:14px">${d.zona}</div></div>
-      <div><div style="font-size:10px;color:#777;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px">Coordinador</div><div style="font-size:14px">${d.coord}</div></div>
-      <div><div style="font-size:10px;color:#777;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px">Fecha</div><div style="font-size:14px;font-family:monospace">${d.fecha}</div></div>
-      <div><div style="font-size:10px;color:#777;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px">Auditora</div><div style="font-size:14px">Julieth Jimenez</div></div>
-    </div>
-  </div>
-
-  <!-- Puntaje total -->
-  <div style="background:${estadoBg};border:1px solid ${estadoColor}33;border-radius:14px;padding:20px;margin-bottom:16px;text-align:center">
-    <div style="font-size:11px;color:#777;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Puntaje total</div>
-    <div style="font-family:monospace;font-size:56px;font-weight:700;color:${estadoColor};line-height:1">${d.total}</div>
-    <div style="font-size:13px;color:${estadoColor};margin-top:6px;font-weight:600">/ 100 — ${d.estado}</div>
-    <!-- Barra -->
-    <div style="height:8px;background:#2a2a2e;border-radius:4px;margin-top:14px;overflow:hidden">
-      <div style="height:100%;width:${d.total}%;background:${estadoColor};border-radius:4px"></div>
-    </div>
-  </div>
-
-  <!-- Puntajes por módulo -->
-  <div style="background:#141416;border:1px solid #2a2a2e;border-radius:14px;padding:16px;margin-bottom:16px">
-    <div style="font-size:11px;color:#f5a623;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px">📊 Puntajes por módulo</div>
-    ${MODULOS.map((mod,i)=>{
-      const score = d.scores[i]||0;
-      const pct = score/MOD_MAX[i];
-      const c = pct>=0.85?'#22c55e':pct>=0.70?'#eab308':'#ef4444';
-      return `<div style="margin-bottom:10px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-          <span style="font-size:12px">${MOD_ICONS[i]} ${MOD_NOMBRES[i]}</span>
-          <span style="font-family:monospace;font-size:13px;font-weight:700;color:${c}">${score}/${MOD_MAX[i]}</span>
-        </div>
-        <div style="height:5px;background:#2a2a2e;border-radius:3px;overflow:hidden">
-          <div style="height:100%;width:${Math.round(pct*100)}%;background:${c};border-radius:3px"></div>
-        </div>
-      </div>`;
-    }).join('')}
-  </div>
-
-  <!-- Observaciones por módulo -->
-  ${modObs?`<div style="margin-bottom:16px">
-    <div style="font-size:11px;color:#f5a623;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">📝 Observaciones por módulo</div>
-    ${modObs}
-  </div>`:''}
-
-  <!-- Hallazgos críticos -->
-  ${hallazgos.length>0?`<div style="background:#141416;border:1px solid #2a2a2e;border-radius:14px;padding:16px;margin-bottom:16px">
-    <div style="font-size:11px;color:#ef4444;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">⚠️ Hallazgos críticos</div>
-    ${hallazgos.map((h,i)=>`<div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #2a2a2e;font-size:13px">
-      <span style="color:#f5a623;flex-shrink:0;font-weight:600">${i+1}.</span>
-      <span>${h}</span>
-    </div>`).join('')}
-  </div>`:''}
-
-  <!-- Plan de acción -->
-  ${planItems?`<div style="background:#141416;border:1px solid #2a2a2e;border-radius:14px;overflow:hidden;margin-bottom:16px">
-    <div style="padding:14px 16px;background:#1e1e21;border-bottom:1px solid #2a2a2e">
-      <div style="font-size:11px;color:#f5a623;font-weight:600;text-transform:uppercase;letter-spacing:.06em">📋 Plan de acción</div>
-    </div>
-    <table style="width:100%;border-collapse:collapse">
-      <thead><tr>
-        <th style="padding:8px 12px;font-size:10px;color:#777;text-align:left;background:#1a1a1c;text-transform:uppercase">Hallazgo</th>
-        <th style="padding:8px 12px;font-size:10px;color:#777;text-align:left;background:#1a1a1c;text-transform:uppercase">Responsable</th>
-        <th style="padding:8px 12px;font-size:10px;color:#777;text-align:left;background:#1a1a1c;text-transform:uppercase">Estado</th>
-      </tr></thead>
-      <tbody>${planItems}</tbody>
-    </table>
-  </div>`:''}
-
-  <!-- Notas -->
-  ${d.notas?`<div style="background:#141416;border:1px solid #2a2a2e;border-radius:14px;padding:16px;margin-bottom:16px">
-    <div style="font-size:11px;color:#f5a623;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">📌 Notas adicionales</div>
-    <div style="font-size:13px;color:#bbb;line-height:1.6">${d.notas}</div>
-  </div>`:''}
-
-  <!-- Footer -->
-  <div style="text-align:center;padding:16px;color:#444;font-size:11px;border-top:1px solid #2a2a2e">
-    BBC Colombia · Auditorías Operaciones · ${d.fecha}
-  </div>
-</div>
-
-<script>
-function compartir(){
-  if(navigator.share){
-    navigator.share({title:'Reporte BBC — ${d.pdv}',text:'Reporte de auditoría ${d.pdv} — ${d.total}/100 ${d.estado}',url:window.location.href});
-  } else {
-    navigator.clipboard.writeText(window.location.href);
-    alert('Link copiado al portapapeles');
-  }
-}
-<\/script>
-</body></html>`;
-
-  const blob = new Blob([html], {type:'text/html'});
-  const url = URL.createObjectURL(blob);
-  window.open(url,'_blank');
-}
-
-function calcTotal(){
-  let total=0;
-  const scores=[];
-  MODULOS.forEach(mod=>{
-    const chip=document.getElementById('score-chip-'+mod.id);
-    const txt=chip?chip.textContent:'—';
-    const sc=parseInt(txt)||0;
-    scores.push(sc);
-    total+=sc;
-    const ri=document.getElementById('r'+mod.id);
-    if(ri)ri.textContent=sc+'/'+mod.max;
-  });
-  document.getElementById('total-num').textContent=total;
-  document.getElementById('total-bar').style.width=Math.min(total,100)+'%';
-  document.getElementById('header-score').textContent=total+' / 100';
-  document.getElementById('progress').style.width=Math.min(total,100)+'%';
-  const badge=document.getElementById('estado-badge');
-  if(total>=85){badge.textContent='🟢 VERDE';badge.className='estado-badge verde';}
-  else if(total>=70){badge.textContent='🟡 AMARILLO';badge.className='estado-badge amarillo';}
-  else{badge.textContent='🔴 ROJO';badge.className='estado-badge rojo';}
-  generarTareas();
-}
-
-function toggleSec(n){
-  const b=document.getElementById('body'+n),ch=document.getElementById('ch'+n);
-  if(!b)return;const open=b.classList.toggle('open');if(ch)ch.classList.toggle('open',open);
-}
-function toggleNota(el){
-  const area=el.nextElementSibling;area.classList.toggle('open');
-  el.textContent=area.classList.contains('open')?'− Ocultar':'+ Observación';
-}
-
-// GPS
-window.onload=function(){
-  tsInicio=new Date();
-  document.getElementById('ts-val').textContent=formatTs(tsInicio);
-  obtenerGPS();
-  buildModulos();
-  cargarBorrador();
-};
-function formatTs(d){return d.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+d.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
-function obtenerGPS(){
-  if(!navigator.geolocation){setGPS('GPS no disponible','err');return;}
-  navigator.geolocation.getCurrentPosition(pos=>{
-    gpsData.lat=pos.coords.latitude.toFixed(6);gpsData.lng=pos.coords.longitude.toFixed(6);
-    gpsData.address=gpsData.lat+', '+gpsData.lng;
-    document.getElementById('gps-val').textContent='📍 '+gpsData.lat+', '+gpsData.lng;
-    document.getElementById('gps-dot').className='gps-dot ok';
-    fetch('https://nominatim.openstreetmap.org/reverse?lat='+gpsData.lat+'&lon='+gpsData.lng+'&format=json')
-      .then(r=>r.json()).then(d=>{const a=d.address;const r=[a.road,a.neighbourhood,a.city||a.town].filter(Boolean).join(', ');if(r){gpsData.address=r+' ('+gpsData.lat+', '+gpsData.lng+')';document.getElementById('gps-val').textContent='📍 '+r;}}).catch(()=>{});
-  },err=>{const m={1:'Permiso GPS denegado',2:'Señal no encontrada',3:'Tiempo agotado'};setGPS(m[err.code]||'Error GPS','err');},{enableHighAccuracy:true,timeout:10000,maximumAge:0});
-}
-function setGPS(msg,state){document.getElementById('gps-val').textContent=msg;document.getElementById('gps-dot').className='gps-dot '+state;}
-
-function autocompletar(){
-  const sel=document.getElementById('f_pdv');const opt=sel.options[sel.selectedIndex];
-  const zona=opt.dataset.zona||'',coord=opt.dataset.coord||'',tipo=opt.dataset.tipo||'';
-  if(zona){document.getElementById('auto-zona').textContent=zona;document.getElementById('auto-coord').textContent=coord;document.getElementById('auto-tipo').textContent=tipo;document.getElementById('pdv-auto').style.display='block';}
-  else{document.getElementById('pdv-auto').style.display='none';}
-}
-
-// Photos
-function abrirFoto(i){document.getElementById('pi'+i).click();}
-function procesarFoto(i,input){
-  const file=input.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=e=>{
-    const img=new Image();
-    img.onload=()=>{
-      const canvas=document.createElement('canvas');const max=800;let w=img.width,h=img.height;
-      if(w>max){h=h*max/w;w=max;}if(h>max){w=w*max/h;h=max;}
-      canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);
-      const b64=canvas.toDataURL('image/jpeg',0.7);fotos[i]=b64;
-      const slot=document.getElementById('slot'+i);slot.innerHTML=`<img src="${b64}"><div class="rm" onclick="event.stopPropagation();eliminarFoto(${i})">✕</div>`;
-      conteoFotos();
-    };img.src=e.target.result;
-  };reader.readAsDataURL(file);
-}
-function eliminarFoto(i){fotos[i]=null;const s=document.getElementById('slot'+i);s.innerHTML='<span class="add-icon">+</span>';s.onclick=()=>abrirFoto(i);document.getElementById('pi'+i).value='';conteoFotos();}
-function conteoFotos(){document.getElementById('photo-count').textContent=fotos.filter(f=>f!==null).length+' / 5 fotos';}
-
-// Tasks
-function generarTareas(){
-  const hallazgos=(document.getElementById('hallazgos').value||'').split('\n').filter(h=>h.trim());
-  if(!hallazgos.length){document.getElementById('tasks-section').style.display='none';return;}
-  const mapa={'caja':'Gte Ops','diferencia':'Gte Ops','consignac':'Gte Ops','comprobante':'Gte Ops','nevera':'Mantenimiento','impresora':'Mantenimiento','iluminac':'Mantenimiento','ac':'Mantenimiento','aire':'Mantenimiento','silla':'Mantenimiento','piso':'Mantenimiento','pared':'Mantenimiento','luz':'Mantenimiento','equipo':'Mantenimiento','pos':'Mantenimiento','uniforme':'Coordinador','aseo':'Coordinador','accesorio':'Coordinador','aviso':'Coordinador','vencido':'Compras','cerveza':'Compras','licor':'Compras','alimento':'Compras','merchandising':'Compras','menú':'Coordinador','cristal':'Coordinador','limpieza':'Coordinador','venta':'Coordinador','personal':'Coordinador'};
-  document.getElementById('tasks-section').style.display='block';
-  const today=new Date();
-  document.getElementById('tasks-body').innerHTML=hallazgos.map(h=>{
-    const hl=h.toLowerCase();let resp='Coordinador',dias=7;
-    for(const[k,r] of Object.entries(mapa)){if(hl.includes(k)){resp=r;break;}}
-    if(hl.includes('no funciona')||hl.includes('vencido')||hl.includes('diferencia')||hl.includes('dañad'))dias=3;
-    const fecha=new Date(today);fecha.setDate(fecha.getDate()+dias);
-    const fStr=fecha.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'});
-    return `<div class="task-item"><div class="task-h">${h}</div><div class="task-meta"><span class="tag tag-r">${resp}</span><span class="tag ${dias===3?'tag-a':'tag-m'}">${dias===3?'Alta — 3d':'Media — 7d'}</span><span class="tag-f">→ ${fStr}</span></div></div>`;
-  }).join('');
-}
-
-// Draft
-function guardar(){
-  const data={pdv:document.getElementById('f_pdv').value,respuestas:JSON.stringify(respuestas),hallazgos:document.getElementById('hallazgos').value,notas:document.getElementById('notas').value,_ts:tsInicio?tsInicio.toISOString():''};
-  // save notes
-  MODULOS.forEach(mod=>mod.items.forEach(item=>{const el=document.getElementById('n_'+item.id);if(el)data['n_'+item.id]=el.value;const inf=document.getElementById(item.id);if(inf&&item.tipo==='info')data['info_'+item.id]=inf.value;}));
-  try{localStorage.setItem(DRAFT_KEY,JSON.stringify(data));}catch(e){}
-}
-
-function cargarBorrador(){
-  try{
-    const raw=localStorage.getItem(DRAFT_KEY);if(!raw)return;
-    const data=JSON.parse(raw);let tieneData=false;
-    if(data.pdv){document.getElementById('f_pdv').value=data.pdv;autocompletar();tieneData=true;}
-    if(data.respuestas){
-      const r=JSON.parse(data.respuestas);
-      Object.entries(r).forEach(([k,v])=>{
-        respuestas[k]=v;
-        if(v==='ok'||v==='no'||v==='na'){['ok','no','na'].forEach(t=>{const btn=document.getElementById('btn-'+t+'-'+k);if(btn)btn.className='opt-btn'+(v===t?' sel-'+t:'');});}
-        else if(v!==null&&v!==undefined){const el=document.getElementById(k);if(el)el.value=v;}
-      });
-      MODULOS.forEach(mod=>calcMod(mod.id));
-      tieneData=true;
-    }
-    if(data.hallazgos)document.getElementById('hallazgos').value=data.hallazgos;
-    if(data.notas)document.getElementById('notas').value=data.notas;
-    if(data._ts){tsInicio=new Date(data._ts);document.getElementById('ts-val').textContent=formatTs(tsInicio);}
-    MODULOS.forEach(mod=>mod.items.forEach(item=>{
-      const n=document.getElementById('n_'+item.id);if(n&&data['n_'+item.id]){n.value=data['n_'+item.id];const tog=n.closest('.note-area');const tgl=tog?tog.previousElementSibling:null;if(tog&&tgl){tog.classList.add('open');tgl.textContent='− Ocultar';}}
-      const inf=document.getElementById(item.id);if(inf&&data['info_'+item.id])inf.value=data['info_'+item.id];
-    }));
-    if(tieneData)document.getElementById('draft-banner').classList.add('show');
-  }catch(e){}
-}
-
-function limpiarBorrador(){
-  try{localStorage.removeItem(DRAFT_KEY);}catch(e){}
-  document.getElementById('draft-banner').classList.remove('show');
-  document.getElementById('f_pdv').value='';
-  document.getElementById('pdv-auto').style.display='none';
-  respuestas={};
-  document.querySelectorAll('.opt-btn').forEach(b=>b.className='opt-btn');
-  document.querySelectorAll('input[type=number],input[type=text]').forEach(i=>{if(!i.id.startsWith('pi'))i.value='';});
-  document.getElementById('hallazgos').value='';document.getElementById('notas').value='';
-  fotos=[null,null,null,null,null];[0,1,2,3,4].forEach(i=>{const s=document.getElementById('slot'+i);s.innerHTML='<span class="add-icon">+</span>';s.onclick=()=>abrirFoto(i);});
-  conteoFotos();MODULOS.forEach(mod=>calcMod(mod.id));
-  tsInicio=new Date();document.getElementById('ts-val').textContent=formatTs(tsInicio);
-  mostrarToast('Nueva auditoría lista','#888');
-}
-
-function mostrarToast(msg,color){const t=document.getElementById('toast');t.textContent=msg;t.style.background=color||'var(--green)';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
-
-function txt(id){const el=document.getElementById(id);return el?el.value||'':""}
-
-async function enviar(){
-  if(!txt('f_pdv')){mostrarToast('Selecciona el PDV','#ef4444');return;}
-
-  // ── Validar que todos los ítems estén respondidos ──
-  const faltantes=validarCompleto();
-  if(faltantes.length>0){
-    mostrarIncompletos(faltantes);
-    return;
-  }
-
-  const total=parseInt(document.getElementById('total-num').textContent)||0;
-
-  // ── Anti-duplicado: token único por auditoría ──
-  const token=txt('f_pdv')+'|'+formatTs(tsInicio);
-  try{
-    const enviados=JSON.parse(localStorage.getItem('bbc_enviados')||'[]');
-    if(enviados.includes(token)){
-      mostrarToast('Esta auditoría ya fue enviada','#eab308');
-      const btn=document.getElementById('btn-enviar');
-      btn.textContent='✓ Ya enviado';btn.disabled=true;
-      return;
-    }
-  }catch(e){}
-
-  const sel=document.getElementById('f_pdv');const opt=sel.options[sel.selectedIndex];
-  const zona=opt.dataset.zona||'',coord=opt.dataset.coord||'',tipo=opt.dataset.tipo||'';
-  const estado=total>=85?'VERDE':total>=70?'AMARILLO':'ROJO';
-  const fotosActivas=fotos.filter(f=>f!==null);
-  const scores=MODULOS.map(mod=>{const chip=document.getElementById('score-chip-'+mod.id);return parseInt(chip?chip.textContent:0)||0;});
-
-  const fila=[
-    formatTs(tsInicio),formatTs(new Date()),
-    gpsData.lat||'N/D',gpsData.lng||'N/D',gpsData.address,
-    txt('f_pdv'),zona,coord,tipo,
-    txt('m1_menu_pct'),respuestas['m1_precios']||'',txt('n_m1_precios')||'',respuestas['m1_cat']||'',txt('n_m1_cat')||'',respuestas['m1_cristal']||'',txt('n_m1_cristal')||'',respuestas['m1_menaje']||'',txt('n_m1_menaje')||'',scores[0],
-    respuestas['m2_av_ent']||'',txt('n_m2_av_ent')||'',respuestas['m2_av_int']||'',txt('n_m2_av_int')||'',respuestas['m2_unif_b']||'',txt('n_m2_unif_b')||'',respuestas['m2_unif_c']||'',txt('n_m2_unif_c')||'',respuestas['m2_aseo']||'',txt('n_m2_aseo')||'',scores[1],
-    respuestas['m3_caja']||'',txt('n_m3_caja')||'',txt('m3_dif')||'',txt('n_m3_dif')||'',respuestas['m3_cons']||'',txt('n_m3_cons')||'',respuestas['m3_comp']||'',txt('n_m3_comp')||'',respuestas['m3_pos']||'',txt('n_m3_pos')||'',scores[2],
-    txt('m4_cerv'),txt('n_m4_cerv')||'',txt('m4_lic'),txt('n_m4_lic')||'',txt('m4_bsa'),txt('n_m4_bsa')||'',txt('m4_alim'),txt('n_m4_alim')||'',respuestas['m4_merch']||'',txt('n_m4_merch')||'',respuestas['m4_venc']||'',txt('n_m4_venc')||'',scores[3],
-    respuestas['m5_l_coc']||'',txt('n_m5_l_coc')||'',respuestas['m5_l_bar']||'',txt('n_m5_l_bar')||'',respuestas['m5_l_ban']||'',txt('n_m5_l_ban')||'',respuestas['m5_l_mes']||'',txt('n_m5_l_mes')||'',respuestas['m5_imp_b']||'',txt('n_m5_imp_b')||'',respuestas['m5_imp_c']||'',txt('n_m5_imp_c')||'',respuestas['m5_frio']||'',txt('n_m5_frio')||'',respuestas['m5_luz']||'',txt('n_m5_luz')||'',respuestas['m5_ac']||'',txt('n_m5_ac')||'',respuestas['m5_legales']||'',txt('n_m5_legales')||'',txt('m5_sanit'),respuestas['m5_equipo']||'',txt('n_m5_equipo')||'',txt('m5_p_coc'),txt('m5_p_ser'),scores[4],
-    respuestas['m6_sillas']||'',txt('n_m6_sillas')||'',respuestas['m6_mesas']||'',txt('n_m6_mesas')||'',respuestas['m6_pisos']||'',txt('n_m6_pisos')||'',respuestas['m6_luces']||'',txt('n_m6_luces')||'',respuestas['m6_pos']||'',txt('n_m6_pos')||'',respuestas['m6_eq_coc']||'',txt('n_m6_eq_coc')||'',respuestas['m6_eq_bar']||'',txt('n_m6_eq_bar')||'',scores[5],
-    respuestas['m7_conoce_ppto']||'',txt('n_m7_conoce_ppto')||'',respuestas['m7_conoce_ventas']||'',txt('n_m7_conoce_ventas')||'',respuestas['m7_conoce_gap']||'',txt('n_m7_conoce_gap')||'',respuestas['m7_conoce_tickets']||'',txt('n_m7_conoce_tickets')||'',respuestas['m7_conoce_vol']||'',txt('n_m7_conoce_vol')||'',respuestas['m7_equipo_conoce']||'',txt('n_m7_equipo_conoce')||'',scores[6],
-    total,estado,
-    txt('hallazgos').replace(/\n/g,' | '),txt('notas'),
-    fotosActivas.length
-  ];
-
-  const btn=document.getElementById('btn-enviar');
-  btn.disabled=true;btn.textContent='Guardando…';
-
-  try{
-    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({row:fila,fotos:fotosActivas,pdv:txt('f_pdv')})});
-
-    // Guardar token para evitar reenvío
-    try{
-      const enviados=JSON.parse(localStorage.getItem('bbc_enviados')||'[]');
-      enviados.push(token);
-      // Guardar solo los últimos 50 tokens
-      if(enviados.length>50)enviados.shift();
-      localStorage.setItem('bbc_enviados',JSON.stringify(enviados));
-    }catch(e){}
-
-    mostrarToast('✓ Guardado en Google Sheets');
-    try{localStorage.removeItem(DRAFT_KEY);}catch(e){}
-    document.getElementById('draft-banner').classList.remove('show');
-
-    // Bloqueo permanente + mostrar botón de reporte
-    btn.textContent='✓ Auditoría enviada';
-    btn.style.background='#22c55e';
-    btn.style.cursor='not-allowed';
-
-    // Guardar datos del reporte para generar PDF
-    const datosReporte = {
-      pdv: txt('f_pdv'), zona, coord, tipo,
-      fecha: formatTs(tsInicio),
-      gps: gpsData.address,
-      total, estado,
-      scores: scores.slice(),
-      hallazgos: txt('hallazgos'),
-      notas: txt('notas'),
-      obs: {}
-    };
-    // Capturar observaciones por módulo
-    MODULOS.forEach(mod=>{
-      mod.items.forEach(item=>{
-        const r = respuestas[item.id];
-        const n = document.getElementById('n_'+item.id);
-        if(r && r !== '') datosReporte.obs[item.id] = {resp: r, nota: n?n.value:''};
-      });
+    var peores=Object.entries(porPDV).sort(function(a,b){return a[1].score-b[1].score;}).slice(0,5);
+    peores.forEach(function(p,pi){
+      var r=startRow+5+pi;
+      var pct=Math.round(p[1].score/max*100)+'%';
+      var bg=p[1].score/max>=0.85?'#e8f5e9':p[1].score/max>=0.70?'#fff8e1':'#ffebee';
+      var hallDetail=p[1].hallazgos||p[1].notas||'Sin observaciones registradas';
+      if(hallDetail.length>150)hallDetail=hallDetail.substring(0,150)+'…';
+      sh.getRange(r,1,1,4).setValues([[p[0],p[1].score+'/'+max,pct,hallDetail]]).setBackground(bg).setFontSize(10);
+      sh.setRowHeight(r,22);
     });
-    localStorage.setItem('bbc_reporte_ultimo', JSON.stringify(datosReporte));
+  });
 
-    // Mostrar botón de reporte en la barra inferior
-    const bottomBar = document.querySelector('.bottom-bar');
-    const btnReporte = document.createElement('button');
-    btnReporte.className = 'btn';
-    btnReporte.style.background = '#1a1a2e';
-    btnReporte.style.border = '1px solid var(--accent)';
-    btnReporte.style.color = 'var(--accent)';
-    btnReporte.textContent = '📄 Ver reporte';
-    btnReporte.onclick = generarReporte;
-    bottomBar.insertBefore(btnReporte, btn);
-
-  }catch(e){
-    mostrarToast('Error — verifica conexión','#ef4444');
-    btn.disabled=false;btn.textContent='Guardar en Sheets →';
-  }
+  sh.setColumnWidth(1,220);sh.setColumnWidth(2,80);sh.setColumnWidth(3,80);sh.setColumnWidth(4,350);
 }
-</script>
-</body>
-</html>
+
+// ── PENDIENTES ──
+function agregarPendientes(ss,row){
+  var sh=ss.getSheetByName('Pendientes');
+  if(!sh){
+    sh=ss.insertSheet('Pendientes',4);
+    var h=['PDV','Zona','Coordinador','Hallazgo / Problema','Módulo','Responsable','Prioridad','Fecha límite','Estado','Solucionado por','Fecha solución','Observaciones'];
+    sh.appendRow(h);
+    sh.getRange(1,1,1,h.length).setFontWeight('bold').setBackground('#0e2340').setFontColor('#fff').setFontSize(10);
+    sh.setFrozenRows(1);
+    var rule=SpreadsheetApp.newDataValidation().requireValueInList(['⏳ Pendiente','✅ Solucionado','🔄 En proceso'],true).build();
+    sh.getRange('I2:I5000').setDataValidation(rule);
+    sh.setColumnWidth(1,200);sh.setColumnWidth(2,100);sh.setColumnWidth(3,100);
+    sh.setColumnWidth(4,320);sh.setColumnWidth(5,120);sh.setColumnWidth(6,110);
+    sh.setColumnWidth(7,90);sh.setColumnWidth(8,110);sh.setColumnWidth(9,130);
+    sh.setColumnWidth(10,140);sh.setColumnWidth(11,120);sh.setColumnWidth(12,200);
+  }
+
+  var pdv=row[IDX.pdv],zona=row[IDX.zona],coord=row[IDX.coord];
+  var hallazgos=String(row[IDX.hallazgos]||'');
+  var fecha=String(row[IDX.tsEnvio]||'').substring(0,16);
+  var mapa={'caja':'Gte Ops','diferencia':'Gte Ops','nevera':'Mantenimiento','impresora':'Mantenimiento','equipo':'Mantenimiento','silla':'Mantenimiento','piso':'Mantenimiento','luz':'Mantenimiento','uniforme':'Coordinador','aseo':'Coordinador','aviso':'Coordinador','legal':'Coordinador','vencido':'Compras','cerveza':'Compras','licor':'Compras','limpieza':'Coordinador'};
+
+  if(hallazgos){
+    hallazgos.split(' | ').forEach(function(h){
+      if(!h.trim())return;
+      var hl=h.toLowerCase(),resp='Coordinador';
+      for(var k in mapa){if(hl.indexOf(k)>=0){resp=mapa[k];break;}}
+      var dias=(hl.indexOf('no funciona')>=0||hl.indexOf('vencido')>=0||hl.indexOf('diferencia')>=0)?3:7;
+      var fl=new Date();fl.setDate(fl.getDate()+dias);
+      var fStr=Utilities.formatDate(fl,'America/Bogota','dd/MM/yyyy');
+      var prio=dias===3?'🔴 Alta':'🟡 Media';
+      var desc='['+fecha+'] '+h.trim();
+      sh.appendRow([pdv,zona,coord,desc,'Hallazgo',resp,prio,fStr,'⏳ Pendiente','','','']);
+      var lr=sh.getLastRow();
+      sh.getRange(lr,1,1,12).setBackground('#fff8e1').setFontSize(10);
+      sh.setRowHeight(lr,22);
+    });
+  }
+
+  // Módulos con puntaje bajo
+  MOD_IDX.forEach(function(idx,i){
+    var score=Number(row[idx])||0;
+    if(score===0)return;
+    var pct=score/MOD_MAX[i];
+    if(pct<0.70){
+      var fl=new Date();fl.setDate(fl.getDate()+14);
+      var fStr=Utilities.formatDate(fl,'America/Bogota','dd/MM/yyyy');
+      var desc='['+fecha+'] Puntaje bajo en '+MOD_NOMBRES[i]+': '+score+'/'+MOD_MAX[i]+' ('+Math.round(pct*100)+'%). Notas: '+(String(row[IDX.notas]||'').substring(0,100)||'Sin notas');
+      sh.appendRow([pdv,zona,coord,desc,MOD_NOMBRES[i],'Coordinador','🟡 Media',fStr,'⏳ Pendiente','','','']);
+      var lr=sh.getLastRow();
+      sh.getRange(lr,1,1,12).setBackground('#ffebee').setFontSize(10);
+      sh.setRowHeight(lr,22);
+    }
+  });
+}
+
+// ── CONFIGURAR / RECONSTRUIR ──
+function configurarHojas(){
+  var ss=SpreadsheetApp.openById(SHEET_ID);
+  obtenerHojaAuditorias(ss);
+  actualizarResumen(ss);
+  actualizarPorModulo(ss);
+  if(!ss.getSheetByName('Pendientes')){
+    var sh=ss.insertSheet('Pendientes',4);
+    var h=['PDV','Zona','Coordinador','Hallazgo / Problema','Módulo','Responsable','Prioridad','Fecha límite','Estado','Solucionado por','Fecha solución','Observaciones'];
+    sh.appendRow(h);sh.getRange(1,1,1,h.length).setFontWeight('bold').setBackground('#0e2340').setFontColor('#fff').setFontSize(10);sh.setFrozenRows(1);
+    var rule=SpreadsheetApp.newDataValidation().requireValueInList(['⏳ Pendiente','✅ Solucionado','🔄 En proceso'],true).build();
+    sh.getRange('I2:I5000').setDataValidation(rule);
+  }
+  Logger.log('Listo.');
+}
+
+function limpiarDuplicados(){
+  var ss=SpreadsheetApp.openById(SHEET_ID);
+  var sh=obtenerHojaAuditorias(ss);
+  if(sh.getLastRow()<2)return;
+  var data=sh.getRange(2,1,sh.getLastRow()-1,2).getValues();
+  var vistos={},filas=[];
+  for(var i=data.length-1;i>=0;i--){var k=data[i][0]+'|'+data[i][1];if(vistos[k])filas.push(i+2);else vistos[k]=true;}
+  filas.forEach(function(r){sh.deleteRow(r);});
+  actualizarResumen(ss);actualizarPorModulo(ss);
+  Logger.log('Duplicados eliminados: '+filas.length);
+}
+
+function reconstruirTodo(){
+  var ss=SpreadsheetApp.openById(SHEET_ID);
+  var dataSh=obtenerHojaAuditorias(ss);
+  if(dataSh.getLastRow()<2){Logger.log('Sin datos');return;}
+  var data=dataSh.getRange(2,1,dataSh.getLastRow()-1,IDX.fotos+2).getValues();
+  var pSh=ss.getSheetByName('Pendientes');if(pSh)ss.deleteSheet(pSh);
+  data.forEach(function(row){agregarPendientes(ss,row);});
+  actualizarResumen(ss);actualizarPorModulo(ss);
+  Logger.log('Todo reconstruido.');
+}
