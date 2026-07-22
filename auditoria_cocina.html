@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Auditoría de Cocina · BBC Colombia</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --green:#1b4332;--green-light:#2e8b57;--green-pale:#e8f5e9;
+  --amber:#e65100;--amber-pale:#fff3e0;--red:#b71c1c;--red-pale:#ffebee;
+  --blue:#1565c0;--blue-pale:#e3f2fd;
+  --gray:#546e7a;--gray-light:#eceff1;--border:#e8dcc0;
+  --text:#2b2018;--white:#fff;--shadow:0 2px 8px rgba(0,0,0,.12);
+  --accent:#F59E0B;--accent-dark:#c9790a;--beige:#F3E7CC;--beige-pale:#FBF6EA;--text-strong:#2b2018;
+}
+body{font-family:Arial,Helvetica,sans-serif;background:var(--beige-pale);color:var(--text);font-size:14px;padding-bottom:90px}
+a{color:inherit}
+
+/* HEADER PERMANENTE */
+.app-header{position:sticky;top:0;z-index:50;background:var(--beige);color:var(--text-strong);box-shadow:var(--shadow)}
+.app-header .logo-img{height:28px;display:block}
+.app-header-top{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;gap:10px}
+.app-header h1{font-size:15px;font-weight:700;letter-spacing:.2px}
+.app-header .sub{font-size:11px;opacity:.8;margin-top:1px}
+.hdr-actions{display:flex;gap:6px;align-items:center;flex-shrink:0}
+.hdr-btn{background:rgba(43,32,24,.08);border:1px solid rgba(43,32,24,.2);color:var(--text-strong);border-radius:8px;padding:6px 9px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap}
+.hdr-btn:active{background:rgba(255,255,255,.28)}
+.progress-ring{position:relative;width:38px;height:38px;flex-shrink:0}
+.progress-ring svg{transform:rotate(-90deg)}
+.progress-ring .pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+.tabs{display:flex;background:#fff;border-bottom:2px solid var(--border);overflow-x:auto}
+.tab-btn{flex:1;padding:11px 6px;font-size:11px;font-weight:700;color:var(--gray);border:none;background:none;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+.tab-btn.active{color:var(--accent-dark);border-bottom-color:var(--accent)}
+.tab-btn:disabled{opacity:.4}
+
+.content{max-width:720px;margin:0 auto;padding:16px}
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+
+.card{background:#fff;border-radius:10px;box-shadow:var(--shadow);margin-bottom:14px}
+.card-header{background:var(--accent);color:#fff;padding:10px 16px;font-size:12px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;border-radius:10px 10px 0 0}
+.card-body{padding:16px}
+
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.form-group{display:flex;flex-direction:column}
+.form-group label{font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.3px;margin-bottom:5px}
+.form-group input,.form-group select,.form-group textarea{border:1px solid var(--border);border-radius:6px;padding:9px 10px;font-size:14px;color:var(--text);background:#fff;font-family:inherit}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(245,158,11,.15)}
+.form-group.full{grid-column:1/-1}
+.autocomplete-wrap{position:relative}
+.autocomplete-list{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px;box-shadow:var(--shadow);z-index:40;max-height:200px;overflow-y:auto}
+.autocomplete-list.show{display:block}
+.autocomplete-item{padding:10px 12px;font-size:14px;cursor:pointer;border-bottom:1px solid var(--gray-light)}
+.autocomplete-item:last-child{border-bottom:none}
+.autocomplete-item:active{background:var(--green-pale)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:none;border-radius:8px;padding:12px 18px;font-size:14px;font-weight:700;cursor:pointer}
+.btn-primary{background:var(--accent);color:var(--text-strong)}
+.btn-secondary{background:var(--gray-light);color:var(--text)}
+.btn-block{width:100%}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* EVALUACIÓN — un ítem a la vez */
+.item-progress{font-size:12px;color:var(--gray);font-weight:700;margin-bottom:6px}
+.item-card{background:#fff;border-radius:12px;box-shadow:var(--shadow);padding:20px;min-height:calc(100vh - 260px);display:flex;flex-direction:column}
+.item-cat{font-size:11px;font-weight:700;color:var(--green-light);text-transform:uppercase;letter-spacing:.5px}
+.item-name{font-size:19px;font-weight:800;margin:6px 0 4px;line-height:1.3}
+.item-max{font-size:12px;color:var(--gray);margin-bottom:18px}
+.score-options{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.score-option{display:flex;align-items:center;gap:10px;border:2px solid var(--border);border-radius:10px;padding:14px;min-height:48px;cursor:pointer;font-weight:700;font-size:14px}
+.score-option .icon{font-size:18px}
+.score-cumple{background:var(--green-pale)}
+.score-cumple.selected{border-color:var(--green-light);background:#c8e6c9}
+.score-parcial{background:var(--amber-pale)}
+.score-parcial.selected{border-color:var(--amber);background:#ffe0b2}
+.score-nocumple{background:var(--red-pale)}
+.score-nocumple.selected{border-color:var(--red);background:#ffcdd2}
+.score-noaplica{background:#e3f2fd}
+.score-noaplica.selected{border-color:var(--blue);background:#bbdefb}
+.obs-label{font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;margin-bottom:6px}
+.obs-input{width:100%;border:1px solid var(--border);border-radius:8px;padding:10px;font-size:13px;min-height:70px;font-family:inherit;resize:vertical}
+.foto-btn{margin-top:10px;background:var(--gray-light);border:1px dashed var(--gray);border-radius:8px;padding:10px;font-size:12px;font-weight:700;color:var(--gray);cursor:pointer;text-align:center}
+.foto-grid{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.foto-thumb{position:relative;width:64px;height:64px;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
+.foto-thumb img{width:100%;height:100%;object-fit:cover}
+.foto-thumb .del{position:absolute;top:2px;right:2px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:11px;line-height:1;cursor:pointer}
+.item-nav{display:flex;gap:10px;margin-top:auto;padding-top:16px}
+.score-bar-wrap{background:var(--gray-light);border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:700;color:var(--gray);margin-bottom:12px}
+.score-bar-wrap b{color:var(--accent-dark);font-size:15px}
+
+/* EVIDENCIAS TAB */
+.evidencia-cat-title{font-size:12px;font-weight:800;color:var(--accent-dark);text-transform:uppercase;margin:14px 0 6px}
+.evidencia-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px}
+.evidencia-grid img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;border:1px solid var(--border)}
+.empty-note{color:var(--gray);font-size:13px;padding:20px;text-align:center}
+
+/* HALLAZGOS */
+.hallazgo-card{border-left:4px solid var(--red);margin-bottom:12px}
+.hallazgo-card.recomendacion{border-left-color:var(--blue)}
+.hallazgo-card .card-header{display:flex;justify-content:space-between;align-items:center;background:var(--red)}
+.hallazgo-card.recomendacion .card-header{background:var(--blue)}
+.badge-tag{font-size:10px;font-weight:800;padding:2px 8px;border-radius:6px;background:rgba(255,255,255,.25)}
+.categoria-vacia{opacity:.5;padding:10px 16px;font-size:12px;color:var(--gray);background:#fff;border-radius:8px;margin-bottom:8px}
+
+/* RESUMEN */
+.score-global{text-align:center;padding:24px}
+.score-global .num{font-size:52px;font-weight:900;line-height:1}
+.score-global .clas{font-size:16px;font-weight:800;margin-top:6px;padding:4px 14px;border-radius:20px;display:inline-block}
+.clas-excelente{background:#1b5e20;color:#fff}
+.clas-bien{background:#c8e6c9;color:#1b5e20}
+.clas-porMejorar{background:#fff9c4;color:#8d6e00}
+.clas-regular{background:#ffe0b2;color:#a94500}
+.clas-critico{background:#ffcdd2;color:#b71c1c}
+.mod-row{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--border);font-size:13px}
+.mod-row:last-child{border-bottom:none}
+.mod-row .pct{font-weight:800}
+
+/* INFORME / IMPRESIÓN */
+.acta-actions{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.acta-actions .btn{flex:1;min-width:140px}
+#acta-print{display:none}
+table.acta-tabla{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+table.acta-tabla th,table.acta-tabla td{border:1px solid #ccc;padding:6px 8px;text-align:left}
+table.acta-tabla th{background:var(--accent);color:#fff}
+.firma-box{display:flex;gap:24px;margin-top:40px}
+.firma-linea{flex:1;border-top:1px solid #333;padding-top:6px;text-align:center;font-size:12px}
+
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#212121;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;z-index:200;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.show{opacity:1}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex}
+.modal-box{background:#fff;border-radius:12px;max-width:420px;width:100%;max-height:80vh;overflow-y:auto;padding:20px}
+.modal-box h3{margin-bottom:12px;font-size:16px}
+.draft-item{border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px;cursor:pointer}
+.draft-item:active{background:var(--gray-light)}
+.draft-item .pdv{font-weight:700;font-size:13px}
+.draft-item .meta{font-size:11px;color:var(--gray)}
+
+@media print{
+  body *{visibility:hidden}
+  #acta-print,#acta-print *{visibility:visible}
+  #acta-print{display:block !important;position:absolute;top:0;left:0;width:100%;padding:20px}
+  .app-header,.tabs{display:none !important}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="app-header">
+  <div class="app-header-top">
+    <div style="display:flex;align-items:center;gap:10px">
+      <img class="logo-img" alt="BBC" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACfCAYAAAB+49JVAAAnu0lEQVR42u2dd5xdVbn3f89ae596vWYyvaRNSIAkJPREBAQUQZDoVUG9qKBXvYgXroqYxIqgXtCLhVfxFZCShJZCCUQyIY0USJ30KWdmkpk5008/e+/1vH+cM2EyTiABwfKu7+cznyRzztl7n71++1lPWyuARqPRaDQajUaj0Wg0Go1Go9FoNBqNRqPRaDQajUaj0Wg0Go1Go9FoNBqNRqPRaDQajUaj0Wg0Go1Go9FoNBqNRqPRaDQajUaj0Wg0Go1Go9FoNBqNRqPRaDQajUaj0Wg0Go1Go9FoNBqNRqPRaDQajUaj0Wg0Gs0/BfTPeNHMTCOvf8mSJQQA1wFYU7iH5s2byqmXr2MiUnqYtQDfjdBoyZIltGfPHlqzZg0aGhoUAHWK35H1UGsBntwFEeF73/uesWjRImcs4Xg8HsRiMQKQAyAXGMg5fHh/Tm/vgM8g4XK5DBMQVk5+UaKsbEoTEe1lZiIiLUItwJMnMzMDQ0OhbKC/4tlnV9bt33t4YiQcmtgd7K2ORePjI5FIQTwez1JKmUIIWJaFZNKCUgpEBMdRmDix1v7mrTfPr59+wdOLFy+W8+fPd/SQ/2Nh/ONMt6C0wfMuf/qhBS+tXj/349dcVRWNRIoFCbg9bni9buTn56KoshS7d+/D1KmTUVo6zgmFIsowJFwuk7xejyIQxRMJ5+GHl3hW/2XtdUR4+v777yc93FqAJ2TJksVi/nxymAen/eWV9bf3BnswdUodSsaPU7ZtK8OQKhqNi0QiIePxBHncbvT09KG7Kyi7g70yw+8DCDBNE0oxPB6X6Xa5kEwmi5TSU7AW4Ntw3XXXMQAcPrzP8fm8qK6pwMDAEPbtPyT6+voFkQBAYOaYYRiRnJysUCIRD7s97sjESbURMLsKCvKmhULhrQx4I+FozkUXX0DTpk27xzAMXrDgOtnYCCxZskRPw9oHHDviXbNmoZw37yueX9zzmzXr1m0r9XjNLsNwHUnEo/XFxcWbCgsK9wwODspIJGT09g+6BgcGXPF4UoTDYaurK5hdXFT40dZA+4poLN6dl5M1YLpcTS1tbZsBdAKIp86zQBAtYh0ZawEex4IFC8SiRYsUMxdvWLfy+jWvbLpky5ZtrmQymRuNxCodpUDEkhmZhmGAFYMEwe1K+YZerxeRaBRnnHEaTNNEY+N+eDxufOyaq7BnT2Pz0ieXN/T39P3pcGvrmnReRqdntACHrd9iSTTfCXbuvune+37/o61bduTHYjF4PB643S643W543C4IIUCCQETKME12u1wwTZMBwDRNYlZi4sRadd75szkrK4PuuutXdOWVHxK1tZPx/HMrwMxY9eKaR1a++PJXmXmIiAinllPU/Kv5gMPiaw+8cdvChb+4+9VXN2H27BmO2+0it9s17PeRUg4xM5JJC7ZlC0kEpRTiiTjAQCgUQTwew5EjnXLa9Cm4+qM3wLJtHNzfxDk52Zybl6MKCvJp8uQJnznc1FIA4Apmpnnz5h27B+kkN9KWUVvHf3UBLl68WBLNV8yd039xz+9++thjT9kXX3yhkFLInp5eDA2GwOnktBCErKxMeL0emKYJ0zTAzBBCQkoJt4fBnIovdu7YAxDhsssughSCorEYxeMxcfhwM0ciEXvGjOmXEdFsAK+NviYhBADAcRy5ZMkSDKdvioqKWAcw/2JTMDMLIlJrVj/90m23Lbp40qRa57LLPySbmg7jSEcnDEPCME2AGVLKdHJ6CNFoDJZlI5lIwnYcOI6C4zgQgjB+/Dh0dQXR29uP2tpKRKNxeL0+2LaFvr5+SCm5o+MoZ2RmdE+eXNvW0LBxOTPHO4929QyEQpstywoD6ABga3n8i1pAZhbANklEVizW9oEHfvvQxV6v15l11pny09d/HkAEK5YtxyuvrIfH4wGYYRgGdu/eC9M0MX58Cfx+L7KyM5GdnYXMTD9y83IxODCEV9duRF/fAGbNOh2z58zAsmdfwO3f+hqUcrBr5x5sWL+ZcnKyyLKscZ/73CfHlY4vOetz/34D9uzaiYcfXopLLp2bXLl81cFxJcWtQ0Oh3h07dv/FTjrU2dXbcTR4dDUAbQX/WQU4XO1Id6goANj++q7bG9ZswBUf/iA8HjdsOwxWEYRC4ZR5ZgYY6O8fwJT6ifjiF69HPJFAIpGAz+dFPBaHZdkwDAOGFKiqqsDBg02IxeIIdvdg/Phx+J+f348JE2twztmz0NrajmTSgsfj5uefW636+gZ4/fot2Ne4C16v26iqqnHV1lVPvebaq6Ym4hE88fiz19/0lZuw7JlncPu3v19PgvayYqGDl38SAS5evFju2bOHFi1a5BClsh+HG1+bmJHl9xWV5g/+7O7fXiINyZWVZdJKWjAMHwCFQGsHBgdD8HotOI6DgYEhFBYV4NZv3ImmplZIKVFSUoxPfvJqZGdnQQiB1157HYODQ+jvH4RtOzj7nJmY94EL8KtfPoDv3nEXfvXLH8Pn80GIODweN+UX5MkJE2twzbWfwv1H7sKZM6Zz8bhsAGCXO5eXLn2aXW4X+npDaG1tI7/fL8PhsEgFz5p/WAEyMy1cuFAuWrTIGdkAwBzwAlnewYGeZzMyfEXNTe3Ldm7fIy+++EKnr29AVlSUYWiwF81N+7B79z50d/cgkUiCWSESiWLD+s3w+X0wTROxWAKbN7+BvLwcTJhQAykF4vEEEokkenr6sH79Zsydew4M00AikUQoGsbOXY0oKSmCP8OPXTsbsWrVGpSVlsI0vdi9ax8OHWymeNxCINBBmRkeJBNJzJx5Os4570J+6qknKBKJKCGEAiC1dP5Bg5CRrU9SSth27JxdOzb9e05u7rTx44tKhgYHMzo7u/OisRjCQ2G8/sYu5GRnYWgwBJEWUU+wFyQkAq1tWLb8RQgSYKQCkdmzz0RJyTh4PG74fB4opZC0LMyZMxvxeASNjQfwzNPP4/LLL8KU+olobW7D7j0HEI1GQETo6+vH9OlTQQTMnjMDH58/H8GuAISUiEZi6OsbQGdnNwwpsH9/EyzLQnVNlXpp1RrasXPXXdFQ5LHu/v6978IX5Pd4XPhd6kHMTZ+/YcQLc4dTVW+mqNRbXDefbB8mvRfiY+asl15c+mWvz//h9ra28//44GNUU1OFwqICPP7Yk3CZJs4972wuKSnE9NPrCQwoTn0fwzDg9/vg8bphWw6i0SiUYiQSCUQiUQwMDCESiSIRTxxrwbIsC5at0NF+BG1t7cjMzMBP7vou/uMr30J7+xHU1tYgKzMD/gw/MjK8yM3LwYb1WzBjxjRUVVWgsDAfpulGPBGFaRiYNHkigsEeZGZmQEiBZCIBf4ZfeTzZ4tE/P9p0368eqBVCQKl37AbKuQA1pAbxvfAlxVxAnMLxhy36qTxUNBeQDanP8N99CmZeIFIa5Oqnlv5x5cIF90y55Rtfwt7Gg/jBD2+3k5Yj7rzjJ7jm2o/QWWedTbt3bacVK1ahf2AQtm2jvGw85s47H2VlJRgKDSEaiUL6JGrrKtHedhQkCI7tgDn1XZPJJBxHIZlMwrZthIYisJ0ZePAPD8OybBzp6MTCRbcjFAoh2N2Dzq4gjhzpROfRIPY07kd3Vw+ys7Nw/Wc/g0i4DwAhEo2mzisJlpVEsLsHff0DEERQzBwJR1Vvb/8RAJ5rr72WNm/efEo3vqCgwNm2bZsFwGk4fvCdEZbGaKmsfEfjYpomHzp0KAFANbwpPPEWiXUxUniTJk3KtGKx6WA+jYmqmTmfiFxgTgDoB1EbmPcbzI0H29s7Gt5MVRkAnEmTJmVYsdh0ZhZSqeZDHR3tb2cJ/4Y+4EIQEW/a8Nwvf/yj+6bs23cwMTgQMkKhsFAKRk93D9rajmDOnBmYMLEGUiqsW/ca/vjgY3C5THg9Hvzudw8jGolixsxpqKmtQ0FBFnKys3HgwGGEwxEIIWBbNhzlwLbttGVMwrIsKGZ0d3Wjr28Q2dlZeOKJZ1FWXorionzk5+didmUZ8vPz4PP5MDQUQmtLAHfffT8ikSjmfeB8JJMJNDcHUFNdCdNlQEqJoqIi5ORmQUoJKaX0eLPQGmibXZCTd+CNLVuY+JT0R33d3XZ1RcUAER2GUutsomWBQKB5WHgNgB0oL/+6BG5RgA3mU/I1nWSSqysqwgDaQLQFjrO8ub19ywmWJhwTfk15+flMdGMyFruEiEpJiBNPjcywmUPVFRWvM/CkkUw+fqizMwiA7Gi0wmEuEkJIJUSsvr6+u7GxMfmeTcELFiwQCxcuJABi/vz56t57f5C7/NnlTbt37/NXlJdSdnY2xRNJxKMRFBYVoqenFwf2H0Z2dhYYjMWLl8Hr80AIAeU4actm4cILz8Gcs+cgJ8eHrKxMRKNRhMNRGIYEgUCCYBoGTJcJ27aR6ohWWPPKq3j22RcwbdoU1NRU4sEHHwMRgVkdq3AUFOSBSMDlMnHBheegonw8rvrYlbCtOFpb25Cfn4++3j7E4nHk5RVi3969yMrOQk+wB0JIbNq0FVu37oDP5z1mjd/JsgMAUMwRYv5lUyBw58yZM8W2bdusqrKyHxqmeYej1DsenOHjMzOY+SlF9B+tra2dI0QoATiVlZVVErgHwMdT94nBzMwjLPJo1VLKaorh+8lKdTHRPc2trT+vqKioJ6IiZk5KpWzp8exIW+S/vQCHqxgjfxfubz5zw2tbXt+2dQcfOHCYvnPHLXjwD4/C4/HgC1+4AU8++SyefHIF/H4/rvjwJVi/bhNefPGV1A3j4ZKbQCQaRSweg2mYmDp1Mnbt2gtb2WnvltMXThAgSGnA5TJhGBI+nw+GIVFXV41Jk+qwevVa/MdXb0RLcwAdHZ0oK6/A+nXrkZnpR01NFXp6+nDuubMwbfppcLsN+P1+AAzTTB3PcRy43W4wgGQiCYYLD/z291iyZJnKzs6E46h3cfuYiciQUsKx7Yeb29o+C4Cry8sXCSm/6yhl0zufoYaPL6QQwnGcvRbz+e3t7f1z586VDQ0NdkVFxUUSeEwIUaSUUgwoSgmTThDY0Kh/KwZYEBlCCNiOszwSi33K5/NNMJiJHKf7PZuCiVIdKT09B8pcLmOm15s7uy1wePK/ffpL9ZZlc3FxMUxT4vHHnoFSjK6ubiz6/t1IJpIoLMxHMmnh+edWIxBoQ2lpCT73+U+huDgfHo8bpmnA7XZDSgmAEYvFYRgGHMdBPJ5AOBRBKBxGf98gevv6EezuRXewB8HuXgwMDCAY7EVlZRmUUsjJyca8eeficNl4SEPA48nE2WdPh207eHXtRnR0HEWwpw/f/tYPkJWVAY/HDbfbDZfbBbfLBZ/PC6/XA6/PC9Mw4PNlIhKJwuUyhVInvKfDgznachw3uGkrxbbj2FLK6ysrKx9rbW19nolk2jcTI3y0UZPgXwcLJzg+bKUShmFMYcf5JoA70uI71wBWgsgzLHT663M5I6ZqGim69Hslpax4kphdxLwjGAyGAbxxKlH5KQqQiRlERNzXu/8XuTkFX4Tw+gEXFtz5U2x+7Q34M/zYv/8wDMMA8wZ4PG5IKUAkIAQBINi2nc7X9eLRR3+DSy//BABrxP0e9pnt9O9pxM/IiUEBsGAlY+jtHUB72xHs2LEXb7y+HVu37oRtO+juCiIaiyGZSKKo2A/lKNi2jcHBMDIyUv5ge/sRGIbAQP8QSAhIKUEEOOn3ph18eL2eVITu8ZwwAiYikW7fPl6VY79/+EspodTlAJ4/iVmJpBDGGCZvTJeAAEMppQj4EIA7KisrcwTzEyDyMLNzAivLQgg54rqZUsgR53IYUFIIl+M4f2hpa7tzVMBzUmkY4xRLaYKInJ7uvXfl5k28JRxqxuDgUWfTxo3MrOjHdy2kWCwkwqFUzo0EgVLtVJBSwrIsuD1uSCHgKIFVL76M7dv3INj7ANymhNfngdvtRlZWBjIy/CgozEdR8TgkE9HjHv/UQA//mRLMuJIijCspxazZ5wKw8aPv/wT33fd73HbbIjiOglIKZeXlCLQGUFVVhroJNTh4qAku04QQAvn5+fj612/GtOlTkJOTCSkFYrE4urp6cOhQC/bs3od9+w6hvb0dLpcbHo/7OFExoASRYKX+ooieEMxCpQbOYKCegM8D8JzQ9SHKeJvbryh1/BZHqZ+MdIUEUAqizxFRWcqFO+74ww5hBgAIpb4ppSyzx57iOf0QkVLqWSJa7AD7iCgmHCfTAWpIyvOJ+SohRBkAqZRaU9nWdnNLylKqEaLjv2kaJp3jcx5++HclQspbX137vNPR3kHRSFRKw4TX68Wd3/0BlGK43S4kEqn0CFHK4jEDRUUF6OvrB0DweNxIJpOori5HZVUV+vr6EGmPpXN8SRimGz6vicqqClx73VVQTiIdUBz/3YhST6llWVAqlvLhXC7c8b1vY8uWHVi/fjMyMvxgZuzYvgNutxvbt+/BunWbUVdXBSJCMpnEfb/8IT7wwasBhEccf+QsmERPMIi1DZtwz0/vQ2ugAz6fd6QIUwIBtrYEAg+Mvn/V5eW2kPLro3w7Rmq6Nph5zUklmImOjnX8ysrKjQbRSmYeWalhZraklG6HeTjzc6NKrfgfc3onIlZK/XtLW9tDY7y+GcDjNTU1d7Bt3w7gyoRtfzydjhHvJB9onPyqtSUCgHPGGZOrN23cavYEezkWS9L+/Qfx8strEQ6FMXFiLcaPH4e1azeisDAfXq8X4XAYFRWluPWbX8Yffv9ntLa2IxyOwLJs5ORkwTAMvPD8S9i8+Q14vR6cc85MXPTBeRgc7MeECTX42le/A6/XhSuv+iSAwfQlD89cAkAMtmXB7clOvxZHLBKClFm44sMXY+3aTTBNE47jwO9PCdHvTwUubrcb8XgCU6ZMxAc+OBfJxJExEvpv+lQFBdm45uPzcfY5M3D1R2/A0aNdcLnM0VOfF4CsA4xDgF0PyGRpaZFDNJ1T3Rgj/TSSQrhs236qsq3t0RYANNzUeGIVmiP9snpARiorfUKpeRBitDtAUkq3o1SzaVl3VFVVnU7MJWkrOVqAthDCcBzn1y1tbQ/NBMxtx1c8jvk/TU1NgwDuqKur+/6RQCAx7Ea8L4no1tY29+pVr2LcuCKeOLGWTps2CUuXLMfNX/4sysvHIxqL48orL8XpZ56OaCSCw4ebkUwm4fG4UVtbhW99+xaYLgMH9h8CEWHa9NOw5pVXcdPNN2D3rr3IzctBVdV4GEYFvF4PLrhgDra/sRvTTj+EcCgIx3aQtFLVj1g0hmnTpqBoXDnW/GU1mpsCOP+COZgwaSKYLUyaVAuXy4RS6jgfSSnAtm243C4kEglMmlwHhhtALB38jPbfGMwKiYQF2zqK8aUTcPXHLsPP7vk1vN482LYDSk1HYKJ/qy4vv8ABqBpAlEgQUEZEuenzy7Syk2ButR3nEV9m5k9PwmkXaQHXV5eXbx0WRIwIxJxPQpSpN48PAA4DXUqp50nK7x84erSnprLyknSlaqx69vDxHwcgtqUE5bxF9oTSKRZ6Xyoh8+fPBxFw8xf+y33TzZ/Fv33qGl798lpIKfC1r38BEybUICsrAxs3boUgwsN/ehxdXd0oLMzHjJkzcO//PIDKyjI89Kcn4PF4EQgEcOMXPo2GNetgSImGNRvQ1NSKyy6/CLbtYMXyVRg/vgTX33Adli5ZjldWvwyfzw1POkoVJJC0GI88vBQNDRuxatUa+HxeZGVl4je/vQeXXXEVSsYXIyPDf6xZdaShUkrB503l8ooK8kAwMFZaj5lhutwAUssD3J4omJOora0CkRj5GQIAQVQgpSwY6YUzM1KZjtSvKNUW1KGYfz48ndbV1blx6JD9dikzIvIJKc8Y7Zw7b7oCnH5zmIFHbOa7Ak1N/Sn3T5lSSnqrqghLOXQSguKxqjjvgwUktHd2ytaWduTnl8MwDezZsx+27eDFF19BdXUFmpsDiMcTKCjIg9+fgUAggIH+AVRVlcPjcSM7JxumaSASCaGj/Qiqqyvw+KNP44wZp8HjdmPmrDNQVl6KzEw/du5oxFNPrsTgUAifv/FmANFRkbIPt936n7BtB1ddfTm2bd2B3t4+/PhH/4OLPjgPhYX5yMjwo6+vH0KYI9yo1NYdfr8XRASvz3sivxfScGH/3oO4//4/IBaN4T9v+RJOmz4H2dlZkPI4t0cRkVDMu9lx1jOzpFTMJEA0SQDnczo6TFvCGinE72oqKr7tKHXroUOHnj6JQSfFHGTHeRpv7hAGBkoAXEJE7uGBYiCbgNsNoq/UVFT8rCkQWARg4C3yvw4RSThOFYCdMwG57cQNByItPCf9d/WeC/A6AEuYUVFRge5gD9auXQsCIZFI4mf3/Brl5eNx7rlnIRQKY+nS5cjJzYZjOwgGe9HdFcQnPnk1HnlkKTo7g8jLy8HQYAiFhfkQQmDnzkb4M3wYGBzCwX2HEBoaQlvgCEpKiqGY8eifn4Tj9MOxkwAIjmPD68vHE489iECgHZ+5/pPwek185COX4L57/w8aGw9g184dmDHrTHi9Y6dMmBlerxfJpAXDGLviJaXEQH8/Xlr1F5SVluC/v/MD9PcPYOnTT8HlMkcERW9GwaTUC81tbbeNPlZVefnDUsrPjAhCWKW2bKgyDOOp6oqKK5sDgRXpPOCJomAJ5sPNgcBNfxXklJXdKKT8vUp92eF0iQJRhiHlwuryclsJ8YeRr491T4joFgDPbkvlv4y5I15Pd8I4AJz6wsKMsNc7PRAIbHg3IhSn+oF4JBK//vrrsHHDegoGexCPJzD1tEmIxmLweNw4fLgFvb39aG87gs7OIGKxOM44cxqUUujp6UNrazsaGw+guSWAxx9/BsXjCnHph+bhoYeWYM2a9fjZz3+D5ctext7GA9iwYQv+9H8fR3//IKQgSCkhBMHl8mBoqAe/+uUf0BPsx4plL2DrljeQTCRx6603QSmFrVt3gsgPr9d7bMOi0ZFzdk4WkpYFl8uFsfJ2JDw4fKgZfX2D+ODFF2D2zDOxc+deJOJdME3zVEtxYrQzn/a7rLSAF2CEeTzl0ocQYsxzMivbcRwG7nQcJwnm10SqXW701CmZWQkh5lWXlz9UXV1dDMBuGPEDwJmUn59ZVV4+P+71bjCAV6tLS6enxSffUwu4BOD0DlO9AwODMAyDcnNzUFtbhfa2DvT09GHFipfg9XpRXVOJ7q4gXK7U6rUXX3wFEybWoLKyHO1tR5CZ6Qenl1K+8MIruPTSD+C551ajr68fu3fvw+yzzsBFF12CvXsPIhDoQH5+HlS6FOc4Cm5PNp5a+jguvPAclJaV49lnlmFgcACO42Da9HpcdtlF2LRpG276soTXm0qEp5LLlH7KBRzbQU52Fvbs3ge3ywWA/2peYub04igDAwNDqKurVitXvkRdXUGyHQfKUW/mI9NOPIguryovzyUiMVxuA/MkEmKOUorprwdKpqPS4rdpiRLMDAbqqsrLfz/CJxRITcEXpS29GEv4QggpmLPB/BMiWsbMaoxrEUopJaS8XjnO5VXl5asI2A2iEJgLGahPEs2RQpQfe06EWFxYWDgrGAxG30lAYpzC3i00f/5854xp9XXbtu3EU0+tVJ/93CdkR9tRPPnUChiGgVdf3YSqynIcPpSKfIUQYMUIBnux5pX12LRpGwYGU/18IEI8FseqF9fASto4dKj5mEV54cVX8NJLa9HT24uDTc2441u3QEg/kokhmC4T4VA3tm7ZgQkTarBp4yYYhomOjqMoLipARkYAM2ZMw9KlK5BM9kEphe7uXmRlpZoyTMOAx+tBVnYm/H4fMjMz4PF6wKyOE15qcG00NQdw8GAT6usnoLAwX8SicYRCYVjJ1Iq8Ee6USE9hU4UQU0cHCekIlU7o0DMHR/XmjR2EAAVCyhvfotJCYxyflVKWmzl5sL19eVV5+XOGlFfYSiUpFV2NFqFDRAVCiE+NNU2r4fIIoKSUk/wez2+DwGfeSVBinGzXCwC+7torP/PRj16xUAgoaUhSjoPSshJ897vfSO9KlSpdXfGRi9OVAoZSDkzDQCgcwbdnfg0ejwfpJxkinQSOxxP41f/+GKaZupxEItXrZxgutLa2Ys6cGWnfT8EwvVi/7hUoxQiFwkgkEnjymSW44dM3oDXQjoLCfNTUVAAAjrR3YEr9RMw5eybycnPgcpnweD3wer1wu10QIrXU0+/zgohBgpgIkIaLAIF4LIxoJIrenj5lWbYoKMjd4bBT1N52tGT79t0shKDRDzwzK5WyLiMr+HQCYSkGHCmESzH/KZ0Jfju3iB2lnFFqGw4MxjDinDQMw23b9oqD7e0dc+fONVpaWj7tKPWSFGJW2icdXXeWnMIZVc8emYAFAaQcJ24Yxqerysu3tLS13XeqIjxZCygWLVpkX3P1h8/6yJWX1DI7iQsvPNtIdSLbYMXHcm3HaoXD2UnFsCwLUsrUezBsCuhYRCqEgJNux2IwTMOAYRjILxiHo0fa0NIcgOM4BDCE8OCZp1+Az+cFCcKmTdtwyQcvR9PhFpx+ej2SlgUAcJkmhobCKCwscOrrJ3MyESfLsmHbNqKRGILdPZxKsbgwMDBEq19aJSKRMEXCCezbtx9XX3MFystL0BbowISJNYqZxdT6KSs9Xs/E22/7/tUDA0NOdnaWtE/QETOqHsWj1xkTINPdKi7bth9paWv7ddoHtBiwCbD55Pvv/8qnI0AQkZBSupXj7GIhvgqAGhoaGMBAZWXlJVDqQSnEx4Zru+njiBGZfoPGsKbpHCNTqhPG4yh1iIXY+Z5OwQBQmJ9LHo8P3V1H3UNDYVhWErbtwHGc4Skm1bY0QojpXQZGmIOU1zQs2NQ0raBSSdBjOyGYpgmGAcd24PP7IGUWvD7CcyuWoru7B+eddxZKS0tQPK4Ie3bvhd/vg9frhWM7kFIiFk/A7XHBNAy5e9deJJMJxOMJ9PcPwuf1Yuppk5Gbmw3DNNDVFcSmjVtgWY7V2tpuvb5thy8jw4fS0vEoHld0rFMmEk20uKRxbjwWN1ymYfC7W74ABhqVbf+qpa3tt3PnzjUaGhoAwCeFMBzAEHh3sFKdjlKPkGH8sDVVvaDh1Elra+sAgGuqystvICH+WwhRP6qpYfS6D5EurtCIfsY+R6k/2kr9uL29ve+dVEROVoAKALqD/Vt/dvf/LpMmmS7T9HV1Bue43S6PNCSY+di0Gw6HYRgGTMNIPS62A9txGACZpjkkABWJxR3LSsLldpFjObDSXSdEYAIcxQzlsOzp7UMsGnM/+eQLGT3BINau3YDzzpsNISUUM/7rmzfjiSeWYefORuTn58LlMgEi9Pb2YdvWHdb27btfyMzO7JGETEC4c3IyMwsK8hIQdKTjSEeHEMbRrJzcozPPrOi87Mrr2j71iatnCUFP33//H9WHLp0nvvil67Gn8aD0Z/h5y+t71nl8Xq9S6pCTiorEO1DeIAnRLIA3DrW2bk1bRipKWSYAeNVxnFzFbNM7OD4BESbqYKJdTLQ5LbTRvaVq2Mq1tLU9VA88nigvv1wRfQzA2WCuJCE8BKTagtIzmmJOgvkIM7/BwAsKWB4IBI6OEKh6X1fF1VVXrxwYGLzcsmxHCDKSCQvTpk/B9OnTsW3bNuzbd2i4VmoLIQ3HcZYNhoe+mPYTkiOeSB7VYzXch2WlTzU9Lztno8vl8hqGRHlFKc2bex7Ky0uQX1CCgwf2obk5gGQyibnzzlVNh1vEz+75zR05ORmbu/v6dixYsKD3yiuvlOecc7aVTFoG0GIQVcfHuBfyhz/8TuHON3bvevXV1/KmTp3EF110gXPV1VeZq1e/tPHrt9xx7nAk/TdEvse7LYzuUnm788uqqqoyZh4vgVyllMFCWAYwYDF3ulyuI6O6nN/u+H87AQ634O/Zs0ROnXqd/cLKx6++994Hnmxs3G97vR6hUjsGIDs7C4lEArFYHEIItm2L83Jz6cwzpp374MOPbXpzCmIIEsc13RIBtu2ICy+cVdwXjMxMxGKF40pL6ocGhz4VCoXHSyl5aChEN9wwH7W1lejvDyEYDKK/fwC1tdWYc/YMvuWWO20ovjueSJQTUabjOGBmk4F2VipTkDCEFCyEiEEgTkyCwVkE8kRjsb3nnnPWrKam1kv7+voxa9YZIAJefmnt7XkFeVFW6mgkHn9xcldX4t2oouHNh41PsKINc9+b4+MtqhsnuzJOjjIeeD/XBRMADLd23/yFG366bt3m24dCYUgpGADZdqr2mu4BVPl5uWJq/cRv/Hnx0/fW1dW5HceZJBzHdJhLQXS6AEoUcyaIJhPQx8wHKdUfV8FKVZouI3/atPoD27fvnskMYk6tB/qv276MrKwsHOnoRG1dDcaPL+QFC+6mtsCRpGEa+yLhSA8RxY85z0TZBExmZhcBexiIg2g4H2aB2WDmetPlyikoyENHx9GEy+XaB6DVtu2VQgg/O87W9EKff9UNLkd3/44VhPDfY2G6GOkPjmxTmv/xj964e9fe70ej8fFKpRoHAQYzq8zMTC4qzF8daG171mGeDeB0AEMAOpjZTUAOiOz000TMbI9cTiiIjGTSyiwaV5Tl83hOC7S1Q0rJqR5Amy+5dC6mTq3nvt4+Xr78BUMI0eP3+6Md7R0x0+U6mO59c4F5MlJNACFKpRfCIIqBOQ5gQBAdUsydkoiTtn10sDfcWF1RHO8cGhro6uqyZ88skdu2HY1C8/fdGaG4uNifSeQjw3CxENmWUtNZqZ7ikqJzIuHoZwhUl7QsEkIow5BCEA2Ew5FOxZgopRiuUdpgthlIgig5wkFX6cx+BzN3EFEC6XRCMpmUBfl5WUKIsoGhoarhRUxDQyE4jgNDSlRUlsXcLld/INARNU1DKeY2IgoBSAAYIKIdYN4Jx+m2pbRN27Zt07TSK8ZO5X7pzSvfTwHW19e74qHQbCYqSXdeZAHIB3NWur2owHGcKULKHNMwCgEmISRs2z62bBLHb+kgR5SSjrOm6TRAFMyDAAY5JSASRHHLsnr8Gb4St9uTGRoK2cw8YBhiMCMjI1BRUbo9Eokd2bZ9l5OTk9MvbDvijsdbG1MLZU7WB+IxVoHx32jbC807ECAB4NqysjqWcgKAXFZqMhNJEGWBeZdgzlNELgJOY6AEShGIkkqp14UQZxORk7Z6Bt5cI2FRKtJNMrNNqSk4DuZ9AKpBlAWiTDD3gqiVmbuIeT+I2LJSmWbTMBRLGWhpadl/kj7NWMsLcaprGDR4/3fHsoRQUqkwSxlVRJ0SEJJIKCn3cSKRI6TMVEqtEUI4JAQ7QjiGae5zHOdMyZx0lDI51QiZEMzptXGpAXdSjj+klJKSyd22YUwRRJlKKQnmhBSixyaKtAQC+95yL5S5c0V6G93RomJtxfQWvX+rfBaP8b9g6o0i/z8QIJ0g66/eImRX76BSMNZneKzoW6PRaDQajUaj0Wg0Go1Go9FoNBqNRqPRaDQajUaj0Wg0Go1Go9FoNBqNRqPRaDQajUaj0Wg0Go1Go9FoNBqNRqPRaDQajUaj0Wg0Go1Go9FoNBqNRqPRaDQajUaj0Wg0Go1Go9FoNBqNRqPRaDQajUaj0Wg0Go3mf+X+Q87LMQfk8kgAAAABJRU5ErkJggg==" style="height:28px;width:auto;border-radius:4px">
+      <div>
+        <h1>Auditoría de Cocina</h1>
+        <div class="sub" id="hdr-sub">BBC Colombia · Temple Colombia</div>
+      </div>
+    </div>
+    <div class="hdr-actions">
+      <button class="hdr-btn" onclick="AppUI.guardarProgreso(true)">💾 Guardar</button>
+      <button class="hdr-btn" onclick="AppUI.abrirModalCargar()">📋 Cargar</button>
+      <button class="hdr-btn" onclick="AppUI.confirmarNueva()">🆕 Nueva</button>
+      <div class="progress-ring" title="Avance">
+        <svg width="38" height="38">
+          <circle cx="19" cy="19" r="16" stroke="rgba(43,32,24,.18)" stroke-width="4" fill="none"></circle>
+          <circle id="ring-progress" cx="19" cy="19" r="16" stroke="#F59E0B" stroke-width="4" fill="none" stroke-dasharray="100.5" stroke-dashoffset="100.5" stroke-linecap="round"></circle>
+        </svg>
+        <div class="pct" id="ring-pct">0%</div>
+      </div>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="1" onclick="AppUI.irATab(1)">1. Auditoría</button>
+    <button class="tab-btn" data-tab="2" onclick="AppUI.irATab(2)">2. Evidencias</button>
+    <button class="tab-btn" data-tab="3" onclick="AppUI.irATab(3)">3. Hallazgos</button>
+    <button class="tab-btn" data-tab="4" onclick="AppUI.irATab(4)">4. Resumen</button>
+    <button class="tab-btn" data-tab="5" onclick="AppUI.irATab(5)">5. Informe</button>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- TAB 1: AUDITORÍA -->
+  <div class="tab-pane active" id="pane-1">
+    <div class="card" id="datos-generales-card">
+      <div class="card-header">Datos del PDV</div>
+      <div class="card-body">
+        <div class="form-grid">
+          <div class="form-group full autocomplete-wrap">
+            <label>PDV</label>
+            <input id="g-pdv" placeholder="Escribe o selecciona el PDV" autocomplete="off">
+            <div class="autocomplete-list" id="ac-g-pdv"></div>
+          </div>
+          <div class="form-group">
+            <label>Fecha (automática)</label>
+            <input type="date" id="g-fecha" disabled>
+          </div>
+          <div class="form-group">
+            <label>Hora (automática)</label>
+            <input type="time" id="g-hora" disabled>
+          </div>
+          <div class="form-group autocomplete-wrap">
+            <label>Auditor</label>
+            <input id="g-auditor" placeholder="Nombre del auditor" autocomplete="off">
+            <div class="autocomplete-list" id="ac-g-auditor"></div>
+          </div>
+          <div class="form-group">
+            <label>Manager del PDV</label>
+            <input id="g-manager" placeholder="Nombre">
+          </div>
+          <div class="form-group">
+            <label>Jefe de Cocina</label>
+            <input id="g-jefeCocina" placeholder="Nombre">
+          </div>
+          <div class="form-group">
+            <label>Coordinador de Zona</label>
+            <select id="g-coordinadorZona">
+              <option value="">Selecciona…</option>
+              <option>Javier Oviedo B</option>
+              <option>Natalia Jiménez</option>
+              <option>Milena Rengifo</option>
+              <option>Germán Piragauta</option>
+              <option>Yency Delgadillo</option>
+              <option>Otro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Persona que Recibe</label>
+            <input id="g-receptor" placeholder="Nombre">
+          </div>
+          <div class="form-group">
+            <label>Tipo PDV</label>
+            <select id="g-tipoPdv">
+              <option value="">Selecciona…</option>
+              <option value="PUB">PUB</option>
+              <option value="BODEGA">BODEGA</option>
+              <option value="ISLA">ISLA</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Modalidad</label>
+            <select id="g-modalidad">
+              <option value="">Selecciona…</option>
+              <option value="PROPIO">PROPIO</option>
+              <option value="FRANQUICIA">FRANQUICIA</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-block" style="margin-top:16px" onclick="AppUI.comenzarEvaluacion()">Comenzar evaluación →</button>
+      </div>
+    </div>
+
+    <div id="evaluacion-wrap" style="display:none">
+      <div class="item-progress" id="item-progress-label"></div>
+      <div class="score-bar-wrap">
+        <span>Puntaje acumulado</span>
+        <b id="score-acumulado">0 / 0</b>
+      </div>
+      <div class="item-card" id="item-card"></div>
+    </div>
+  </div>
+
+  <!-- TAB 2: EVIDENCIAS -->
+  <div class="tab-pane" id="pane-2">
+    <div id="evidencias-wrap"></div>
+  </div>
+
+  <!-- TAB 3: HALLAZGOS -->
+  <div class="tab-pane" id="pane-3">
+    <div id="hallazgos-wrap"></div>
+  </div>
+
+  <!-- TAB 4: RESUMEN -->
+  <div class="tab-pane" id="pane-4">
+    <div id="resumen-wrap"></div>
+    <div class="card">
+      <div class="card-header">Retroalimentación / Capacitación ejecutada</div>
+      <div class="card-body">
+        <textarea class="obs-input" id="r-retro" placeholder="¿Qué se retroalimentó o capacitó durante la visita?"></textarea>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">Novedades y observaciones generales</div>
+      <div class="card-body">
+        <textarea class="obs-input" id="r-novedades" placeholder="Novedades adicionales…"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 5: INFORME EJECUTIVO -->
+  <div class="tab-pane" id="pane-5">
+    <div class="acta-actions">
+      <button class="btn btn-primary" onclick="AppUI.guardarYFinalizar()">✔ Guardar auditoría</button>
+    </div>
+    <div class="acta-actions">
+      <button class="btn btn-secondary" onclick="window.print()">⬇ Descargar PDF</button>
+      <button class="btn btn-secondary" onclick="AppUI.enviarCorreo()">✉ Enviar por correo</button>
+      <button class="btn btn-secondary" onclick="window.print()">🖨 Imprimir</button>
+    </div>
+    <div id="informe-preview"></div>
+  </div>
+
+</div>
+
+<div id="acta-print"></div>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-overlay" id="modal-cargar">
+  <div class="modal-box">
+    <h3>Cargar auditoría guardada</h3>
+    <div id="lista-borradores"></div>
+    <button class="btn btn-secondary btn-block" onclick="AppUI.cerrarModal()">Cerrar</button>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   BBC AUDITORÍAS · Auditoría de Cocina
+   Namespace de almacenamiento: bbc_cocina_*
+   Fuente de verdad: Google Sheets vía Apps Script (localStorage = borrador offline)
+   ═══════════════════════════════════════════════════════════ */
+
+// ── Config de conexión (reemplaza esta URL tras desplegar el Apps Script) ──
+const APPS_SCRIPT_URL = 'https://script.google.com/a/macros/templecolombia.com/s/AKfycbzu9-M_2kSDKSQqCPxgbrnwAjU5OSMmUGs1YxnnmeUoOpFPhEooYUBnNtvQz0bvnQFUeA/exec';
+const APPS_TOKEN = 'temple2026';
+
+// ── Schema — único lugar donde viven los ítems de esta auditoría ──
+const AUDIT_SCHEMAS = {
+  cocina: {
+    tipo: 'cocina',
+    nombre: 'Auditoría de Cocina',
+    version: '1.0',
+    umbrales: {excelente:95, bien:85, porMejorar:80, regular:70},
+    categorias: [
+      {id:'almacenamiento', nombre:'Almacenamiento', items:[
+        {id:'peps', nombre:'Rotación y almacenamiento PEPS', pts:10},
+        {id:'rotulacion', nombre:'Rotulación y control de vida útil', pts:10}
+      ]},
+      {id:'limpieza', nombre:'Limpieza', items:[
+        {id:'limpieza_general', nombre:'Orden y limpieza general', pts:5},
+        {id:'freidoras', nombre:'Manejo y limpieza de freidoras', pts:5}
+      ]},
+      {id:'equipos', nombre:'Equipos', items:[
+        {id:'equipos_utensilios', nombre:'Funcionamiento de equipos y utensilios', pts:5},
+        {id:'equipos_frio_calor', nombre:'Funcionamiento equipos frío/calor', pts:5}
+      ]},
+      {id:'personal', nombre:'Personal', items:[
+        {id:'higiene_personal', nombre:'Manipulación e higiene personal', pts:5}
+      ]},
+      {id:'proceso', nombre:'Proceso', items:[
+        {id:'estandarizacion', nombre:'Estandarización y preparación', pts:10},
+        {id:'descongelacion', nombre:'Descongelación segura de productos', pts:5}
+      ]},
+      {id:'documentacion', nombre:'Documentación', items:[
+        {id:'formatos', nombre:'Diligenciamiento de formatos', pts:5}
+      ]},
+      {id:'operacion', nombre:'Operación', items:[
+        {id:'disponibilidad', nombre:'Disponibilidad y operación', pts:10}
+      ]}
+    ]
+  }
+};
+const SCHEMA = AUDIT_SCHEMAS.cocina;
+
+// Personas que realizan auditorías — precargadas como sugerencias del autocompletar
+const AUDITORES_BASE = [
+  'Jhon Vargas', 'Veronica Virviescas', 'Rafael Garcia', 'Julieth Jimenez',
+  'Natalia Jiménez', 'Javier Oviedo', 'Milena Rengifo', 'Sebastián Arias',
+  'German Piragauta', 'Yency Delgadillo'
+];
+
+// Listado maestro de PDVs — fuente: Master_POC_Jul01.xlsx (77 franquicias + 41 propios)
+const PDVS_BASE = [{"nombre": "AMANTA ARMENIA", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "AMANTA SAS ARMENIA PORTAL QUINDIO", "zona": "Regional Andes", "tipoPdv": "ISLA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "AMANTA SAS PALO DE AGUA", "zona": "Regional Andes", "tipoPdv": "ISLA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "AMANTA SAS PERIERA", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "ARTESANALES PREMIUM CALI CHIPICHAPE", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "ARTESANALES PREMIUM CALI GRANADA", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "ARTESANALES PREMIUM CALI RÍO CALI", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "ARTESANALES PREMIUM FLORA CALI", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "ARTESANALES PREMIUN CALI AEROPUERTO", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "BAP COMPANY FLORENCIA CUNDUY", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "BAP COMPANY ZOMAC S.A.S", "zona": "Regional Sur", "tipoPdv": "ISLA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "BBC CARTAGO AMANTA SAS", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "BBC MEDELLIN", "zona": "Regional Andes", "tipoPdv": "PUB", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "BEER PALS JAVERIANA", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "BEER PALS SAS CL 109", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "BIRRAPEDIA SAS - TULUA", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "BODEGA BBC LA CASTELLANA", "zona": "Regional Norte", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "BODEGA BOSA CENTRO", "zona": "SUR", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "BODEGA CALLE 100", "zona": "NORTE", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "BODEGA CALLE 43", "zona": "SUR", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "BODEGA CALLE 67", "zona": "NORTE", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "BODEGA CALLE 93", "zona": "NORTE", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "BODEGA CHICO", "zona": "NORTE", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "BODEGA CORFERIAS", "zona": "SUR", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "BODEGA DIVER PLAZA", "zona": "SUR", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "BODEGA GRAN ESTACIÓN", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "BODEGA HEROES", "zona": "NORTE", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "BODEGA IMPERIAL", "zona": "NORTE", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "BODEGA KUZUDAMA MALL PLAZA", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "BODEGA LA CANDELARIA", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "BODEGA LOURDES", "zona": "NORTE", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "BODEGA MODELO", "zona": "SUR", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "BODEGA PARK WAY", "zona": "SUR", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "BODEGA PASADENA", "zona": "NORTE", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "BODEGA PLAZA CLARO", "zona": "SUR", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "BODEGA PORTAL CALLE 80", "zona": "SUR", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "BODEGA QUINTA", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "BODEGA RESTREPO", "zona": "SUR", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "BODEGA SABANETA MERA CERON", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "BODEGA SOACHA PARQUE", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "BODEGA TERRAZA PASTEUR", "zona": "SUR", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "BODEGA VILLA DEL PRADO", "zona": "NORTE", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "BODEGA VILLA DEL ROSARIO INV APONTE SAS", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "BREWERY BODEGA SEBASTIAN PASTO", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "BREWERY SAS PASTO ESTUDIANTES", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "BURBANO CONTRERAS NAVAS - CUCUTA", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "DUYAN INVERSIONES SAS SOACHA TERREROS", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "EL BREWER BODEGA BOGOTA COLINA 152", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "GESSAG SAS PALMIRA LLANOGRANDE", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "GRUPO INGERLIN CALI PARQUE DEL PERRO", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "GRUPO INGERLIN JARDIN PLAZA", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "GRUPO INGERLIN PUERTO 125", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "GRUPO INGERLIN SAS - LAS PALMAS", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "GRUPO INGERLIN SAS - SAN FERNANDO", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "GRUPO PROYECATR ICO SAS - NUESTRO BOGOTA", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "HARBOUR TOWN BOGOTA ALSACIA", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "HARBOUR TOWN SAS HAYUELOS", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "INDUSTRIAS VANDELAY S.A.S CHIA", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "INDUSTRIAS VANDELAY UNICENTRO BOGOTA", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "INVERSIONES AHG - CC ACQUA IBAGUE", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "INVERSIONES AHG - PUB BUCARAMANGA", "zona": "Regional Andes", "tipoPdv": "PUB", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "INVERSIONES AHG BOGOTÁ CALLE 165", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "INVERSIONES AHG CENTRO EMPRESARIAL 127", "zona": "Regional Centro", "tipoPdv": "PUB", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "INVERSIONES AHG IBAGUE VERGEL PLAZA", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "INVERSIONES AHG LA FLORIDA", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "INVERSIONES AHG UNICENTRO OCCIDENTE", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "MALTAURBANA SAS MANIZALES", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "MERA CERON BODEGA MEDELLIN LA 70", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "MINIPUB CALLE 97", "zona": "NORTE", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "OIKOS BODEGA BBC TOCANCIPA", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "OLD STYLE BOGOTA TEQUENDAMA", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "OLD STYLE BOGOTA VARDI", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "PERLA DEL LUPULO BODEGA UNICENTRO PEREIR", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "POLA INVESTMENT BODEGA CALLE 100 WTC", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "POLA INVESTMENT BOGOTÁ SALITRE", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "POLA INVESTMENT GROUP - BODEGA CALLE 90", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "PUB ANDINO", "zona": "NORTE", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "PUB AVDA 19", "zona": "NORTE", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "PUB BARRANQUILLA CANTOR COMPANY", "zona": "Regional Andes", "tipoPdv": "PUB", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "PUB BBC MOVISTAR ARENA", "zona": "SUR", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "PUB BELAIRE", "zona": "NORTE", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "PUB CALLE 63", "zona": "NORTE", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "PUB CALLE 85", "zona": "NORTE", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "PUB CANDELARIA", "zona": "SUR", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "PUB CEDRITOS", "zona": "NORTE", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "PUB CENTRO MAYOR", "zona": "SUR", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "PUB CHAPINERO KUZUDAMA SAS", "zona": "Regional Centro", "tipoPdv": "PUB", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "PUB COLINA", "zona": "NORTE", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "PUB CONECTA", "zona": "SUR", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "PUB GALERIAS", "zona": "SUR", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "PUB MANIZALES", "zona": "Regional Andes", "tipoPdv": "PUB", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "PUB PARQUE 93", "zona": "NORTE", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "PUB PEPE SIERRA", "zona": "NORTE", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "PUB PLAZA CENTRAL", "zona": "SUR", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "PUB PLAZA DE LAS AMERICAS", "zona": "SUR", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "PUB ROSALES", "zona": "NORTE", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "PUB SALITRE", "zona": "SUR", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "PUB SAN MARTIN", "zona": "SUR", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "PUB SANTAFE KUZUDAMA SAS", "zona": "Regional Centro", "tipoPdv": "PUB", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "PUB TITAN", "zona": "SUR", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "PUB USAQUEN", "zona": "NORTE", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "PUB VALBUENA BROTHERS SAS - ESTRADA MED", "zona": "Regional Andes", "tipoPdv": "PUB", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "PUB VILLA DEL RIO AHG", "zona": "Regional Centro", "tipoPdv": "PUB", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "RESILIENCIA FC S.A.S. - POPAYAN", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "RESILIENCIA POPAYAN CENTRO HISTORICO", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "RESILIENCIA POPAYAN NORTE", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "SANTAMARTA", "zona": "Regional Sur", "tipoPdv": "PUB", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "VALBUENA BROTHERS - MEDELLIN AMSTERDAM", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "VALBUENA BROTHERS CIUDAD DE RIO", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "VALBUENA BROTHERS COMPANY CC LLANOGRANDE", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "VALBUENA BROTHERS SAS -LAURELES MEDELLIN", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "VALBUENA BROTHERS SQUARE", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "VILLA DE LEYVA - POLA INVESTMENT GROUP", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "VOLANDO ALTO SAS PUB CALLE 19", "zona": "Regional Centro", "tipoPdv": "PUB", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "ZONA BBC BOGOTA CALLE 140", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "ZONA BBC BOGOTA PORTO ALEGRE", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "ZONA BBC S.A.S. - GRANADA HILLS", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "ZONA BBC SAS CALLE 150", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}];
+const ITEMS_FLAT = SCHEMA.categorias.flatMap(c => c.items.map(i => ({...i, categoriaId:c.id, categoriaNombre:c.nombre})));
+const PUNTOS_MAX_TOTAL = ITEMS_FLAT.reduce((s,i)=>s+i.pts,0);
+
+// ── Namespacing de almacenamiento ──
+const LS_DB = 'bbc_cocina_db';
+const LS_CONFIG = 'bbc_cocina_config';
+const LS_DRAFT_ACTIVO = 'bbc_cocina_draft_activo';
+const IDB_NAME = 'bbc_cocina_fotos_db';
+const LEGACY_DB = 'auditoria_db';
+const LEGACY_CONFIG = 'auditoria_config';
+
+// ── Estado en memoria ──
+let state = {
+  id: null,
+  itemIndex: 0,
+  datos: {pdv:'',fecha:'',hora:'',auditor:'',manager:'',jefeCocina:'',coordinadorZona:'',receptor:'',tipoPdv:'',modalidad:''},
+  items: {}, // itemId -> {calificacion, observacion, fotos:[fotoKeys]}
+  compromisos: {}, // categoriaId+'|HALLAZGO' o '|RECOMENDACION' -> {responsable, areaEjecutora, fechaCompromiso}
+  retro: '', novedades: '',
+  creadoEn: null
+};
+
+// ═══ Almacenamiento: localStorage ═══
+
+function leerDB(){ try{ return JSON.parse(localStorage.getItem(LS_DB)||'[]'); }catch(e){ return []; } }
+function guardarDB(arr){ localStorage.setItem(LS_DB, JSON.stringify(arr)); }
+function leerConfig(){ try{ return JSON.parse(localStorage.getItem(LS_CONFIG)||'{}'); }catch(e){ return {}; } }
+function guardarConfig(cfg){ localStorage.setItem(LS_CONFIG, JSON.stringify(cfg)); }
+
+function migrarDatosLegacy(){
+  const cfg = leerConfig();
+  if (cfg.migradoDesdeLegacy) return;
+  try{
+    const legacyDb = JSON.parse(localStorage.getItem(LEGACY_DB) || 'null');
+    if (Array.isArray(legacyDb) && legacyDb.length){
+      const actual = leerDB();
+      const idsActuales = new Set(actual.map(r=>r.id));
+      let migrados = 0;
+      legacyDb.forEach(r=>{
+        const id = r.id || ('legacy_'+Math.random().toString(36).slice(2));
+        if (!idsActuales.has(id)){
+          actual.push({...r, id, origen:'migrado_legacy'});
+          migrados++;
+        }
+      });
+      guardarDB(actual);
+      if (migrados) console.info('[BBC Cocina] Migrados '+migrados+' registros desde localStorage legacy "auditoria_db". Los datos originales NO se borraron.');
+    }
+    const legacyCfg = JSON.parse(localStorage.getItem(LEGACY_CONFIG) || 'null');
+    if (legacyCfg && typeof legacyCfg === 'object'){
+      const nuevaCfg = {...legacyCfg, ...cfg};
+      nuevaCfg.migradoDesdeLegacy = true;
+      guardarConfig(nuevaCfg);
+      return;
+    }
+  }catch(e){ console.warn('Migración legacy falló', e); }
+  cfg.migradoDesdeLegacy = true;
+  guardarConfig(cfg);
+}
+
+// ═══ IndexedDB: fotos ═══
+let idbConn = null;
+function abrirIDB(){
+  return new Promise((resolve,reject)=>{
+    if (idbConn) return resolve(idbConn);
+    const req = indexedDB.open(IDB_NAME, 1);
+    req.onupgradeneeded = e => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('fotos')) db.createObjectStore('fotos', {keyPath:'key'});
+    };
+    req.onsuccess = e => { idbConn = e.target.result; resolve(idbConn); };
+    req.onerror = e => reject(e);
+  });
+}
+async function guardarFoto(key, dataUrl){
+  const db = await abrirIDB();
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction('fotos','readwrite');
+    tx.objectStore('fotos').put({key, dataUrl});
+    tx.oncomplete = ()=>resolve(true);
+    tx.onerror = reject;
+  });
+}
+async function leerFoto(key){
+  const db = await abrirIDB();
+  return new Promise((resolve)=>{
+    const tx = db.transaction('fotos','readonly');
+    const req = tx.objectStore('fotos').get(key);
+    req.onsuccess = ()=>resolve(req.result ? req.result.dataUrl : null);
+    req.onerror = ()=>resolve(null);
+  });
+}
+async function borrarFoto(key){
+  const db = await abrirIDB();
+  return new Promise((resolve)=>{
+    const tx = db.transaction('fotos','readwrite');
+    tx.objectStore('fotos').delete(key);
+    tx.oncomplete = ()=>resolve(true);
+  });
+}
+
+// ═══ Utilidades ═══
+function uid(){ return Date.now().toString() + Math.random().toString(36).slice(2,7); }
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+function clasificar(pct){
+  const u = SCHEMA.umbrales;
+  if (pct >= u.excelente) return {label:'Excelente', css:'clas-excelente'};
+  if (pct >= u.bien) return {label:'Bien', css:'clas-bien'};
+  if (pct >= u.porMejorar) return {label:'Por mejorar', css:'clas-porMejorar'};
+  if (pct >= u.regular) return {label:'Regular', css:'clas-regular'};
+  return {label:'Crítico', css:'clas-critico'};
+}
+function calcularScorePorCategoria(catId){
+  const items = ITEMS_FLAT.filter(i=>i.categoriaId===catId);
+  let obtenido=0, max=0;
+  const sinCalificar = items.some(i=>!state.items[i.id] || !state.items[i.id].calificacion);
+  items.forEach(i=>{
+    const ev = state.items[i.id];
+    if (!ev || ev.calificacion === 'no_aplica' || !ev.calificacion) return;
+    max += i.pts;
+    if (ev.calificacion==='cumple') obtenido += i.pts;
+    else if (ev.calificacion==='parcial') obtenido += i.pts*0.5;
+  });
+  const estado = sinCalificar ? 'pendiente' : (max>0 ? 'evaluado' : 'no_aplica');
+  return {obtenido, max, pct: max>0 ? (obtenido/max*100) : null, estado};
+}
+function calcularScoreGlobal(){
+  let obtenido=0, max=0;
+  ITEMS_FLAT.forEach(i=>{
+    const ev = state.items[i.id];
+    if (!ev || ev.calificacion === 'no_aplica' || !ev.calificacion) return;
+    max += i.pts;
+    if (ev.calificacion==='cumple') obtenido += i.pts;
+    else if (ev.calificacion==='parcial') obtenido += i.pts*0.5;
+  });
+  return {obtenido, max, pct: max>0 ? (obtenido/max*100) : 0};
+}
+function avanceItems(){
+  const respondidos = ITEMS_FLAT.filter(i=>state.items[i.id] && state.items[i.id].calificacion).length;
+  return Math.round(respondidos / ITEMS_FLAT.length * 100);
+}
+function actualizarAnillo(){
+  const pct = avanceItems();
+  const circ = 2*Math.PI*16;
+  const ring = document.getElementById('ring-progress');
+  ring.setAttribute('stroke-dasharray', circ.toFixed(1));
+  ring.setAttribute('stroke-dashoffset', (circ*(1-pct/100)).toFixed(1));
+  document.getElementById('ring-pct').textContent = pct+'%';
+}
+
+// ═══ UI Controller ═══
+const AppUI = {
+
+  init(){
+    migrarDatosLegacy();
+    this.sembrarAuditoresBase();
+    this.sembrarPDVsBase();
+    const cfg = leerConfig();
+    document.getElementById('g-auditor').value = cfg.auditorDefault || '';
+    document.getElementById('g-fecha').value = new Date().toISOString().slice(0,10);
+    document.getElementById('g-hora').value = new Date().toTimeString().slice(0,5);
+    this.setupAutocomplete('g-pdv', 'pdvsConocidos', (nombre)=>this.autocompletarDatosPDV(nombre));
+    this.setupAutocomplete('g-auditor', 'auditoresConocidos');
+    this.cargarBorradorActivo();
+    actualizarAnillo();
+  },
+
+  // Autocompletar propio (no usamos <datalist> nativo: en iOS/Android móvil
+  // el datalist con frecuencia no muestra ninguna sugerencia visible)
+  setupAutocomplete(inputId, configKey, onSelect){
+    const input = document.getElementById(inputId);
+    const list = document.getElementById('ac-' + inputId);
+    const mostrar = (filtro)=>{
+      const cfg = leerConfig();
+      const opciones = (cfg[configKey] || []);
+      const texto = (filtro||'').toLowerCase().trim();
+      const filtradas = texto ? opciones.filter(o=>o.toLowerCase().includes(texto)) : opciones;
+      if (!filtradas.length){ list.classList.remove('show'); list.innerHTML=''; return; }
+      list.innerHTML = filtradas.slice(0,8).map(o=>`<div class="autocomplete-item">${o}</div>`).join('');
+      list.classList.add('show');
+    };
+    input.addEventListener('focus', ()=>mostrar(input.value));
+    input.addEventListener('input', ()=>mostrar(input.value));
+    input.addEventListener('blur', ()=>setTimeout(()=>list.classList.remove('show'), 200));
+    list.addEventListener('mousedown', (e)=>{
+      const item = e.target.closest('.autocomplete-item');
+      if (!item) return;
+      input.value = item.textContent;
+      list.classList.remove('show');
+      if (onSelect) onSelect(item.textContent);
+    });
+  },
+
+  // Al elegir un PDV de la lista, precarga Tipo PDV / Modalidad / Coordinador
+  // según el listado maestro — así todos quedan consistentes automáticamente
+  autocompletarDatosPDV(nombre){
+    const pdv = PDVS_BASE.find(p => p.nombre === nombre);
+    if (!pdv) return;
+    if (pdv.tipoPdv) document.getElementById('g-tipoPdv').value = pdv.tipoPdv;
+    if (pdv.modalidad) document.getElementById('g-modalidad').value = pdv.modalidad;
+    const sinTildes = (s)=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    const coordSelect = document.getElementById('g-coordinadorZona');
+    const coordNorm = sinTildes((pdv.coordinador || '').toLowerCase());
+    for (const opt of coordSelect.options){
+      if (opt.value && coordNorm.includes(sinTildes(opt.value.toLowerCase().split(' ')[0]))){
+        coordSelect.value = opt.value;
+        break;
+      }
+    }
+  },
+
+  sembrarAuditoresBase(){
+    const cfg = leerConfig();
+    const actuales = cfg.auditoresConocidos || [];
+    const faltantes = AUDITORES_BASE.filter(a => !actuales.includes(a));
+    if (faltantes.length){
+      cfg.auditoresConocidos = [...actuales, ...faltantes];
+      guardarConfig(cfg);
+    }
+  },
+
+  sembrarPDVsBase(){
+    const cfg = leerConfig();
+    const actuales = cfg.pdvsConocidos || [];
+    const nombresBase = PDVS_BASE.map(p => p.nombre);
+    const faltantes = nombresBase.filter(n => !actuales.includes(n));
+    if (faltantes.length){
+      cfg.pdvsConocidos = [...actuales, ...faltantes];
+      guardarConfig(cfg);
+    }
+  },
+
+  recordarValor(configKey, valor){
+    if (!valor) return;
+    const cfg = leerConfig();
+    cfg[configKey] = cfg[configKey] || [];
+    if (!cfg[configKey].includes(valor)){
+      cfg[configKey].unshift(valor);
+      cfg[configKey] = cfg[configKey].slice(0,50);
+    }
+    guardarConfig(cfg);
+  },
+
+  irATab(n){
+    if (n>1 && !state.id){ toast('Primero completa los datos del PDV y comienza la evaluación'); return; }
+    if (n>=3 && avanceItems()<100){ toast('Debes calificar los ' + ITEMS_FLAT.length + ' ítems antes de continuar (' + avanceItems() + '% completado)'); return; }
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab==String(n)));
+    document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+    document.getElementById('pane-'+n).classList.add('active');
+    if (n===2) this.renderEvidencias();
+    if (n===3) this.renderHallazgos();
+    if (n===4) this.renderResumen();
+    if (n===5) this.renderInforme();
+  },
+
+  leerDatosGenerales(){
+    ['pdv','fecha','hora','auditor','manager','jefeCocina','coordinadorZona','receptor','tipoPdv','modalidad'].forEach(k=>{
+      state.datos[k] = document.getElementById('g-'+k).value;
+    });
+  },
+
+  comenzarEvaluacion(){
+    if (!state.id){
+      // Fecha/hora se fijan al momento real de iniciar, con la hora del dispositivo — no editable
+      document.getElementById('g-fecha').value = new Date().toISOString().slice(0,10);
+      document.getElementById('g-hora').value = new Date().toTimeString().slice(0,5);
+    }
+    this.leerDatosGenerales();
+    if (!state.datos.pdv){ toast('Ingresa el PDV antes de continuar'); return; }
+    if (!state.id){ state.id = uid(); state.creadoEn = new Date().toISOString(); }
+    this.recordarValor('pdvsConocidos', state.datos.pdv);
+    this.recordarValor('auditoresConocidos', state.datos.auditor);
+    const cfg = leerConfig(); cfg.auditorDefault = state.datos.auditor; guardarConfig(cfg);
+    document.getElementById('evaluacion-wrap').style.display = 'block';
+    document.getElementById('datos-generales-card').querySelector('.btn').textContent = 'Datos guardados ✓ — edítalos arriba si es necesario';
+    this.renderItemActual();
+    this.guardarProgreso(false);
+  },
+
+  renderItemActual(){
+    const i = ITEMS_FLAT[state.itemIndex];
+    const ev = state.items[i.id] || {calificacion:null, observacion:'', fotos:[]};
+    document.getElementById('item-progress-label').textContent = `Ítem ${state.itemIndex+1} de ${ITEMS_FLAT.length} — ${i.categoriaNombre}`;
+    const card = document.getElementById('item-card');
+    card.innerHTML = `
+      <div class="item-cat">${i.categoriaNombre}</div>
+      <div class="item-name">${i.nombre}</div>
+      <div class="item-max">Puntaje máximo: ${i.pts} pts</div>
+      <div class="score-options">
+        <div class="score-option score-cumple ${ev.calificacion==='cumple'?'selected':''}" onclick="AppUI.calificar('cumple')"><span class="icon">✓</span> Cumple <span style="margin-left:auto;font-weight:800">${i.pts} pts</span></div>
+        <div class="score-option score-parcial ${ev.calificacion==='parcial'?'selected':''}" onclick="AppUI.calificar('parcial')"><span class="icon">≈</span> Cumple parcialmente <span style="margin-left:auto;font-weight:800">${(i.pts*0.5)} pts</span></div>
+        <div class="score-option score-nocumple ${ev.calificacion==='no_cumple'?'selected':''}" onclick="AppUI.calificar('no_cumple')"><span class="icon">✕</span> No cumple <span style="margin-left:auto;font-weight:800">0 pts</span></div>
+        <div class="score-option score-noaplica ${ev.calificacion==='no_aplica'?'selected':''}" onclick="AppUI.calificar('no_aplica')"><span class="icon">—</span> No aplica <span style="margin-left:auto;font-weight:800">excluido</span></div>
+      </div>
+      <div class="obs-label">Observaciones</div>
+      <textarea class="obs-input" id="item-obs" placeholder="Cumple, pero… / No cumple porque… / No aplica, pero debe implementarse cuando…">${ev.observacion||''}</textarea>
+      <div class="foto-btn" onclick="document.getElementById('item-foto-input').click()">📷 Agregar foto de evidencia</div>
+      <input type="file" id="item-foto-input" accept="image/*" capture="environment" style="display:none" onchange="AppUI.agregarFoto(event)">
+      <div class="foto-grid" id="item-foto-grid"></div>
+      <div class="item-nav">
+        <button class="btn btn-secondary" ${state.itemIndex===0?'disabled':''} onclick="AppUI.navegarItem(-1)">← Atrás</button>
+        <button class="btn btn-primary" style="flex:1" onclick="AppUI.navegarItem(1)">${state.itemIndex===ITEMS_FLAT.length-1?'Ir a Evidencias →':'Siguiente →'}</button>
+      </div>
+    `;
+    document.getElementById('item-obs').addEventListener('input', e=>{
+      state.items[i.id] = state.items[i.id] || {calificacion:null, observacion:'', fotos:[]};
+      state.items[i.id].observacion = e.target.value;
+    });
+    this.renderFotosItem(i.id);
+    this.actualizarScoreBar();
+  },
+
+  async renderFotosItem(itemId){
+    const grid = document.getElementById('item-foto-grid');
+    const ev = state.items[itemId];
+    if (!ev || !ev.fotos || !ev.fotos.length){ grid.innerHTML=''; return; }
+    grid.innerHTML = '';
+    for (const key of ev.fotos){
+      const dataUrl = await leerFoto(key);
+      if (!dataUrl) continue;
+      const div = document.createElement('div');
+      div.className = 'foto-thumb';
+      div.innerHTML = `<img src="${dataUrl}"><button class="del" onclick="AppUI.eliminarFoto('${itemId}','${key}')">✕</button>`;
+      grid.appendChild(div);
+    }
+  },
+
+  agregarFoto(e){
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async ()=>{
+      const i = ITEMS_FLAT[state.itemIndex];
+      const key = state.id+'_'+i.id+'_'+uid();
+      await guardarFoto(key, reader.result);
+      state.items[i.id] = state.items[i.id] || {calificacion:null, observacion:'', fotos:[]};
+      state.items[i.id].fotos.push(key);
+      this.renderFotosItem(i.id);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  },
+
+  async eliminarFoto(itemId, key){
+    await borrarFoto(key);
+    state.items[itemId].fotos = state.items[itemId].fotos.filter(k=>k!==key);
+    this.renderFotosItem(itemId);
+  },
+
+  calificar(valor){
+    const i = ITEMS_FLAT[state.itemIndex];
+    state.items[i.id] = state.items[i.id] || {calificacion:null, observacion:'', fotos:[]};
+    state.items[i.id].calificacion = valor;
+    if (!state.items[i.id].observacion){
+      const obsEl = document.getElementById('item-obs');
+      state.items[i.id].observacion = obsEl ? obsEl.value : '';
+    }
+    this.renderItemActual();
+    actualizarAnillo();
+  },
+
+  navegarItem(delta){
+    const obsEl = document.getElementById('item-obs');
+    const i = ITEMS_FLAT[state.itemIndex];
+    if (obsEl){
+      state.items[i.id] = state.items[i.id] || {calificacion:null, observacion:'', fotos:[]};
+      state.items[i.id].observacion = obsEl.value;
+    }
+    if (delta > 0){
+      const ev = state.items[i.id];
+      if (!ev || !ev.calificacion){
+        toast('Selecciona una calificación antes de continuar');
+        return;
+      }
+      if (ev.calificacion === 'no_cumple' && (!ev.observacion || !ev.observacion.trim())){
+        toast('Escribe la observación: ¿por qué no cumple?');
+        if (obsEl) obsEl.focus();
+        return;
+      }
+    }
+    const nuevo = state.itemIndex + delta;
+    if (nuevo < 0) return;
+    if (nuevo >= ITEMS_FLAT.length){ this.irATab(2); return; }
+    state.itemIndex = nuevo;
+    this.renderItemActual();
+    this.guardarProgreso(false);
+  },
+
+  actualizarScoreBar(){
+    const s = calcularScoreGlobal();
+    document.getElementById('score-acumulado').textContent = `${s.obtenido.toFixed(1)} / ${s.max.toFixed(1)}`;
+  },
+
+  renderEvidencias(){
+    const wrap = document.getElementById('evidencias-wrap');
+    wrap.innerHTML = '';
+    let huboFotos = false;
+    SCHEMA.categorias.forEach(cat=>{
+      const itemsConFoto = cat.items.filter(i => state.items[i.id] && state.items[i.id].fotos && state.items[i.id].fotos.length);
+      if (!itemsConFoto.length) return;
+      huboFotos = true;
+      const titulo = document.createElement('div');
+      titulo.className = 'evidencia-cat-title';
+      titulo.textContent = cat.nombre;
+      wrap.appendChild(titulo);
+      const grid = document.createElement('div');
+      grid.className = 'evidencia-grid';
+      wrap.appendChild(grid);
+      itemsConFoto.forEach(async i=>{
+        for (const key of state.items[i.id].fotos){
+          const dataUrl = await leerFoto(key);
+          if (!dataUrl) continue;
+          const img = document.createElement('img');
+          img.src = dataUrl;
+          img.title = i.nombre;
+          grid.appendChild(img);
+        }
+      });
+    });
+    if (!huboFotos) wrap.innerHTML = '<div class="empty-note">Aún no hay fotos de evidencia. Agrégalas desde cada ítem en la pestaña Auditoría.</div>';
+  },
+
+  // ── Hallazgos / Recomendaciones ──
+  categoriasConHallazgo(){
+    return SCHEMA.categorias.map(cat=>{
+      const itemsCat = cat.items;
+      const conFalla = itemsCat.filter(i=>{
+        const ev = state.items[i.id];
+        return ev && (ev.calificacion==='parcial' || ev.calificacion==='no_cumple');
+      });
+      const conRecomendacion = itemsCat.filter(i=>{
+        const ev = state.items[i.id];
+        return ev && ev.calificacion==='no_aplica' && ev.observacion && ev.observacion.trim();
+      });
+      return {cat, conFalla, conRecomendacion};
+    });
+  },
+
+  renderHallazgos(){
+    const wrap = document.getElementById('hallazgos-wrap');
+    wrap.innerHTML = '';
+    const data = this.categoriasConHallazgo();
+    data.forEach(({cat, conFalla, conRecomendacion})=>{
+      if (!conFalla.length && !conRecomendacion.length){
+        const div = document.createElement('div');
+        div.className = 'categoria-vacia';
+        div.textContent = cat.nombre + ' — sin hallazgos';
+        wrap.appendChild(div);
+        return;
+      }
+      if (conFalla.length){
+        wrap.appendChild(this.crearHallazgoCard(cat, conFalla, 'HALLAZGO'));
+      }
+      if (conRecomendacion.length){
+        wrap.appendChild(this.crearHallazgoCard(cat, conRecomendacion, 'RECOMENDACIÓN'));
+      }
+    });
+  },
+
+  crearHallazgoCard(cat, items, tipo){
+    const key = cat.id + '|' + tipo;
+    const criticidad = tipo==='RECOMENDACIÓN' ? 'BAJA' : (items.some(i=>i.pts>=10) ? 'ALTA' : 'MEDIA');
+    const compPrevio = state.compromisos[key] || {};
+    const descAuto = items.map(i=>{
+      const ev = state.items[i.id];
+      return `${i.nombre}: ${ev.observacion || '(sin observación)'}`;
+    }).join('\n');
+
+    const div = document.createElement('div');
+    div.className = 'card hallazgo-card' + (tipo==='RECOMENDACIÓN' ? ' recomendacion' : '');
+    div.innerHTML = `
+      <div class="card-header">
+        <span>${cat.nombre} — ${tipo}</span>
+        <span class="badge-tag">Criticidad ${criticidad}</span>
+      </div>
+      <div class="card-body">
+        <div class="obs-label">Descripción</div>
+        <textarea class="obs-input" data-key="${key}" data-field="descripcion">${compPrevio.descripcion || descAuto}</textarea>
+        <div class="form-grid" style="margin-top:12px">
+          <div class="form-group">
+            <label>Responsable de acción</label>
+            <input data-key="${key}" data-field="responsable" value="${compPrevio.responsable || state.datos.jefeCocina || ''}">
+          </div>
+          <div class="form-group">
+            <label>Área ejecutora</label>
+            <select data-key="${key}" data-field="areaEjecutora">
+              ${['PDV / Punto de venta','Mantenimiento','Compras','Operaciones','Calidad','Otro'].map(o=>`<option ${compPrevio.areaEjecutora===o?'selected':''}>${o}</option>`).join('')}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Fecha compromiso *</label>
+            <input type="date" data-key="${key}" data-field="fechaCompromiso" value="${compPrevio.fechaCompromiso || ''}" required>
+          </div>
+        </div>
+      </div>
+    `;
+    div.querySelectorAll('[data-key]').forEach(el=>{
+      el.addEventListener('input', ()=>{
+        state.compromisos[key] = state.compromisos[key] || {categoriaId:cat.id, tipo};
+        state.compromisos[key][el.dataset.field] = el.value;
+        state.compromisos[key].criticidad = criticidad;
+      });
+    });
+    if (!state.compromisos[key]){
+      state.compromisos[key] = {categoriaId:cat.id, tipo, descripcion:descAuto, responsable:state.datos.jefeCocina||'', areaEjecutora:'PDV / Punto de venta', fechaCompromiso:'', criticidad};
+    }
+    return div;
+  },
+
+  // ── Resumen ──
+  renderResumen(){
+    const wrap = document.getElementById('resumen-wrap');
+    const g = calcularScoreGlobal();
+    const clas = clasificar(g.pct);
+    let html = `
+      <div class="card">
+        <div class="score-global">
+          <div class="num">${g.pct.toFixed(1)}%</div>
+          <div class="clas ${clas.css}">${clas.label}</div>
+          <div style="margin-top:8px;color:var(--gray);font-size:12px">${g.obtenido.toFixed(1)} / ${g.max.toFixed(1)} puntos aplicables</div>
+        </div>
+      </div>
+      <div class="card"><div class="card-header">Resultado por categoría</div>`;
+    SCHEMA.categorias.forEach(cat=>{
+      const s = calcularScorePorCategoria(cat.id);
+      let texto;
+      if (s.estado === 'pendiente') texto = 'Pendiente por calificar';
+      else if (s.estado === 'no_aplica') texto = 'No aplica (todos los ítems)';
+      else texto = s.pct.toFixed(1)+'% · '+clasificar(s.pct).label;
+      html += `<div class="mod-row"><span>${cat.nombre}</span><span class="pct">${texto}</span></div>`;
+    });
+    html += `</div>`;
+
+    const hallazgos = Object.values(state.compromisos).filter(c=>c.tipo==='HALLAZGO');
+    const recos = Object.values(state.compromisos).filter(c=>c.tipo==='RECOMENDACIÓN');
+    html += `<div class="card"><div class="card-header">Hallazgos (${hallazgos.length})</div><div class="card-body">`;
+    html += hallazgos.length ? hallazgos.map(h=>`<div class="mod-row"><span>${h.descripcion.split('\n')[0]}</span><span>${h.responsable||'—'} · ${h.fechaCompromiso||'sin fecha'}</span></div>`).join('') : '<div class="empty-note">Sin hallazgos</div>';
+    html += `</div></div>`;
+    html += `<div class="card"><div class="card-header">Recomendaciones (${recos.length})</div><div class="card-body">`;
+    html += recos.length ? recos.map(h=>`<div class="mod-row"><span>${h.descripcion.split('\n')[0]}</span><span>${h.responsable||'—'} · ${h.fechaCompromiso||'sin fecha'}</span></div>`).join('') : '<div class="empty-note">Sin recomendaciones</div>';
+    html += `</div></div>`;
+    wrap.innerHTML = html;
+  },
+
+  // ── Informe ejecutivo / Acta de Compromisos ──
+  async construirActaHTML(){
+    const g = calcularScoreGlobal();
+    const clas = clasificar(g.pct);
+    state.retro = document.getElementById('r-retro') ? document.getElementById('r-retro').value : state.retro;
+    state.novedades = document.getElementById('r-novedades') ? document.getElementById('r-novedades').value : state.novedades;
+    const d = state.datos;
+
+    let filasItems = '';
+    SCHEMA.categorias.forEach(cat=>{
+      cat.items.forEach(i=>{
+        const ev = state.items[i.id] || {};
+        const labelCal = {cumple:'Cumple', parcial:'Cumple parcialmente', no_cumple:'No cumple', no_aplica:'No aplica'}[ev.calificacion] || '—';
+        const ptsObt = ev.calificacion==='cumple' ? i.pts : ev.calificacion==='parcial' ? i.pts*0.5 : 0;
+        filasItems += `<tr><td>${cat.nombre}</td><td>${i.nombre}</td><td>${labelCal}</td><td>${ev.calificacion==='no_aplica'?'—':ptsObt}</td><td>${i.pts}</td><td>${ev.observacion||''}</td></tr>`;
+      });
+    });
+
+    const compromisos = Object.values(state.compromisos).filter(c=>c.fechaCompromiso || c.descripcion);
+    let filasCompromisos = compromisos.map(c=>
+      `<tr><td>${c.tipo}</td><td>${c.descripcion.split('\n')[0]}</td><td>${c.responsable||''}</td><td>${c.areaEjecutora||''}</td><td>${c.fechaCompromiso||''}</td></tr>`
+    ).join('');
+
+    let fotosHtml = '';
+    for (const cat of SCHEMA.categorias){
+      const itemsConFoto = cat.items.filter(i => state.items[i.id] && state.items[i.id].fotos && state.items[i.id].fotos.length);
+      if (!itemsConFoto.length) continue;
+      let imgsCat = '';
+      for (const i of itemsConFoto){
+        for (const key of state.items[i.id].fotos){
+          const dataUrl = await leerFoto(key);
+          if (!dataUrl) continue;
+          imgsCat += `<img src="${dataUrl}" style="width:140px;height:140px;object-fit:cover;border-radius:6px;border:1px solid #ccc;margin:4px" title="${i.nombre}">`;
+        }
+      }
+      if (imgsCat) fotosHtml += `<p style="font-weight:700;margin-top:10px">${cat.nombre}</p><div>${imgsCat}</div>`;
+    }
+
+    return `
+      <div style="text-align:center;border-bottom:3px solid #F59E0B;padding-bottom:12px;margin-bottom:16px">
+        <h2 style="color:#c9790a">🍺 BBC Colombia · Temple Colombia</h2>
+        <h3>Acta de Compromisos — Auditoría de Cocina</h3>
+      </div>
+      <table class="acta-tabla">
+        <tr><th>PDV</th><td>${d.pdv}</td><th>Fecha</th><td>${d.fecha} ${d.hora}</td></tr>
+        <tr><th>Tipo PDV</th><td>${d.tipoPdv}</td><th>Modalidad</th><td>${d.modalidad}</td></tr>
+        <tr><th>Auditor</th><td>${d.auditor}</td><th>Manager</th><td>${d.manager}</td></tr>
+        <tr><th>Jefe de Cocina</th><td>${d.jefeCocina}</td><th>Coordinador Zona</th><td>${d.coordinadorZona}</td></tr>
+        <tr><th>Recibe</th><td colspan="3">${d.receptor}</td></tr>
+      </table>
+
+      <h3 style="margin-top:20px">Resultado global: ${g.pct.toFixed(1)}% — ${clas.label}</h3>
+
+      <table class="acta-tabla">
+        <thead><tr><th>Categoría</th><th>Ítem</th><th>Calificación</th><th>Pts obtenidos</th><th>Pts máx</th><th>Observación</th></tr></thead>
+        <tbody>${filasItems}</tbody>
+      </table>
+
+      <h3 style="margin-top:20px">Compromisos</h3>
+      <table class="acta-tabla">
+        <thead><tr><th>Tipo</th><th>Descripción</th><th>Responsable</th><th>Área ejecutora</th><th>Fecha compromiso</th></tr></thead>
+        <tbody>${filasCompromisos || '<tr><td colspan="5">Sin compromisos registrados</td></tr>'}</tbody>
+      </table>
+
+      <h3 style="margin-top:20px">Retroalimentación / Capacitación ejecutada</h3>
+      <p>${state.retro || '—'}</p>
+      <h3 style="margin-top:12px">Novedades y observaciones generales</h3>
+      <p>${state.novedades || '—'}</p>
+
+      <h3 style="margin-top:20px">Evidencias fotográficas</h3>
+      ${fotosHtml || '<p style="color:#666">Sin fotos de evidencia registradas</p>'}
+
+      <div class="firma-box">
+        <div class="firma-linea">Firma Auditor<br>${d.auditor}</div>
+        <div class="firma-linea">Firma Manager / Receptor<br>${d.receptor || d.manager}</div>
+      </div>
+    `;
+  },
+
+  async renderInforme(){
+    document.getElementById('informe-preview').innerHTML = `<div class="card"><div class="card-body">Generando informe…</div></div>`;
+    const html = await this.construirActaHTML();
+    document.getElementById('informe-preview').innerHTML = `<div class="card"><div class="card-body">${html}</div></div>`;
+    document.getElementById('acta-print').innerHTML = html;
+  },
+
+  async enviarCorreo(){
+    const d = state.datos;
+    const asunto = `Auditoría Cocina — ${d.pdv} — ${d.fecha}`;
+
+    const destinatarios = prompt('¿A qué correo(s) enviar el Acta de Compromisos? (separa varios con coma)', '');
+    if (!destinatarios) return;
+
+    if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf('PEGAR_AQUI') >= 0){
+      toast('⚠ Falta configurar la URL del Apps Script');
+      return;
+    }
+
+    toast('Enviando correo con el PDF adjunto…');
+    const actaHtml = await this.construirActaHTML();
+    try{
+      await fetch(APPS_SCRIPT_URL, {
+        method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({token: APPS_TOKEN, action:'enviar_acta_pdf', actaHtml, destinatarios, asunto})
+      });
+      toast('✓ Enviado — revisa la bandeja de ' + destinatarios + ' en unos segundos');
+    }catch(e){
+      toast('⚠ Error de conexión al enviar el correo');
+    }
+  },
+
+  // ── Guardar progreso / Cargar / Nueva ──
+  guardarProgreso(mostrarToast){
+    this.leerDatosGenerales();
+    if (!state.id) state.id = uid();
+    if (!state.creadoEn) state.creadoEn = new Date().toISOString();
+    const db = leerDB();
+    const idx = db.findIndex(r=>r.id===state.id);
+    const registro = {...JSON.parse(JSON.stringify(state)), estadoLocal:'borrador', actualizadoEn:new Date().toISOString()};
+    if (idx>=0) db[idx] = registro; else db.push(registro);
+    guardarDB(db);
+    localStorage.setItem(LS_DRAFT_ACTIVO, state.id);
+    if (mostrarToast) toast('✓ Progreso guardado localmente');
+  },
+
+  cargarBorradorActivo(){
+    const activoId = localStorage.getItem(LS_DRAFT_ACTIVO);
+    if (!activoId) return;
+    const db = leerDB();
+    const registro = db.find(r=>r.id===activoId && r.estadoLocal==='borrador');
+    if (registro) this.cargarRegistro(registro);
+  },
+
+  cargarRegistro(registro){
+    state = JSON.parse(JSON.stringify(registro));
+    Object.keys(state.datos).forEach(k=>{
+      const el = document.getElementById('g-'+k);
+      if (el) el.value = state.datos[k] || '';
+    });
+    if (Object.keys(state.items).length){
+      document.getElementById('evaluacion-wrap').style.display = 'block';
+      this.renderItemActual();
+    }
+    actualizarAnillo();
+    this.cerrarModal();
+    toast('Auditoría cargada: ' + (state.datos.pdv || 'sin PDV'));
+  },
+
+  abrirModalCargar(){
+    const db = leerDB().filter(r=>r.estadoLocal==='borrador');
+    const wrap = document.getElementById('lista-borradores');
+    wrap.innerHTML = db.length ? db.map(r=>`
+      <div class="draft-item" onclick='AppUI.cargarRegistroPorId("${r.id}")'>
+        <div class="pdv">${r.datos.pdv || 'Sin PDV'}</div>
+        <div class="meta">${r.datos.fecha||''} · Actualizado ${new Date(r.actualizadoEn).toLocaleString('es-CO')}</div>
+      </div>
+    `).join('') : '<div class="empty-note">No hay auditorías guardadas</div>';
+    document.getElementById('modal-cargar').classList.add('show');
+  },
+
+  cargarRegistroPorId(id){
+    const registro = leerDB().find(r=>r.id===id);
+    if (registro) this.cargarRegistro(registro);
+  },
+
+  cerrarModal(){ document.getElementById('modal-cargar').classList.remove('show'); },
+
+  confirmarNueva(){
+    if (state.id && Object.keys(state.items).length){
+      if (!confirm('¿Descartar la auditoría actual y empezar una nueva? (lo ya guardado como progreso se conserva en "Cargar auditoría")')) return;
+    }
+    this.guardarProgreso(false);
+    localStorage.removeItem(LS_DRAFT_ACTIVO);
+    location.reload();
+  },
+
+  // ── Guardado final: envía a Apps Script ──
+  async guardarYFinalizar(){
+    this.leerDatosGenerales();
+    if (!state.datos.pdv || !state.datos.auditor){ toast('Completa PDV y Auditor antes de guardar'); this.irATab(1); return; }
+    if (avanceItems()<100){ toast('Debes calificar el 100% de los ítems antes de finalizar'); this.irATab(1); return; }
+
+    const g = calcularScoreGlobal();
+    const clas = clasificar(g.pct);
+    state.retro = document.getElementById('r-retro').value;
+    state.novedades = document.getElementById('r-novedades').value;
+
+    const auditoria = {
+      id: state.id, tipo:'cocina', pdv: state.datos.pdv, zona:'', modalidad: state.datos.modalidad,
+      tipoPdv: state.datos.tipoPdv, fecha: state.datos.fecha, hora: state.datos.hora,
+      auditor: state.datos.auditor, manager: state.datos.manager, coordinadorZona: state.datos.coordinadorZona,
+      receptor: state.datos.receptor,
+      camposAdicionales: JSON.stringify({jefeCocina: state.datos.jefeCocina}),
+      scoreTotal: g.obtenido, scoreMax: g.max, scorePct: g.pct.toFixed(1),
+      clasificacion: clas.label, itemsEvaluados: JSON.stringify(state.items),
+      creadoEn: state.creadoEn || new Date().toISOString()
+    };
+
+    const hallazgos = [];
+    const compromisosPayload = [];
+    Object.entries(state.compromisos).forEach(([key, c])=>{
+      if (!c.descripcion) return;
+      const hallazgoId = uid();
+      hallazgos.push({
+        id: hallazgoId, auditId: state.id, auditTipo:'cocina', pdv: state.datos.pdv, zona:'',
+        coordinador: state.datos.coordinadorZona, categoriaId: c.categoriaId,
+        categoriaNombre: (SCHEMA.categorias.find(cat=>cat.id===c.categoriaId)||{}).nombre || c.categoriaId,
+        descripcion: c.descripcion, criticidad: c.criticidad, tipo: c.tipo,
+        creadoEn: new Date().toISOString()
+      });
+      compromisosPayload.push({
+        id: uid(), hallazgoId, auditId: state.id, pdv: state.datos.pdv, zona:'',
+        coordinador: state.datos.coordinadorZona, auditTipo:'cocina', categoriaId: c.categoriaId,
+        descripcionAccion: c.descripcion, responsable: c.responsable, areaEjecutora: c.areaEjecutora,
+        fechaCompromiso: c.fechaCompromiso, estado: c.tipo==='RECOMENDACIÓN' ? 'RECOMENDACIÓN' : 'ABIERTO',
+        evidencias: JSON.stringify([]), reincidenciaCount: 0, fechaCierre:'', evidenciaCierre:'',
+        validadoPor:'', pdfEnviado:false, tipo:'COMPROMISO', creadoEn: new Date().toISOString()
+      });
+    });
+
+    if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf('PEGAR_AQUI') >= 0){
+      toast('⚠ Falta configurar la URL del Apps Script — guardado solo localmente');
+    } else {
+      try{
+        await fetch(APPS_SCRIPT_URL, {
+          method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({token: APPS_TOKEN, action:'save_auditoria', auditoria, hallazgos, compromisos: compromisosPayload})
+        });
+        toast('✓ Auditoría enviada a Google Sheets');
+      }catch(e){ toast('⚠ Error de conexión — quedó guardada localmente'); }
+    }
+
+    // Marcar como guardado localmente (deja de ser borrador)
+    const db = leerDB();
+    const idx = db.findIndex(r=>r.id===state.id);
+    const registroFinal = {...JSON.parse(JSON.stringify(state)), estadoLocal:'guardado', actualizadoEn:new Date().toISOString()};
+    if (idx>=0) db[idx] = registroFinal; else db.push(registroFinal);
+    guardarDB(db);
+    localStorage.removeItem(LS_DRAFT_ACTIVO);
+  }
+};
+
+window.addEventListener('DOMContentLoaded', ()=>AppUI.init());
+</script>
+</body>
+</html>
