@@ -517,7 +517,8 @@ function generarTareas(){
     const area=prev.area||areaSugerida;
     const fecha=prev.fecha||fStrISO;
     const responsable=prev.responsable!==undefined?prev.responsable:'';
-    compromisosEdit[idx]={area,fecha,responsable,criticidad,descripcion:h};
+    const responsableSeguimiento=prev.responsableSeguimiento!==undefined?prev.responsableSeguimiento:'';
+    compromisosEdit[idx]={area,fecha,responsable,responsableSeguimiento,criticidad,descripcion:h};
     return `<div class="item-block">
       <div class="item-label">${h}</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px">
@@ -526,7 +527,8 @@ function generarTareas(){
         </select>
         <input type="date" value="${fecha}" onchange="actualizarCompromiso(${idx},'fecha',this.value)" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 8px;font-size:12px;color:var(--text);font-family:var(--font)">
       </div>
-      <input type="text" placeholder="Responsable (nombre)" value="${responsable}" oninput="actualizarCompromiso(${idx},'responsable',this.value)" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 8px;font-size:12px;color:var(--text);font-family:var(--font)">
+      <input type="text" placeholder="Responsable (nombre)" value="${responsable}" oninput="actualizarCompromiso(${idx},'responsable',this.value)" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 8px;font-size:12px;color:var(--text);font-family:var(--font);margin-bottom:6px">
+      <input type="text" placeholder="Responsable de seguimiento" value="${responsableSeguimiento}" oninput="actualizarCompromiso(${idx},'responsableSeguimiento',this.value)" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 8px;font-size:12px;color:var(--text);font-family:var(--font)">
     </div>`;
   }).join('');
 }
@@ -557,7 +559,8 @@ async function enviarComprosoAlMaestro(auditId,pdv,zona,coord,tipo,total,maxTota
       id:uid(),hallazgoId,auditId,pdv,zona,coordinador:coord,auditTipo:'hora-servicio',categoriaId,
       descripcionAccion:c.descripcion,responsable:c.responsable||'',areaEjecutora:c.area||'',
       fechaCompromiso:c.fecha||'',estado:'ABIERTO',evidencias:JSON.stringify([]),reincidenciaCount:0,
-      fechaCierre:'',evidenciaCierre:'',validadoPor:'',pdfEnviado:false,tipo:'COMPROMISO',creadoEn:new Date().toISOString()
+      fechaCierre:'',evidenciaCierre:'',validadoPor:'',pdfEnviado:false,tipo:'COMPROMISO',creadoEn:new Date().toISOString(),
+      responsableSeguimiento:c.responsableSeguimiento||''
     });
   });
   try{
@@ -570,7 +573,7 @@ function construirActaHorarioHTML(pdv,zona,coord,total,maxTotal,estado){
   const filasModulos=MODULOS.map((m,mi)=>`<tr><td>${m.nombre}</td><td>${scores[mi]||0} / ${m.max}</td></tr>`).join('');
   const compromisos=Object.values(compromisosEdit).filter(c=>c.descripcion);
   const filasCompromisos=compromisos.map(c=>
-    `<tr><td>${c.descripcion}</td><td>${c.responsable||''}</td><td>${c.area||''}</td><td>${c.fecha||''}</td></tr>`
+    `<tr><td>${c.descripcion}</td><td>${c.responsable||''}</td><td>${c.responsableSeguimiento||''}</td><td>${c.area||''}</td><td>${c.fecha||''}</td></tr>`
   ).join('');
   return `
     <div style="text-align:center;border-bottom:3px solid #F59E0B;padding-bottom:12px;margin-bottom:16px">
@@ -588,7 +591,7 @@ function construirActaHorarioHTML(pdv,zona,coord,total,maxTotal,estado){
     </table>
     <h3 style="margin-top:20px">Compromisos</h3>
     <table style="width:100%;border-collapse:collapse;font-size:12px">
-      <thead><tr><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Hallazgo</th><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Responsable</th><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Área</th><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Fecha compromiso</th></tr></thead>
+      <thead><tr><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Hallazgo</th><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Responsable</th><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Seguimiento</th><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Área</th><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Fecha compromiso</th></tr></thead>
       <tbody>${filasCompromisos||'<tr><td colspan="4">Sin compromisos registrados</td></tr>'}</tbody>
     </table>
     <h3 style="margin-top:20px">Notas adicionales</h3>

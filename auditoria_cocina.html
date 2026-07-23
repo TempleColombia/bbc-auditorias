@@ -901,6 +901,10 @@ const AppUI = {
             <input data-key="${key}" data-field="responsable" value="${compPrevio.responsable || state.datos.jefeCocina || ''}">
           </div>
           <div class="form-group">
+            <label>Responsable de seguimiento</label>
+            <input data-key="${key}" data-field="responsableSeguimiento" value="${compPrevio.responsableSeguimiento || ''}">
+          </div>
+          <div class="form-group">
             <label>Área ejecutora</label>
             <select data-key="${key}" data-field="areaEjecutora">
               ${['PDV / Punto de venta','Mantenimiento','Compras','Operaciones','Calidad','Otro'].map(o=>`<option ${compPrevio.areaEjecutora===o?'selected':''}>${o}</option>`).join('')}
@@ -921,7 +925,7 @@ const AppUI = {
       });
     });
     if (!state.compromisos[key]){
-      state.compromisos[key] = {categoriaId:cat.id, tipo, descripcion:descAuto, responsable:state.datos.jefeCocina||'', areaEjecutora:'PDV / Punto de venta', fechaCompromiso:'', criticidad};
+      state.compromisos[key] = {categoriaId:cat.id, tipo, descripcion:descAuto, responsable:state.datos.jefeCocina||'', responsableSeguimiento:'', areaEjecutora:'PDV / Punto de venta', fechaCompromiso:'', criticidad};
     }
     return div;
   },
@@ -981,7 +985,7 @@ const AppUI = {
 
     const compromisos = Object.values(state.compromisos).filter(c=>c.fechaCompromiso || c.descripcion);
     let filasCompromisos = compromisos.map(c=>
-      `<tr><td>${c.tipo}</td><td>${c.descripcion.split('\n')[0]}</td><td>${c.responsable||''}</td><td>${c.areaEjecutora||''}</td><td>${c.fechaCompromiso||''}</td></tr>`
+      `<tr><td>${c.tipo}</td><td>${c.descripcion.split('\n')[0]}</td><td>${c.responsable||''}</td><td>${c.responsableSeguimiento||''}</td><td>${c.areaEjecutora||''}</td><td>${c.fechaCompromiso||''}</td></tr>`
     ).join('');
 
     let fotosHtml = '';
@@ -1021,8 +1025,8 @@ const AppUI = {
 
       <h3 style="margin-top:20px">Compromisos</h3>
       <table class="acta-tabla">
-        <thead><tr><th>Tipo</th><th>Descripción</th><th>Responsable</th><th>Área ejecutora</th><th>Fecha compromiso</th></tr></thead>
-        <tbody>${filasCompromisos || '<tr><td colspan="5">Sin compromisos registrados</td></tr>'}</tbody>
+        <thead><tr><th>Tipo</th><th>Descripción</th><th>Responsable</th><th>Seguimiento</th><th>Área ejecutora</th><th>Fecha compromiso</th></tr></thead>
+        <tbody>${filasCompromisos || '<tr><td colspan="6">Sin compromisos registrados</td></tr>'}</tbody>
       </table>
 
       <h3 style="margin-top:20px">Retroalimentación / Capacitación ejecutada</h3>
@@ -1177,7 +1181,8 @@ const AppUI = {
         descripcionAccion: c.descripcion, responsable: c.responsable, areaEjecutora: c.areaEjecutora,
         fechaCompromiso: c.fechaCompromiso, estado: c.tipo==='RECOMENDACIÓN' ? 'RECOMENDACIÓN' : 'ABIERTO',
         evidencias: JSON.stringify([]), reincidenciaCount: 0, fechaCierre:'', evidenciaCierre:'',
-        validadoPor:'', pdfEnviado:false, tipo:'COMPROMISO', creadoEn: new Date().toISOString()
+        validadoPor:'', pdfEnviado:false, tipo:'COMPROMISO', creadoEn: new Date().toISOString(),
+        responsableSeguimiento: c.responsableSeguimiento||''
       });
     });
 

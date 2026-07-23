@@ -36,7 +36,8 @@ const HEADERS = {
     'id','hallazgoId','auditId','pdv','zona','coordinador','auditTipo','categoriaId',
     'descripcionAccion','responsable','areaEjecutora','fechaCompromiso','estado',
     'evidencias','reincidenciaCount','fechaCierre','evidenciaCierre','validadoPor',
-    'pdfEnviado','tipo','creadoEn'
+    'pdfEnviado','tipo','creadoEn',
+    'responsableSeguimiento'
   ]
 };
 
@@ -135,7 +136,7 @@ function updateCompromiso_(payload) {
   const row = findRowById_(sheet, payload.id);
   if (row === -1) return {error: 'Compromiso no encontrado: ' + payload.id};
 
-  const campos = ['estado','fechaCierre','evidenciaCierre','validadoPor','pdfEnviado'];
+  const campos = ['estado','fechaCierre','evidenciaCierre','validadoPor','pdfEnviado','responsableSeguimiento'];
   campos.forEach(campo => {
     if (payload[campo] !== undefined) {
       const col = headers.indexOf(campo) + 1;

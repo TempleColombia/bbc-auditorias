@@ -153,6 +153,7 @@ select:focus{border-color:var(--accent)}
           <option value="">Área…</option><option>Franquiciado</option><option>Coordinador</option><option>Marketing</option><option>Operaciones</option><option>Otro</option>
         </select>
         <input class="comp-mini" placeholder="Fecha" id="c1_fecha" type="date" onchange="guardarBorrador()">
+        <input class="comp-input" placeholder="Responsable de seguimiento" id="c1_respSeg" oninput="guardarBorrador()" style="grid-column:1/-1">
       </div>
       <div class="comp-row">
         <input class="comp-input" placeholder="Acción / Compromiso" id="c2_acc" oninput="guardarBorrador()">
@@ -161,6 +162,7 @@ select:focus{border-color:var(--accent)}
           <option value="">Área…</option><option>Franquiciado</option><option>Coordinador</option><option>Marketing</option><option>Operaciones</option><option>Otro</option>
         </select>
         <input class="comp-mini" placeholder="Fecha" id="c2_fecha" type="date" onchange="guardarBorrador()">
+        <input class="comp-input" placeholder="Responsable de seguimiento" id="c2_respSeg" oninput="guardarBorrador()" style="grid-column:1/-1">
       </div>
       <div class="comp-row">
         <input class="comp-input" placeholder="Acción / Compromiso" id="c3_acc" oninput="guardarBorrador()">
@@ -169,6 +171,7 @@ select:focus{border-color:var(--accent)}
           <option value="">Área…</option><option>Franquiciado</option><option>Coordinador</option><option>Marketing</option><option>Operaciones</option><option>Otro</option>
         </select>
         <input class="comp-mini" placeholder="Fecha" id="c3_fecha" type="date" onchange="guardarBorrador()">
+        <input class="comp-input" placeholder="Responsable de seguimiento" id="c3_respSeg" oninput="guardarBorrador()" style="grid-column:1/-1">
       </div>
     </div>
     <div class="field" style="margin-top:8px">
@@ -513,7 +516,8 @@ async function enviarComprosoAlMaestro(auditId,pdv,zona,coord,tipo,promGlobal){
       id:uid(),hallazgoId,auditId,pdv,zona,coordinador:coord,auditTipo:'visita-virtual',categoriaId,
       descripcionAccion:descripcion,responsable:txt('c'+i+'_resp')||'',areaEjecutora:area,
       fechaCompromiso:txt('c'+i+'_fecha')||'',estado:'ABIERTO',evidencias:JSON.stringify([]),reincidenciaCount:0,
-      fechaCierre:'',evidenciaCierre:'',validadoPor:'',pdfEnviado:false,tipo:'COMPROMISO',creadoEn:new Date().toISOString()
+      fechaCierre:'',evidenciaCierre:'',validadoPor:'',pdfEnviado:false,tipo:'COMPROMISO',creadoEn:new Date().toISOString(),
+      responsableSeguimiento:txt('c'+i+'_respSeg')||''
     });
   });
   try{
@@ -534,7 +538,7 @@ function construirActaVirtualHTML(pdv,zona,coord,promGlobal,estado){
   [1,2,3].forEach(i=>{
     const d=txt('c'+i+'_acc');
     if(!d)return;
-    filasCompromisos+=`<tr><td>${d}</td><td>${txt('c'+i+'_resp')||''}</td><td>${txt('c'+i+'_area')||''}</td><td>${txt('c'+i+'_fecha')||''}</td></tr>`;
+    filasCompromisos+=`<tr><td>${d}</td><td>${txt('c'+i+'_resp')||''}</td><td>${txt('c'+i+'_respSeg')||''}</td><td>${txt('c'+i+'_area')||''}</td><td>${txt('c'+i+'_fecha')||''}</td></tr>`;
   });
   return `
     <div style="text-align:center;border-bottom:3px solid #F59E0B;padding-bottom:12px;margin-bottom:16px">
@@ -552,7 +556,7 @@ function construirActaVirtualHTML(pdv,zona,coord,promGlobal,estado){
     </table>
     <h3 style="margin-top:20px">Compromisos</h3>
     <table style="width:100%;border-collapse:collapse;font-size:12px">
-      <thead><tr><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Acción</th><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Responsable</th><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Área</th><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Fecha</th></tr></thead>
+      <thead><tr><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Acción</th><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Responsable</th><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Seguimiento</th><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Área</th><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Fecha</th></tr></thead>
       <tbody>${filasCompromisos||'<tr><td colspan="4">Sin compromisos registrados</td></tr>'}</tbody>
     </table>
     <h3 style="margin-top:20px">Notas generales</h3>
@@ -629,7 +633,7 @@ async function enviar(){
 function guardarBorrador(){
   const data={pdv:txt('f_pdv'),califs,tsInicio,notas:txt('notas')};
   SECCIONES.forEach(sec=>sec.preguntas.forEach((p,pi)=>{const id=`${sec.id}_q${pi}`;const n=document.getElementById('n_'+id);if(n&&n.value)data['n_'+id]=n.value;}));
-  [1,2,3].forEach(i=>{data['c'+i+'_acc']=txt('c'+i+'_acc');data['c'+i+'_resp']=txt('c'+i+'_resp');data['c'+i+'_area']=txt('c'+i+'_area');data['c'+i+'_fecha']=txt('c'+i+'_fecha');});
+  [1,2,3].forEach(i=>{data['c'+i+'_acc']=txt('c'+i+'_acc');data['c'+i+'_resp']=txt('c'+i+'_resp');data['c'+i+'_respSeg']=txt('c'+i+'_respSeg');data['c'+i+'_area']=txt('c'+i+'_area');data['c'+i+'_fecha']=txt('c'+i+'_fecha');});
   try{localStorage.setItem(DRAFT_KEY,JSON.stringify(data));mostrarToast('💾 Borrador guardado');}catch(e){}
 }
 
@@ -656,6 +660,7 @@ function cargarBorrador(){
     [1,2,3].forEach(i=>{
       if(data['c'+i+'_acc'])document.getElementById('c'+i+'_acc').value=data['c'+i+'_acc'];
       if(data['c'+i+'_resp'])document.getElementById('c'+i+'_resp').value=data['c'+i+'_resp'];
+      if(data['c'+i+'_respSeg'])document.getElementById('c'+i+'_respSeg').value=data['c'+i+'_respSeg'];
       if(data['c'+i+'_area'])document.getElementById('c'+i+'_area').value=data['c'+i+'_area'];
       if(data['c'+i+'_fecha'])document.getElementById('c'+i+'_fecha').value=data['c'+i+'_fecha'];
     });

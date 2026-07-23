@@ -947,7 +947,8 @@ function generarCompromisos() {
     const area = prev.area || f.area;
     const fecha = prev.fecha || fSug.toISOString().slice(0,10);
     const responsable = prev.responsable !== undefined ? prev.responsable : '';
-    compromisosEdit[idx] = { descripcion: f.descripcion, area, fecha, responsable, criticidad: f.criticidad };
+    const responsableSeguimiento = prev.responsableSeguimiento !== undefined ? prev.responsableSeguimiento : '';
+    compromisosEdit[idx] = { descripcion: f.descripcion, area, fecha, responsable, responsableSeguimiento, criticidad: f.criticidad };
     return `<div class="compromiso-item">
       <div class="compromiso-desc">${f.descripcion}</div>
       <div class="compromiso-row">
@@ -956,7 +957,8 @@ function generarCompromisos() {
         </select>
         <input type="date" value="${fecha}" onchange="actualizarCompromiso(${idx},'fecha',this.value)">
       </div>
-      <input type="text" placeholder="Responsable (nombre)" value="${responsable}" oninput="actualizarCompromiso(${idx},'responsable',this.value)">
+      <input type="text" placeholder="Responsable (nombre)" value="${responsable}" oninput="actualizarCompromiso(${idx},'responsable',this.value)" style="margin-bottom:8px">
+      <input type="text" placeholder="Responsable de seguimiento" value="${responsableSeguimiento}" oninput="actualizarCompromiso(${idx},'responsableSeguimiento',this.value)">
     </div>`;
   }).join('');
 }
@@ -1028,7 +1030,8 @@ async function enviarComprosoAlMaestro(auditId, data) {
       id: uid(), hallazgoId, auditId, pdv: data.pdv, zona: data.zona, coordinador: data.coordinador, auditTipo:'puntos-propios', categoriaId,
       descripcionAccion: c.descripcion, responsable: c.responsable||'', areaEjecutora: c.area||'',
       fechaCompromiso: c.fecha||'', estado:'ABIERTO', evidencias: JSON.stringify([]), reincidenciaCount:0,
-      fechaCierre:'', evidenciaCierre:'', validadoPor:'', pdfEnviado:false, tipo:'COMPROMISO', creadoEn: new Date().toISOString()
+      fechaCierre:'', evidenciaCierre:'', validadoPor:'', pdfEnviado:false, tipo:'COMPROMISO', creadoEn: new Date().toISOString(),
+      responsableSeguimiento: c.responsableSeguimiento||''
     });
   });
   try {
@@ -1039,7 +1042,7 @@ async function enviarComprosoAlMaestro(auditId, data) {
 
 function construirActaHTML(data) {
   const filasCompromisos = Object.values(compromisosEdit).filter(c => c.descripcion).map(c =>
-    `<tr><td>${c.descripcion}</td><td>${c.responsable||''}</td><td>${c.area||''}</td><td>${c.fecha||''}</td></tr>`
+    `<tr><td>${c.descripcion}</td><td>${c.responsable||''}</td><td>${c.responsableSeguimiento||''}</td><td>${c.area||''}</td><td>${c.fecha||''}</td></tr>`
   ).join('');
   return `
     <div style="text-align:center;border-bottom:3px solid #F59E0B;padding-bottom:12px;margin-bottom:16px">
@@ -1053,7 +1056,7 @@ function construirActaHTML(data) {
     <h3 style="margin-top:20px">KPIs cumplidos: ${data.kpisCumplidos}/8</h3>
     <h3 style="margin-top:20px">Compromisos</h3>
     <table style="width:100%;border-collapse:collapse;font-size:12px">
-      <thead><tr><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Hallazgo</th><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Responsable</th><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Área</th><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Fecha compromiso</th></tr></thead>
+      <thead><tr><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Hallazgo</th><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Responsable</th><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Seguimiento</th><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Área</th><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Fecha compromiso</th></tr></thead>
       <tbody>${filasCompromisos||'<tr><td colspan="4">Sin compromisos registrados</td></tr>'}</tbody>
     </table>
     <div style="display:flex;gap:24px;margin-top:40px">
