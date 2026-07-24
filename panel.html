@@ -84,6 +84,12 @@ tr:hover td{background:var(--s2);}
 .spinner{width:38px;height:38px;border:3px solid var(--brd);border-top-color:var(--amber);border-radius:50%;animation:spin .7s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
 .filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+select.estado-sel{padding:6px 26px 6px 9px;border-radius:6px;border:1px solid var(--brd);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;appearance:none;cursor:pointer;background-repeat:no-repeat;background-position:right 8px center;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath fill='%23555' d='M4 5 0 0h8z'/%3E%3C/svg%3E");}
+select.estado-sel.est-abierto{background-color:var(--yd);color:var(--yellow);}
+select.estado-sel.est-en_proceso{background-color:var(--bd2);color:var(--blue);}
+select.estado-sel.est-cerrado{background-color:var(--gd);color:var(--green);}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--text-strong);color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;display:none;z-index:2000;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.2);}
+.toast.show{display:block;}
 select.fil{padding:8px 30px 8px 11px;background:var(--s2);border:1px solid var(--brd);border-radius:7px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:12px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath fill='%23888' d='M4 5 0 0h8z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;cursor:pointer;}
 select.fil:focus{outline:none;border-color:var(--amber);}
 @media(max-width:600px){.section{padding:16px;}.stat-grid{grid-template-columns:1fr 1fr;}.stat-n{font-size:32px;}}
@@ -100,6 +106,17 @@ select.fil:focus{outline:none;border-color:var(--amber);}
 .modal-val-ok{color:var(--green);}
 .modal-val-no{color:var(--red);}
 .modal-val-na{color:var(--muted);}
+.field-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin-bottom:6px;}
+.ev-input{width:100%;padding:10px 12px;background:var(--s2);border:1px solid var(--brd);border-radius:8px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:13px;resize:vertical;}
+.ev-input:focus{outline:none;border-color:var(--amber);}
+input[type=file]#ev-archivos{width:100%;font-size:12px;margin-top:2px;}
+.ev-archivo-item{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--s2);border-radius:8px;padding:8px 10px;margin-top:6px;font-size:12px;}
+.ev-archivo-quitar{background:none;border:none;color:var(--red);cursor:pointer;font-size:14px;padding:0 4px;}
+.btn-guardar-ev{width:100%;margin-top:18px;padding:13px;border:none;border-radius:10px;background:var(--amber);color:#000;font-weight:700;font-size:14px;cursor:pointer;}
+.btn-guardar-ev:disabled{background:var(--s3);color:var(--muted);cursor:not-allowed;}
+.bitacora-item{padding:10px 0;border-bottom:1px solid var(--s2);font-size:12px;}
+.bitacora-item:last-child{border-bottom:none;}
+.bitacora-archivo{display:inline-block;margin-top:4px;margin-right:8px;color:var(--amber);text-decoration:none;font-size:11px;}
 </style>
 </head>
 <body>
@@ -209,10 +226,32 @@ select.fil:focus{outline:none;border-color:var(--amber);}
   <div class="tbl-wrap" id="tabla-compromisos"></div>
 </div>
 
+<div class="toast" id="toast"></div>
+
 <div class="modal-overlay" id="detalle-modal" onclick="if(event.target===this)cerrarDetalle()">
   <div class="modal-box">
     <button class="modal-close" onclick="cerrarDetalle()">✕</button>
     <div id="detalle-contenido"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="evidencia-modal" onclick="if(event.target===this)cerrarModalEvidencia()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="cerrarModalEvidencia()">✕</button>
+    <div class="modal-title" id="evidencia-titulo">Agregar evidencia</div>
+    <div class="modal-sub" id="evidencia-desc"></div>
+
+    <div class="field-label">¿Quién reporta este avance? <span style="color:var(--red)">*</span></div>
+    <input type="text" id="ev-autor" class="ev-input" placeholder="Tu nombre" oninput="validarEvidencia()">
+
+    <div class="field-label" style="margin-top:14px">Comentario <span style="color:var(--red)">*</span></div>
+    <textarea id="ev-comentario" class="ev-input" rows="3" placeholder="¿Qué se hizo o qué avance hay?" oninput="validarEvidencia()"></textarea>
+
+    <div class="field-label" style="margin-top:14px">Fotos o documentos <span style="color:var(--red)">*</span></div>
+    <input type="file" id="ev-archivos" accept="image/*,.pdf,.doc,.docx" multiple onchange="onArchivosEvidencia(this)">
+    <div id="ev-archivos-lista"></div>
+
+    <button class="btn-guardar-ev" id="ev-btn-guardar" disabled onclick="guardarEvidencia()">Guardar</button>
   </div>
 </div>
 
@@ -459,17 +498,210 @@ function renderCompromisos(){
   if(!rows.length){ document.getElementById('tabla-compromisos').innerHTML = '<div class="empty">✅ Sin compromisos con estos filtros.</div>'; return; }
   rows.sort((a,b)=>(a.fechaCompromiso||'').localeCompare(b.fechaCompromiso||''));
   document.getElementById('tabla-compromisos').innerHTML = `<table>
-    <thead><tr><th>Categoría</th><th>PDV</th><th>Hallazgo</th><th>Área</th><th>Responsable</th><th>Seguimiento</th><th>Fecha</th><th>Estado</th></tr></thead>
-    <tbody>${rows.map(r=>`<tr>
+    <thead><tr><th>Categoría</th><th>PDV</th><th>Hallazgo</th><th>Área</th><th>Responsable</th><th>Seguimiento</th><th>Fecha</th><th>Estado</th><th>Evidencia</th></tr></thead>
+    <tbody>${rows.map(r=>{
+      const vencido = r.estado==='VENCIDO';
+      const estadoReal = vencido ? 'ABIERTO' : (r.estado||'ABIERTO');
+      const nEv = parseEvidencias(r).length;
+      return `<tr>
       <td><span class="tag tag-${r.auditTipo}">${r.auditTipo||'—'}</span></td>
       <td style="font-weight:600;font-size:12px">${r.pdv||'—'}</td>
       <td style="font-size:12px;max-width:220px">${r.descripcionAccion||''}</td>
       <td style="font-size:11px;color:var(--muted)">${r.areaEjecutora||'—'}</td>
       <td style="font-size:12px">${r.responsable||'—'}</td>
       <td style="font-size:12px">${r.responsableSeguimiento||'—'}</td>
-      <td style="font-size:11px;white-space:nowrap">${r.fechaCompromiso||'—'}</td>
-      <td>${r.estado==='VENCIDO'?'<span class="badge badge-alert">Vencido</span>':r.estado==='CERRADO'?'<span class="badge badge-ok">Cerrado</span>':'<span class="badge badge-warn">'+(r.estado||'ABIERTO')+'</span>'}</td>
-    </tr>`).join('')}</tbody></table>`;
+      <td style="font-size:11px;white-space:nowrap">${r.fechaCompromiso||'—'}${vencido?' <span class="badge badge-alert">Vencido</span>':''}</td>
+      <td>
+        <select class="estado-sel est-${estadoReal.toLowerCase()}" onchange="onCambioEstado('${r.id}',this.value,this)">
+          <option value="ABIERTO" ${estadoReal==='ABIERTO'?'selected':''}>Abierto</option>
+          <option value="EN_PROCESO" ${estadoReal==='EN_PROCESO'?'selected':''}>En proceso</option>
+          <option value="CERRADO" ${estadoReal==='CERRADO'?'selected':''}>Cerrado</option>
+        </select>
+      </td>
+      <td>${nEv ? `<span class="badge badge-muted" style="cursor:pointer" onclick="verBitacoraCompromiso('${r.id}')">📎 ${nEv}</span>` : '<span style="color:var(--dim)">—</span>'}</td>
+    </tr>`;
+    }).join('')}</tbody></table>`;
+}
+
+/* ── ACTUALIZAR ESTADO (responsable o seguimiento marcan avance) ── */
+function onCambioEstado(id, nuevoValor, selectEl){
+  if(nuevoValor==='ABIERTO'){ actualizarEstadoCompromiso(id, nuevoValor, selectEl); return; }
+  abrirModalEvidencia(id, nuevoValor, selectEl);
+}
+
+async function actualizarEstadoCompromiso(id, nuevoEstado, selectEl){
+  selectEl.className = 'estado-sel est-'+nuevoEstado.toLowerCase();
+  try{
+    await fetch(MASTER_SHEET_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ token: MASTER_TOKEN, action:'update_compromiso', id, estado: nuevoEstado }) });
+    const local = allCompromisos.find(c=>String(c.id)===String(id));
+    if(local) local.estado = nuevoEstado;
+    mostrarToast('✓ Compromiso actualizado');
+    renderCompromisos();
+    renderResumen();
+  }catch(e){
+    mostrarToast('⚠ Error de conexión — el estado no se guardó', '#ef4444');
+  }
+}
+
+/* ── MODAL DE EVIDENCIA (foto/documento/comentario obligatorios) ── */
+let evidenciaCtx = null; // {id, nuevoEstado, selectEl, estadoAnterior}
+let evidenciaArchivos = []; // [{nombre, mimeType, contenidoBase64, previewUrl}]
+
+function abrirModalEvidencia(id, nuevoEstado, selectEl){
+  // el valor anterior real viene del modelo (allCompromisos), no del <select> — su value ya cambió al nuevo
+  const compromiso = allCompromisos.find(c=>String(c.id)===String(id));
+  const estadoAnterior = (compromiso?.estado==='VENCIDO'?'ABIERTO':compromiso?.estado) || 'ABIERTO';
+  evidenciaCtx = { id, nuevoEstado, selectEl, estadoAnterior };
+  evidenciaArchivos = [];
+  document.getElementById('ev-autor').value='';
+  document.getElementById('ev-comentario').value='';
+  document.getElementById('ev-archivos').value='';
+  document.getElementById('ev-archivos-lista').innerHTML='';
+  document.getElementById('evidencia-titulo').textContent = nuevoEstado==='CERRADO' ? 'Cerrar compromiso' : 'Marcar en proceso';
+  document.getElementById('evidencia-desc').textContent = (compromiso?.descripcionAccion||'') + ' · ' + (compromiso?.pdv||'');
+  validarEvidencia();
+  document.getElementById('evidencia-modal').classList.add('show');
+}
+
+function cerrarModalEvidencia(){
+  if(evidenciaCtx && evidenciaCtx.selectEl){
+    evidenciaCtx.selectEl.value = evidenciaCtx.estadoAnterior==='VENCIDO'?'ABIERTO':evidenciaCtx.estadoAnterior;
+    evidenciaCtx.selectEl.className = 'estado-sel est-'+(evidenciaCtx.estadoAnterior==='VENCIDO'?'abierto':evidenciaCtx.estadoAnterior.toLowerCase());
+  }
+  evidenciaCtx = null; evidenciaArchivos = [];
+  document.getElementById('evidencia-modal').classList.remove('show');
+}
+
+function validarEvidencia(){
+  const ok = document.getElementById('ev-autor').value.trim() &&
+             document.getElementById('ev-comentario').value.trim() &&
+             evidenciaArchivos.length > 0;
+  document.getElementById('ev-btn-guardar').disabled = !ok;
+}
+
+async function comprimirFoto(file){
+  const max = 800;
+  let bitmap;
+  if (window.createImageBitmap){
+    try{
+      const probe = await createImageBitmap(file);
+      const scale = Math.min(1, max/Math.max(probe.width, probe.height));
+      bitmap = await createImageBitmap(file, {resizeWidth:Math.round(probe.width*scale), resizeHeight:Math.round(probe.height*scale), resizeQuality:'medium'});
+      probe.close && probe.close();
+    }catch(_){ bitmap = null; }
+  }
+  const canvas = document.createElement('canvas');
+  let w, h;
+  if (bitmap){
+    w = bitmap.width; h = bitmap.height;
+    canvas.width = w; canvas.height = h;
+    canvas.getContext('2d').drawImage(bitmap, 0, 0, w, h);
+    bitmap.close && bitmap.close();
+  } else {
+    const dataUrl = await new Promise((res, rej)=>{
+      const reader = new FileReader();
+      reader.onload = ev=>res(ev.target.result);
+      reader.onerror = ()=>rej(new Error('No se pudo leer el archivo'));
+      reader.readAsDataURL(file);
+    });
+    const img = await new Promise((res, rej)=>{
+      const im = new Image();
+      im.onload = ()=>res(im);
+      im.onerror = ()=>rej(new Error('No se pudo procesar la imagen'));
+      im.src = dataUrl;
+    });
+    w = img.width; h = img.height;
+    if (w > max){ h = h*max/w; w = max; }
+    if (h > max){ w = w*max/h; h = max; }
+    canvas.width = w; canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+  }
+  return canvas.toDataURL('image/jpeg', 0.7);
+}
+
+function leerArchivoPlano(file){
+  return new Promise((res, rej)=>{
+    const reader = new FileReader();
+    reader.onload = ev=>res(ev.target.result);
+    reader.onerror = ()=>rej(new Error('No se pudo leer el archivo'));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function onArchivosEvidencia(input){
+  const files = [...input.files];
+  for(const file of files){
+    if(!file.type.startsWith('image/') && file.size > 5*1024*1024){
+      mostrarToast('⚠ "'+file.name+'" pesa mucho — intenta con un archivo más liviano', '#ef4444');
+      continue;
+    }
+    try{
+      const esImagen = file.type.startsWith('image/');
+      const dataUrl = esImagen ? await comprimirFoto(file) : await leerArchivoPlano(file);
+      const contenidoBase64 = dataUrl.split(',')[1];
+      evidenciaArchivos.push({ nombre: file.name, mimeType: esImagen?'image/jpeg':(file.type||'application/octet-stream'), contenidoBase64 });
+    }catch(e){
+      mostrarToast('⚠ No se pudo cargar "'+file.name+'"', '#ef4444');
+    }
+  }
+  input.value = '';
+  renderArchivosEvidencia();
+  validarEvidencia();
+}
+
+function quitarArchivoEvidencia(idx){
+  evidenciaArchivos.splice(idx,1);
+  renderArchivosEvidencia();
+  validarEvidencia();
+}
+
+function renderArchivosEvidencia(){
+  document.getElementById('ev-archivos-lista').innerHTML = evidenciaArchivos.map((a,idx)=>
+    `<div class="ev-archivo-item"><span>📎 ${a.nombre}</span><button type="button" class="ev-archivo-quitar" onclick="quitarArchivoEvidencia(${idx})">✕</button></div>`
+  ).join('');
+}
+
+async function guardarEvidencia(){
+  if(!evidenciaCtx) return;
+  const btn = document.getElementById('ev-btn-guardar');
+  btn.disabled = true; btn.textContent = 'Guardando...';
+  const { id, nuevoEstado, selectEl } = evidenciaCtx;
+  const autor = document.getElementById('ev-autor').value.trim();
+  const comentario = document.getElementById('ev-comentario').value.trim();
+  const payload = { token: MASTER_TOKEN, action:'agregar_evidencia_compromiso', id, estado: nuevoEstado, autor, comentario, archivos: evidenciaArchivos };
+  try{
+    await fetch(MASTER_SHEET_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    const local = allCompromisos.find(c=>String(c.id)===String(id));
+    if(local){
+      local.estado = nuevoEstado;
+      let historial = [];
+      try{ historial = JSON.parse(local.evidencias||'[]'); }catch(e){}
+      historial.push({ fecha:new Date().toISOString(), estado:nuevoEstado, comentario, autor, archivos: evidenciaArchivos.map(a=>({nombre:a.nombre, mimeType:a.mimeType, url:''})) });
+      local.evidencias = JSON.stringify(historial);
+      if(nuevoEstado==='CERRADO'){
+        local.fechaCierre = new Date().toISOString().slice(0,10);
+        local.evidenciaCierre = comentario;
+        local.validadoPor = autor;
+      }
+    }
+    selectEl.className = 'estado-sel est-'+nuevoEstado.toLowerCase();
+    mostrarToast('✓ Evidencia guardada — los archivos aparecerán con su link real al actualizar');
+    evidenciaCtx = null; evidenciaArchivos = [];
+    document.getElementById('evidencia-modal').classList.remove('show');
+    renderCompromisos();
+    renderResumen();
+  }catch(e){
+    mostrarToast('⚠ Error de conexión — no se guardó la evidencia', '#ef4444');
+  }finally{
+    btn.disabled = false; btn.textContent = 'Guardar';
+  }
+}
+
+function mostrarToast(msg,color){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.style.background=color||'var(--text-strong)';
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
 }
 
 function goTab(id,el){
@@ -530,6 +762,33 @@ function itemsHTML(tipo, itemsEvaluados){
   return '<div class="empty" style="padding:20px 0">Este tipo de auditoría no tiene desglose por ítem — usa KPIs/checklist en vez de módulos.</div>';
 }
 
+function parseEvidencias(compromiso){
+  try{ return JSON.parse(compromiso.evidencias||'[]'); }catch(e){ return []; }
+}
+
+function bitacoraHTML(compromiso){
+  const historial = parseEvidencias(compromiso).slice().reverse();
+  if(!historial.length) return '';
+  return `<div style="margin-top:8px">${historial.map(ev=>`
+    <div class="bitacora-item">
+      <div><strong>${ev.autor||'—'}</strong> · ${(ev.fecha||'').slice(0,10)} · <span style="color:var(--muted)">marcó ${ev.estado==='CERRADO'?'Cerrado':'En proceso'}</span></div>
+      <div>${ev.comentario||''}</div>
+      ${(ev.archivos||[]).map(a=>a.url?`<a class="bitacora-archivo" href="${a.url}" target="_blank">📎 ${a.nombre}</a>`:`<span class="bitacora-archivo" style="color:var(--muted)">📎 ${a.nombre} (procesando…)</span>`).join('')}
+    </div>`).join('')}</div>`;
+}
+
+function verBitacoraCompromiso(compromisoId){
+  const c = allCompromisos.find(x=>String(x.id)===String(compromisoId));
+  if(!c){ mostrarToast('No se encontró este compromiso', '#ef4444'); return; }
+  document.getElementById('detalle-contenido').innerHTML = `
+    <div class="modal-title">${c.pdv||'—'}</div>
+    <div class="modal-sub">${c.descripcionAccion||''}</div>
+    <div class="modal-mod-title" style="margin-top:0">Bitácora de seguimiento</div>
+    ${bitacoraHTML(c) || '<div class="empty" style="padding:20px 0">Aún no hay evidencia registrada para este compromiso.</div>'}
+  `;
+  document.getElementById('detalle-modal').classList.add('show');
+}
+
 function verDetalle(auditId){
   const r = allAuditorias.find(a=>String(a.id)===String(auditId));
   if(!r){ alert('No se encontró el detalle de esta auditoría.'); return; }
@@ -541,6 +800,7 @@ function verDetalle(auditId){
         <span>${c.estado==='VENCIDO'?'<span class="badge badge-alert">Vencido</span>':c.estado==='CERRADO'?'<span class="badge badge-ok">Cerrado</span>':'<span class="badge badge-warn">'+(c.estado||'ABIERTO')+'</span>'}</span>
       </div>
       <div style="font-size:11px;color:var(--muted);margin-top:2px">${c.areaEjecutora||'—'} · Responsable: ${c.responsable||'—'} · Seguimiento: ${c.responsableSeguimiento||'—'} · Fecha: ${c.fechaCompromiso||'—'}</div>
+      ${bitacoraHTML(c)}
     </div>`).join('') : '<div class="empty" style="padding:12px 0">Sin compromisos registrados para esta auditoría.</div>';
 
   document.getElementById('detalle-contenido').innerHTML = `

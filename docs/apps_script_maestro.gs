@@ -136,7 +136,7 @@ function updateCompromiso_(payload) {
   const row = findRowById_(sheet, payload.id);
   if (row === -1) return {error: 'Compromiso no encontrado: ' + payload.id};
 
-  const campos = ['estado','fechaCierre','evidenciaCierre','validadoPor','pdfEnviado','responsableSeguimiento'];
+  const campos = ['estado','fechaCierre','evidenciaCierre','validadoPor','pdfEnviado','responsableSeguimiento','evidencias'];
   campos.forEach(campo => {
     if (payload[campo] !== undefined) {
       const col = headers.indexOf(campo) + 1;
@@ -144,6 +144,40 @@ function updateCompromiso_(payload) {
     }
   });
   return {status: 'updated', id: payload.id};
+}
+
+// ── Bitácora de evidencia (fotos/documentos/comentario) al actualizar un compromiso ──
+// Requiere el mismo servicio avanzado "Drive API" ya habilitado para enviarActaPdf_.
+function agregarEvidenciaCompromiso_(payload) {
+  const sheet = getTab_(TAB_COMPROMISOS);
+  const headers = HEADERS[TAB_COMPROMISOS];
+  const row = findRowById_(sheet, payload.id);
+  if (row === -1) return {error: 'Compromiso no encontrado: ' + payload.id};
+
+  const archivosSubidos = (payload.archivos || []).map(a => {
+    const bytes = Utilities.base64Decode(a.contenidoBase64);
+    const blob = Utilities.newBlob(bytes, a.mimeType, a.nombre);
+    const creado = Drive.Files.create({name: a.nombre}, blob); // archivo nativo, no se convierte a Google Doc
+    DriveApp.getFileById(creado.id).setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    return {nombre: a.nombre, mimeType: a.mimeType, url: DriveApp.getFileById(creado.id).getUrl()};
+  });
+
+  const colEvid = headers.indexOf('evidencias') + 1;
+  let historial = [];
+  try { historial = JSON.parse(sheet.getRange(row, colEvid).getValue() || '[]'); } catch (e) {}
+  historial.push({
+    fecha: new Date().toISOString(), estado: payload.estado,
+    comentario: payload.comentario || '', autor: payload.autor || '',
+    archivos: archivosSubidos
+  });
+  sheet.getRange(row, colEvid).setValue(JSON.stringify(historial));
+  sheet.getRange(row, headers.indexOf('estado') + 1).setValue(payload.estado);
+  if (payload.estado === 'CERRADO') {
+    sheet.getRange(row, headers.indexOf('fechaCierre') + 1).setValue(new Date().toISOString().slice(0,10));
+    sheet.getRange(row, headers.indexOf('evidenciaCierre') + 1).setValue(payload.comentario || '');
+    sheet.getRange(row, headers.indexOf('validadoPor') + 1).setValue(payload.autor || '');
+  }
+  return {status: 'ok', id: payload.id, archivos: archivosSubidos};
 }
 
 // ── Acciones de lectura (doGet / doPost) ──────────────────────
@@ -234,6 +268,7 @@ function doPost(e) {
     switch (payload.action) {
       case 'save_auditoria':    return ok(saveAuditoria_(payload));
       case 'update_compromiso': return ok(updateCompromiso_(payload));
+      case 'agregar_evidencia_compromiso': return ok(agregarEvidenciaCompromiso_(payload));
       case 'get_compromisos':   return ok(getCompromisos_(payload.filters));
       case 'get_pdv_timeline':  return ok(getPdvTimeline_(payload.pdv));
       case 'get_auditorias':    return ok(getAuditorias_(payload.filters));
