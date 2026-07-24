@@ -74,6 +74,15 @@ select.period:focus{outline:none;border-color:var(--amber);}
 .heatmap-head{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.02em;text-align:center;padding:2px 2px 6px;line-height:1.3;}
 .heatmap-day{font-size:11px;color:var(--muted);font-weight:600;display:flex;align-items:center;}
 .heatmap-cell{border-radius:6px;text-align:center;padding:9px 2px;font-family:'DM Mono',monospace;font-weight:700;font-size:13px;color:var(--text-strong);min-height:16px;}
+.cerrados-wrap{background:var(--gd);border:1px solid rgba(62,191,106,.35);border-radius:12px;padding:16px;margin-bottom:20px;}
+.cerrados-title{font-size:12px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;}
+.cerrado-item{background:var(--s);border-radius:10px;padding:12px 14px;margin-bottom:8px;}
+.cerrado-item:last-child{margin-bottom:0;}
+.cerrado-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+.cerrado-pdv{font-weight:700;font-size:13px;}
+.cerrado-desc{font-size:12px;color:var(--muted);margin-top:2px;}
+.cerrado-fecha{font-size:11px;color:var(--muted);white-space:nowrap;font-family:'DM Mono',monospace;}
+.cerrado-meta{font-size:11px;color:var(--muted);margin-top:6px;}
 .tbl-wrap{overflow-x:auto;}
 table{width:100%;border-collapse:collapse;font-size:12px;}
 th{text-align:left;padding:9px 12px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);border-bottom:2px solid var(--brd);white-space:nowrap;background:var(--s);}
@@ -164,6 +173,7 @@ input[type=file]#ev-archivos{width:100%;font-size:12px;margin-top:2px;}
   <div id="alarma-alimentos"></div>
   <div id="ranking-alimentos"></div>
   <div id="heatmap-alimentos"></div>
+  <div id="cerrados-alimentos"></div>
   <div class="sec-title">Auditorías — Alimentos (Cocina)</div>
   <div class="tbl-wrap" id="tabla-alimentos"></div>
 </div>
@@ -183,6 +193,7 @@ input[type=file]#ev-archivos{width:100%;font-size:12px;margin-top:2px;}
   <div id="alarma-generales"></div>
   <div id="ranking-generales"></div>
   <div id="heatmap-generales"></div>
+  <div id="cerrados-generales"></div>
   <div class="sec-title">Auditorías — General / Virtual / Servicio</div>
   <div class="tbl-wrap" id="tabla-generales"></div>
 </div>
@@ -194,6 +205,7 @@ input[type=file]#ev-archivos{width:100%;font-size:12px;margin-top:2px;}
   <div id="alarma-puntos"></div>
   <div id="ranking-puntos"></div>
   <div id="heatmap-puntos"></div>
+  <div id="cerrados-puntos"></div>
   <div class="sec-title">Visitas — Puntos Propios</div>
   <div class="tbl-wrap" id="tabla-puntos"></div>
 </div>
@@ -222,6 +234,7 @@ input[type=file]#ev-archivos{width:100%;font-size:12px;margin-top:2px;}
   <div id="alarma-capacitaciones"></div>
   <div id="ranking-capacitaciones"></div>
   <div id="heatmap-capacitaciones"></div>
+  <div id="cerrados-capacitaciones"></div>
   <div class="sec-title">Auditorías — Capacitaciones</div>
   <div class="tbl-wrap" id="tabla-capacitaciones"></div>
 </div>
@@ -502,6 +515,31 @@ function heatmapHTML(rows){
   </div>`;
 }
 
+/* Compromisos cerrados de esta categoría en el período — con su evidencia,
+   para que el gerente vea lo que coordinador/responsable ya resolvieron sin
+   tener que ir a la pestaña de Compromisos. */
+function compromisosCerradosHTML(tipos){
+  const cerrados = allCompromisos
+    .filter(c => tipos.includes(c.auditTipo) && c.estado==='CERRADO' && enPeriodo(c.fechaCierre))
+    .sort((a,b)=>(b.fechaCierre||'').localeCompare(a.fechaCierre||''));
+  if(!cerrados.length) return '';
+  return `<div class="cerrados-wrap">
+    <div class="cerrados-title">✅ ${cerrados.length} compromiso${cerrados.length===1?'':'s'} cerrado${cerrados.length===1?'':'s'} este período</div>
+    ${cerrados.map(c=>`
+      <div class="cerrado-item">
+        <div class="cerrado-head">
+          <div>
+            <div class="cerrado-pdv">${c.pdv||'—'}</div>
+            <div class="cerrado-desc">${c.descripcionAccion||''}</div>
+          </div>
+          <div class="cerrado-fecha">${(c.fechaCierre||'').slice(0,10)||'—'}</div>
+        </div>
+        <div class="cerrado-meta">Responsable: <b>${c.responsable||'—'}</b>${c.validadoPor?' · Validó: <b>'+c.validadoPor+'</b>':''}</div>
+        ${bitacoraHTML(c)}
+      </div>`).join('')}
+  </div>`;
+}
+
 /* ── ALIMENTOS ── */
 function renderAlimentos(){
   const rows = allAuditorias.filter(a=>a.tipo==='cocina' && enPeriodo(a.fecha));
@@ -510,6 +548,7 @@ function renderAlimentos(){
   document.getElementById('alarma-alimentos').innerHTML = alarmaHTML(rows);
   document.getElementById('ranking-alimentos').innerHTML = rankingHTML(rows);
   document.getElementById('heatmap-alimentos').innerHTML = heatmapHTML(rows);
+  document.getElementById('cerrados-alimentos').innerHTML = compromisosCerradosHTML(['cocina']);
   document.getElementById('tabla-alimentos').innerHTML = tablaAuditoriasHTML(rows, false);
 }
 
@@ -523,6 +562,7 @@ function renderGenerales(){
   document.getElementById('alarma-generales').innerHTML = alarmaHTML(rows);
   document.getElementById('ranking-generales').innerHTML = rankingHTML(rows);
   document.getElementById('heatmap-generales').innerHTML = heatmapHTML(rows);
+  document.getElementById('cerrados-generales').innerHTML = compromisosCerradosHTML(tipos);
   document.getElementById('tabla-generales').innerHTML = tablaAuditoriasHTML(rows, true);
 }
 
@@ -536,6 +576,7 @@ function renderCapacitaciones(){
   document.getElementById('alarma-capacitaciones').innerHTML = alarmaHTML(rows);
   document.getElementById('ranking-capacitaciones').innerHTML = rankingHTML(rows);
   document.getElementById('heatmap-capacitaciones').innerHTML = heatmapHTML(rows);
+  document.getElementById('cerrados-capacitaciones').innerHTML = compromisosCerradosHTML(tipos);
   document.getElementById('tabla-capacitaciones').innerHTML = tablaAuditoriasHTML(rows, true);
 }
 
@@ -547,6 +588,7 @@ function renderPuntos(){
   document.getElementById('alarma-puntos').innerHTML = alarmaHTML(rows);
   document.getElementById('ranking-puntos').innerHTML = rankingHTML(rows);
   document.getElementById('heatmap-puntos').innerHTML = heatmapHTML(rows);
+  document.getElementById('cerrados-puntos').innerHTML = compromisosCerradosHTML(['puntos-propios']);
   document.getElementById('tabla-puntos').innerHTML = tablaAuditoriasHTML(rows, false);
 }
 
