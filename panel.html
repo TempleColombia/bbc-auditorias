@@ -54,6 +54,20 @@ select.period:focus{outline:none;border-color:var(--amber);}
 .badge-warn{background:var(--yd);color:var(--yellow);}
 .badge-alert{background:var(--rd);color:var(--red);}
 .badge-muted{background:var(--s3);color:var(--muted);}
+.alarma-box{background:var(--rd);border:1px solid rgba(232,68,68,.35);border-radius:12px;padding:16px;margin-bottom:20px;}
+.alarma-title{font-size:12px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;}
+.alarma-item{font-size:13px;padding:6px 0;border-bottom:1px solid rgba(232,68,68,.15);}
+.alarma-item:last-child{border-bottom:none;}
+.alarma-item b{cursor:pointer;text-decoration:underline;}
+.ranking-wrap{background:var(--s);border:1px solid var(--brd);border-radius:12px;padding:16px;margin-bottom:20px;}
+.ranking-title{font-size:12px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;}
+.ranking-row{display:grid;grid-template-columns:24px 1fr 46px;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--s2);cursor:pointer;}
+.ranking-row:last-child{border-bottom:none;}
+.ranking-pos{font-family:'DM Mono',monospace;font-weight:900;color:var(--muted);font-size:13px;}
+.ranking-bar-track{height:6px;background:var(--s2);border-radius:3px;overflow:hidden;margin-top:4px;}
+.ranking-bar-fill{height:100%;border-radius:3px;}
+.ranking-pdv{font-size:12px;font-weight:600;}
+.ranking-score{font-family:'DM Mono',monospace;font-size:13px;font-weight:800;text-align:right;}
 .tbl-wrap{overflow-x:auto;}
 table{width:100%;border-collapse:collapse;font-size:12px;}
 th{text-align:left;padding:9px 12px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);border-bottom:2px solid var(--brd);white-space:nowrap;background:var(--s);}
@@ -73,6 +87,19 @@ tr:hover td{background:var(--s2);}
 select.fil{padding:8px 30px 8px 11px;background:var(--s2);border:1px solid var(--brd);border-radius:7px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:12px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath fill='%23888' d='M4 5 0 0h8z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;cursor:pointer;}
 select.fil:focus{outline:none;border-color:var(--amber);}
 @media(max-width:600px){.section{padding:16px;}.stat-grid{grid-template-columns:1fr 1fr;}.stat-n{font-size:32px;}}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(43,32,24,.55);z-index:1000;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto;}
+.modal-overlay.show{display:flex;}
+.modal-box{background:var(--bg);border-radius:14px;max-width:640px;width:100%;padding:24px;position:relative;margin-top:20px;margin-bottom:20px;}
+.modal-close{position:absolute;top:16px;right:16px;background:var(--s2);border:none;border-radius:50%;width:32px;height:32px;font-size:16px;cursor:pointer;color:var(--text-strong);}
+.modal-title{font-size:18px;font-weight:700;margin-bottom:4px;padding-right:40px;}
+.modal-sub{font-size:12px;color:var(--muted);margin-bottom:18px;}
+.modal-mod-title{font-size:12px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.05em;margin:16px 0 8px;}
+.modal-item{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--s2);font-size:13px;}
+.modal-item:last-child{border-bottom:none;}
+.modal-item-val{font-weight:700;flex-shrink:0;white-space:nowrap;}
+.modal-val-ok{color:var(--green);}
+.modal-val-no{color:var(--red);}
+.modal-val-na{color:var(--muted);}
 </style>
 </head>
 <body>
@@ -108,6 +135,9 @@ select.fil:focus{outline:none;border-color:var(--amber);}
 <!-- ALIMENTOS -->
 <div class="section" id="tab-alimentos">
   <div class="stat-grid" id="stats-alimentos"></div>
+  <div id="tendencia-alimentos" style="margin-bottom:20px"></div>
+  <div id="alarma-alimentos"></div>
+  <div id="ranking-alimentos"></div>
   <div class="sec-title">Auditorías — Alimentos (Cocina)</div>
   <div class="tbl-wrap" id="tabla-alimentos"></div>
 </div>
@@ -115,6 +145,7 @@ select.fil:focus{outline:none;border-color:var(--amber);}
 <!-- GENERALES -->
 <div class="section" id="tab-generales">
   <div class="stat-grid" id="stats-generales"></div>
+  <div id="tendencia-generales" style="margin-bottom:20px"></div>
   <div class="filters">
     <select class="fil" id="fSubtipo" onchange="renderGenerales()">
       <option value="">Las 3 sub-auditorías</option>
@@ -123,6 +154,8 @@ select.fil:focus{outline:none;border-color:var(--amber);}
       <option value="hora-servicio">Solo Servicio</option>
     </select>
   </div>
+  <div id="alarma-generales"></div>
+  <div id="ranking-generales"></div>
   <div class="sec-title">Auditorías — General / Virtual / Servicio</div>
   <div class="tbl-wrap" id="tabla-generales"></div>
 </div>
@@ -130,6 +163,9 @@ select.fil:focus{outline:none;border-color:var(--amber);}
 <!-- PUNTOS PROPIOS -->
 <div class="section" id="tab-puntos">
   <div class="stat-grid" id="stats-puntos"></div>
+  <div id="tendencia-puntos" style="margin-bottom:20px"></div>
+  <div id="alarma-puntos"></div>
+  <div id="ranking-puntos"></div>
   <div class="sec-title">Visitas — Puntos Propios</div>
   <div class="tbl-wrap" id="tabla-puntos"></div>
 </div>
@@ -173,6 +209,13 @@ select.fil:focus{outline:none;border-color:var(--amber);}
   <div class="tbl-wrap" id="tabla-compromisos"></div>
 </div>
 
+<div class="modal-overlay" id="detalle-modal" onclick="if(event.target===this)cerrarDetalle()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="cerrarDetalle()">✕</button>
+    <div id="detalle-contenido"></div>
+  </div>
+</div>
+
 <script>
 const MASTER_SHEET_URL='https://script.google.com/a/macros/templecolombia.com/s/AKfycbzu9-M_2kSDKSQqCPxgbrnwAjU5OSMmUGs1YxnnmeUoOpFPhEooYUBnNtvQz0bvnQFUeA/exec';
 const MASTER_TOKEN='temple2026';
@@ -185,6 +228,13 @@ const CATEGORIAS = [
   {id:'mantenimiento', nombre:'Mantenimiento', icon:'🛠️', tipos:['mantenimiento'], tab:'mantenimiento', construida:false},
   {id:'capacitaciones', nombre:'Capacitaciones', icon:'🎓', tipos:['capacitaciones'], tab:'capacitaciones', construida:false}
 ];
+
+const SCHEMAS = {
+  general: [{"id": 1, "nombre": "Experiencia", "items": [{"id": "m1_menu_pct", "label": "Menú disponible (%)"}, {"id": "m1_precios", "label": "Precios actualizados"}, {"id": "m1_cat", "label": "Categorías completas"}, {"id": "m1_cristal", "label": "Cristalería completa"}, {"id": "m1_menaje", "label": "Menaje cocina completo"}]}, {"id": 2, "nombre": "Marketing & Uniformes", "items": [{"id": "m2_av_ent", "label": "Avisos BBC entrada"}, {"id": "m2_av_int", "label": "Avisos BBC interior"}, {"id": "m2_unif_b", "label": "Uniforme barra correcto"}, {"id": "m2_unif_c", "label": "Uniforme cocina correcto"}, {"id": "m2_aseo", "label": "Aseo y accesorios ok"}]}, {"id": 3, "nombre": "Finanzas & Caja", "items": [{"id": "m3_caja", "label": "Caja cuadra"}, {"id": "m3_dif", "label": "Diferencia en caja (%)"}, {"id": "m3_cons", "label": "Consignaciones al día"}, {"id": "m3_comp", "label": "Comprobantes organizados"}, {"id": "m3_pos", "label": "POS funcionando"}]}, {"id": 4, "nombre": "Inventario", "items": [{"id": "m4_cerv", "label": "Cervezas BBC (%)"}, {"id": "m4_lic", "label": "Licores (%)"}, {"id": "m4_bsa", "label": "Bebidas sin alcohol (%)"}, {"id": "m4_alim", "label": "Alimentos (%)"}, {"id": "m4_merch", "label": "Merchandising completo"}, {"id": "m4_venc", "label": "Sin productos vencidos"}]}, {"id": 5, "nombre": "Operaciones & Personal", "items": [{"id": "m5_l_coc", "label": "Limpieza cocina"}, {"id": "m5_l_bar", "label": "Limpieza barra"}, {"id": "m5_l_ban", "label": "Limpieza baños"}, {"id": "m5_l_mes", "label": "Limpieza mesas"}, {"id": "m5_imp_b", "label": "Impresora barra"}, {"id": "m5_imp_c", "label": "Impresora cocina"}, {"id": "m5_frio", "label": "Nevera funcionando"}, {"id": "m5_luz", "label": "Iluminación ok"}, {"id": "m5_ac", "label": "Aire acondicionado"}, {"id": "m5_leg_camara", "label": "Cámara de Comercio"}, {"id": "m5_leg_matricula", "label": "Matrícula Mercantil"}, {"id": "m5_leg_sayco", "label": "SAYCO-OSA"}, {"id": "m5_leg_bomberos", "label": "Certificado de Bomberos"}, {"id": "m5_leg_turismo", "label": "Registro Nacional de Turismo (si aplica)"}, {"id": "m5_leg_sanitaria", "label": "Visita Sanitaria"}, {"id": "m5_leg_emergencias", "label": "Plan de Emergencias"}, {"id": "m5_leg_saneamiento", "label": "Plan de Saneamiento"}, {"id": "m5_leg_rut", "label": "RUT vigente"}, {"id": "m5_leg_rit", "label": "RIT vigente"}, {"id": "m5_leg_facturacion", "label": "Resolución de Facturación"}, {"id": "m5_leg_apertura", "label": "Comunicación de Apertura / Cámara de Comercio válida"}, {"id": "m5_leg_suelos", "label": "Uso de suelos"}, {"id": "m5_leg_tanques", "label": "Lavado de Tanques (cada 6 meses)"}, {"id": "m5_leg_manipulacion", "label": "Manipulación de Alimentos (revisión anual)"}, {"id": "m5_leg_examenes", "label": "Exámenes médicos (revisión anual)"}, {"id": "m5_leg_auditiva", "label": "Certificado de Intensidad Auditiva (según exigencia local)"}, {"id": "m5_formatos", "label": "Diligenciamiento de formatos diarios"}, {"id": "m5_sanit", "label": "Última fecha de sanitización"}, {"id": "m5_equipo", "label": "Equipo completo"}, {"id": "m5_p_coc", "label": "Personas en cocina"}, {"id": "m5_p_ser", "label": "Personas en servicio"}]}, {"id": 6, "nombre": "Mantenimiento", "items": [{"id": "m6_sillas", "label": "Sillas en buen estado"}, {"id": "m6_mesas", "label": "Mesas en buen estado"}, {"id": "m6_pisos", "label": "Pisos y paredes ok"}, {"id": "m6_luces", "label": "Luces completas"}, {"id": "m6_pos", "label": "Sistema POS completo"}, {"id": "m6_eq_coc", "label": "Equipos cocina ok"}, {"id": "m6_eq_bar", "label": "Equipos barra ok"}]}, {"id": 7, "nombre": "Ventas", "items": [{"id": "m7_conoce_ppto", "label": "¿El manager conoce el presupuesto del mes?"}, {"id": "m7_conoce_ventas", "label": "¿Conoce las ventas del mes al día de hoy?"}, {"id": "m7_conoce_gap", "label": "¿Sabe si va por encima o debajo del presupuesto?"}, {"id": "m7_conoce_tickets", "label": "¿Conoce el número de tickets y ticket promedio?"}, {"id": "m7_conoce_vol", "label": "¿Conoce el volumen de ventas y shares del mes?"}, {"id": "m7_equipo_conoce", "label": "¿El equipo conoce los indicadores clave?"}]}],
+  'hora-servicio': [{"id": 1, "nombre": "Servicio & Menú", "items": [{"id": "h_menu", "label": "Menú disponible y precios actualizados"}, {"id": "h_cat", "label": "Categorías completas del menú (cervezas, licores, comida)"}, {"id": "h_oferta", "label": "Ofrecimiento activo de nuevas opciones (refill, otra ronda, para llevar)"}, {"id": "h_aviso", "label": "Aviso BBC iluminado"}, {"id": "h_actitud", "label": "Actitud y cordialidad en el servicio"}, {"id": "h_uniforme", "label": "Uniformes completos (servicio y cocina)"}, {"id": "h_aseo_per", "label": "Aseo personal y sin accesorios"}, {"id": "h_campana_pop", "label": "📋 Informativo (no suma al puntaje) — El PDV tiene visibilidad de las campañas activas (material POP, promociones)?"}, {"id": "h_campana_mecanica", "label": "📋 Informativo (no suma al puntaje) — El equipo del PDV conoce las mecánicas de las promociones vigentes?"}]}, {"id": 2, "nombre": "Limpieza", "items": [{"id": "h_lim_coc", "label": "Limpieza de cocina"}, {"id": "h_lim_bar", "label": "Limpieza de barra"}, {"id": "h_lim_sal", "label": "Limpieza de salón"}, {"id": "h_lim_ban", "label": "Limpieza de baños"}]}, {"id": 3, "nombre": "Operación", "items": [{"id": "h_imp_bar", "label": "Impresora de barra funcionando"}, {"id": "h_imp_coc", "label": "Impresora de cocina funcionando"}, {"id": "h_pres_plat", "label": "Presentación de platos y servicio correcta"}, {"id": "h_factura", "label": "Facturación al momento de cobrar"}, {"id": "h_personal", "label": "Personal completo para la operación"}, {"id": "h_consig", "label": "Sin consignaciones pendientes"}]}, {"id": 4, "nombre": "Mantenimiento", "items": [{"id": "h_sillas", "label": "Sillas y mesas en buen estado"}, {"id": "h_pisos", "label": "Pisos y paredes OK"}, {"id": "h_luces", "label": "Luces completas y funcionando"}, {"id": "h_eq_coc", "label": "Equipos de cocina funcionando"}, {"id": "h_eq_bar", "label": "Equipos de barra funcionando"}]}],
+  'visita-virtual': [{"id": "s1", "nombre": "Cierre y Resultados del Mes", "preguntas": ["Cuál es el NR acumulado vs. la meta proporcional al día de corte?", "Cuál es el volumen en HL acumulado vs. meta?", "Cuál es el ticket promedio actual vs. el mes anterior?", "Cuántas transacciones (TKS) se han registrado en el período?"]}, {"id": "s2", "nombre": "Cumplimiento de Metas", "preguntas": ["El PDV está en ritmo para cumplir la meta mensual de NR?", "El PDV está en ritmo para cumplir la meta de volumen (HL)?", "Cómo es la participación de CERVEZAS BBC vs. meta de mezcla?", "Cómo es la participación de ALIMENTOS vs. meta de mezcla?", "Cómo es la participación del KPI o cerveza de temporada del mes?", "Hay alguna categoría rezagada que requiera acción inmediata?"]}, {"id": "s3", "nombre": "Revisión de Pendientes del Sistema", "preguntas": ["Hay pedidos pendientes de surtir o confirmar?", "Existe alguna devolución sin procesar?", "Hay pendientes que no permitan la acumulación?", "El líder del PDV conoce cómo consultar sus reportes en el sistema?"]}, {"id": "s4", "nombre": "Disponibilidad de Productos", "preguntas": ["Hay rupturas de stock en referencias clave (SKUs principales)?", "El equipo de chiller está funcionando correctamente?", "Los productos están correctamente etiquetados y con precio visible?", "Se requiere ajuste en el pedido para la siguiente semana?"]}, {"id": "s5", "nombre": "Campañas y Próximos Eventos", "preguntas": ["El PDV tiene visibilidad de las campañas activas (material POP, promociones)?", "El equipo del PDV conoce las mecánicas de las promociones vigentes?", "Hay eventos o fechas especiales próximas que requieran preparación?", "Se cumplieron los compromisos de la última campaña?"]}, {"id": "s6", "nombre": "Novedades del Personal", "preguntas": ["Ha habido cambios de personal en el PDV desde la última visita?", "El personal nuevo tiene la inducción sobre productos BBC?", "Hay necesidades de capacitación identificadas en el equipo?", "El clima laboral es adecuado para la operación del PDV?"]}, {"id": "s7", "nombre": "Pendientes Generales", "preguntas": ["Quedaron compromisos de la visita anterior sin cumplir?", "Hay solicitudes del líder del PDV que deban escalar al equipo BBC?", "Hay temas de infraestructura o mantenimiento que afecten la operación?", "Se requiere alguna acción de soporte comercial o logístico?"]}, {"id": "s8", "nombre": "Crecimiento KPI vs. Año Anterior", "preguntas": ["Cuál es el crecimiento en NR vs. el mismo período del año anterior?", "Cuál es el crecimiento en volumen (HL) vs. el mismo período del año anterior?", "Cuál es la variación en ticket promedio vs. el año anterior?", "Cuál es la tendencia de TKS (transacciones) vs. el año anterior?", "Qué acciones se implementarán para sostener/mejorar el crecimiento?"]}],
+  cocina: [{"id": "almacenamiento", "nombre": "Almacenamiento", "items": [{"id": "peps", "nombre": "Rotación y almacenamiento PEPS"}, {"id": "rotulacion", "nombre": "Rotulación y control de vida útil"}]}, {"id": "limpieza", "nombre": "Limpieza", "items": [{"id": "limpieza_general", "nombre": "Orden y limpieza general"}, {"id": "freidoras", "nombre": "Manejo y limpieza de freidoras"}]}, {"id": "equipos", "nombre": "Equipos", "items": [{"id": "equipos_utensilios", "nombre": "Funcionamiento de equipos y utensilios"}, {"id": "equipos_frio_calor", "nombre": "Funcionamiento equipos frío/calor"}]}, {"id": "personal", "nombre": "Personal", "items": [{"id": "higiene_personal", "nombre": "Manipulación e higiene personal"}]}, {"id": "proceso", "nombre": "Proceso", "items": [{"id": "estandarizacion", "nombre": "Estandarización y preparación"}, {"id": "descongelacion", "nombre": "Descongelación segura de productos"}]}, {"id": "documentacion", "nombre": "Documentación", "items": [{"id": "formatos", "nombre": "Diligenciamiento de formatos"}]}, {"id": "operacion", "nombre": "Operación", "items": [{"id": "disponibilidad", "nombre": "Disponibilidad y operación"}]}]
+};
 
 let allAuditorias = [];
 let allCompromisos = [];
@@ -226,6 +276,31 @@ async function load(){
 function periodoActual(){ return document.getElementById('fPeriodo').value; }
 function enPeriodo(fechaStr){ return (fechaStr||'').slice(0,7) === periodoActual(); }
 
+function mesAnterior(ym){
+  const [y,m] = ym.split('-').map(Number);
+  const d = new Date(y, m-2, 1);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+}
+
+function promedioScore(rows){ return rows.length ? rows.reduce((s,r)=>s+parseFloat(r.scorePct||0),0)/rows.length : null; }
+
+function tendenciaHTML(tipos){
+  const actual = periodoActual();
+  const anterior = mesAnterior(actual);
+  const rowsActual = allAuditorias.filter(a=>tipos.includes(a.tipo) && (a.fecha||'').slice(0,7)===actual);
+  const rowsAnterior = allAuditorias.filter(a=>tipos.includes(a.tipo) && (a.fecha||'').slice(0,7)===anterior);
+  const pa = promedioScore(rowsActual), pp = promedioScore(rowsAnterior);
+  if(pa===null || pp===null) return '<span style="color:var(--muted);font-size:11px">— sin mes anterior para comparar</span>';
+  const delta = pa - pp;
+  const color = delta>0.5?'var(--green)':delta<-0.5?'var(--red)':'var(--muted)';
+  const arrow = delta>0.5?'↑':delta<-0.5?'↓':'→';
+  return `<span style="color:${color};font-size:12px;font-weight:700">${arrow} ${delta>=0?'+':''}${delta.toFixed(0)} pts</span> <span style="font-size:11px;color:var(--muted)">vs mes anterior</span>`;
+}
+
+function compromisosAbiertos(tipos){
+  return allCompromisos.filter(c => tipos.includes(c.auditTipo) && c.estado!=='CERRADO').length;
+}
+
 function clasifColor(c){
   return c==='Excelente'?'var(--green)':c==='Bien'?'#7ec850':c==='Por mejorar'?'var(--yellow)':c==='Regular'?'#e8873a':'var(--red)';
 }
@@ -251,11 +326,14 @@ function renderResumen(){
     }
     const n = rows.length;
     const prom = n ? (rows.reduce((s,r)=>s+parseFloat(r.scorePct||0),0)/n) : 0;
+    const abiertos = compromisosAbiertos(cat.tipos);
     return `<div class="cat-card" onclick="goTabById('${cat.tab}')">
       <div class="cat-icon">${cat.icon}</div>
       <div class="cat-name">${cat.nombre}</div>
       <div class="cat-n">${n}</div>
       <div class="cat-sub">auditoría${n===1?'':'s'} este período${n?' · promedio '+prom.toFixed(0)+'%':''}</div>
+      <div style="margin-top:8px">${tendenciaHTML(cat.tipos)}</div>
+      <div style="margin-top:8px"><span class="badge ${abiertos>0?'badge-warn':'badge-ok'}">🤝 ${abiertos} compromiso${abiertos===1?'':'s'} abierto${abiertos===1?'':'s'}</span></div>
     </div>`;
   }).join('');
 }
@@ -284,7 +362,7 @@ function tablaAuditoriasHTML(rows, mostrarTipo){
   rows = rows.slice().sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||''));
   return `<table>
     <thead><tr><th>Fecha</th>${mostrarTipo?'<th>Tipo</th>':''}<th>PDV</th><th>Auditor</th><th>Score</th><th>Clasificación</th></tr></thead>
-    <tbody>${rows.map(r=>`<tr>
+    <tbody>${rows.map(r=>`<tr onclick="verDetalle('${r.id}')" style="cursor:pointer">
       <td style="white-space:nowrap;font-size:11px;color:var(--muted)">${(r.fecha||'').slice(0,10)||'—'}</td>
       ${mostrarTipo?`<td><span class="tag tag-${r.tipo}">${r.tipo}</span></td>`:''}
       <td style="font-weight:600">${r.pdv||'—'}</td>
@@ -294,10 +372,49 @@ function tablaAuditoriasHTML(rows, mostrarTipo){
     </tr>`).join('')}</tbody></table>`;
 }
 
+function alarmaHTML(rows){
+  const criticas = rows.filter(r=>r.clasificacion==='Crítico').sort((a,b)=>parseFloat(a.scorePct||0)-parseFloat(b.scorePct||0));
+  if(!criticas.length) return '';
+  return `<div class="alarma-box">
+    <div class="alarma-title">🚨 ${criticas.length} auditoría${criticas.length===1?'':'s'} en estado crítico este período</div>
+    ${criticas.map(r=>`<div class="alarma-item"><b onclick="verDetalle('${r.id}')">${r.pdv||'—'}</b> — ${parseFloat(r.scorePct||0).toFixed(0)}% · ${(r.fecha||'').slice(0,10)}</div>`).join('')}
+  </div>`;
+}
+
+function rankingHTML(rows){
+  if(!rows.length) return '';
+  const porPdv = {};
+  rows.forEach(r=>{
+    const pdv = r.pdv||'—';
+    if(!porPdv[pdv]) porPdv[pdv] = {sum:0, n:0, lastId:r.id};
+    porPdv[pdv].sum += parseFloat(r.scorePct||0);
+    porPdv[pdv].n++;
+    porPdv[pdv].lastId = r.id;
+  });
+  const ranking = Object.entries(porPdv).map(([pdv,d])=>({pdv, prom: d.sum/d.n, n:d.n, lastId:d.lastId})).sort((a,b)=>a.prom-b.prom);
+  return `<div class="ranking-wrap">
+    <div class="ranking-title">📉 Ranking de PDVs este período (peor a mejor)</div>
+    ${ranking.map((r,i)=>{
+      const color = r.prom>=85?'var(--green)':r.prom>=70?'var(--yellow)':'var(--red)';
+      return `<div class="ranking-row" onclick="verDetalle('${r.lastId}')">
+        <div class="ranking-pos">${i+1}</div>
+        <div>
+          <div class="ranking-pdv">${r.pdv}${r.n>1?' <span style="color:var(--muted);font-weight:400">('+r.n+' auditorías)</span>':''}</div>
+          <div class="ranking-bar-track"><div class="ranking-bar-fill" style="width:${r.prom}%;background:${color}"></div></div>
+        </div>
+        <div class="ranking-score" style="color:${color}">${r.prom.toFixed(0)}%</div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
 /* ── ALIMENTOS ── */
 function renderAlimentos(){
   const rows = allAuditorias.filter(a=>a.tipo==='cocina' && enPeriodo(a.fecha));
   document.getElementById('stats-alimentos').innerHTML = statsHTML(rows);
+  document.getElementById('tendencia-alimentos').innerHTML = tendenciaHTML(['cocina']);
+  document.getElementById('alarma-alimentos').innerHTML = alarmaHTML(rows);
+  document.getElementById('ranking-alimentos').innerHTML = rankingHTML(rows);
   document.getElementById('tabla-alimentos').innerHTML = tablaAuditoriasHTML(rows, false);
 }
 
@@ -307,6 +424,9 @@ function renderGenerales(){
   const tipos = subtipo ? [subtipo] : ['general','visita-virtual','hora-servicio'];
   const rows = allAuditorias.filter(a=>tipos.includes(a.tipo) && enPeriodo(a.fecha));
   document.getElementById('stats-generales').innerHTML = statsHTML(rows);
+  document.getElementById('tendencia-generales').innerHTML = tendenciaHTML(tipos);
+  document.getElementById('alarma-generales').innerHTML = alarmaHTML(rows);
+  document.getElementById('ranking-generales').innerHTML = rankingHTML(rows);
   document.getElementById('tabla-generales').innerHTML = tablaAuditoriasHTML(rows, true);
 }
 
@@ -314,6 +434,9 @@ function renderGenerales(){
 function renderPuntos(){
   const rows = allAuditorias.filter(a=>a.tipo==='puntos-propios' && enPeriodo(a.fecha));
   document.getElementById('stats-puntos').innerHTML = statsHTML(rows);
+  document.getElementById('tendencia-puntos').innerHTML = tendenciaHTML(['puntos-propios']);
+  document.getElementById('alarma-puntos').innerHTML = alarmaHTML(rows);
+  document.getElementById('ranking-puntos').innerHTML = rankingHTML(rows);
   document.getElementById('tabla-puntos').innerHTML = tablaAuditoriasHTML(rows, false);
 }
 
@@ -354,6 +477,85 @@ function goTab(id,el){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   el.classList.add('active');
   document.getElementById('tab-'+id).classList.add('active');
+}
+
+/* ── MODAL DE DETALLE ── */
+function valBadge(v){
+  if(v==='ok'||v==='cumple'||v===true) return '<span class="modal-item-val modal-val-ok">✓ Cumple</span>';
+  if(v==='no'||v==='no_cumple'||v===false) return '<span class="modal-item-val modal-val-no">✗ No cumple</span>';
+  if(v==='na'||v==='no_aplica'||v===''||v===undefined||v===null) return '<span class="modal-item-val modal-val-na">— N/A</span>';
+  if(!isNaN(parseFloat(v)) && String(v).trim()!=='') return `<span class="modal-item-val" style="color:${parseFloat(v)>=80?'var(--green)':parseFloat(v)>=50?'var(--yellow)':'var(--red)'}">${v}${String(v).match(/^\d+$/)?'%':''}</span>`;
+  return `<span class="modal-item-val" style="color:var(--muted)">${v}</span>`;
+}
+
+function itemsHTML(tipo, itemsEvaluados){
+  let data;
+  try{ data = JSON.parse(itemsEvaluados||'{}'); }catch(e){ data = {}; }
+  if(!data || !Object.keys(data).length) return '<div class="empty" style="padding:20px 0">Sin ítems evaluados registrados para esta auditoría.</div>';
+
+  if(tipo==='general' || tipo==='hora-servicio'){
+    const modulos = SCHEMAS[tipo]||[];
+    return modulos.map(m=>{
+      const filas = m.items.filter(i=>data[i.id]!==undefined).map(i=>
+        `<div class="modal-item"><span>${i.label}</span>${valBadge(data[i.id])}</div>`
+      ).join('');
+      if(!filas) return '';
+      return `<div class="modal-mod-title">${m.nombre}</div>${filas}`;
+    }).join('');
+  }
+  if(tipo==='visita-virtual'){
+    const secciones = SCHEMAS['visita-virtual']||[];
+    return secciones.map(s=>{
+      const filas = s.preguntas.map((p,pi)=>{
+        const key = s.id+'_q'+pi;
+        if(data[key]===undefined) return '';
+        return `<div class="modal-item"><span>${p}</span><span class="modal-item-val" style="color:${data[key]>=4?'var(--green)':data[key]>=3?'var(--yellow)':'var(--red)'}">${data[key]}/5</span></div>`;
+      }).join('');
+      if(!filas) return '';
+      return `<div class="modal-mod-title">${s.nombre}</div>${filas}`;
+    }).join('');
+  }
+  if(tipo==='cocina'){
+    const categorias = SCHEMAS.cocina||[];
+    return categorias.map(c=>{
+      const filas = c.items.filter(i=>data[i.id]!==undefined).map(i=>{
+        const ev = data[i.id]||{};
+        const obs = ev.observacion ? `<div style="font-size:11px;color:var(--muted);margin-top:2px">${ev.observacion}</div>` : '';
+        return `<div class="modal-item" style="display:block"><div style="display:flex;justify-content:space-between;gap:10px"><span>${i.nombre}</span>${valBadge(ev.calificacion)}</div>${obs}</div>`;
+      }).join('');
+      if(!filas) return '';
+      return `<div class="modal-mod-title">${c.nombre}</div>${filas}`;
+    }).join('');
+  }
+  return '<div class="empty" style="padding:20px 0">Este tipo de auditoría no tiene desglose por ítem — usa KPIs/checklist en vez de módulos.</div>';
+}
+
+function verDetalle(auditId){
+  const r = allAuditorias.find(a=>String(a.id)===String(auditId));
+  if(!r){ alert('No se encontró el detalle de esta auditoría.'); return; }
+  const compromisosLigados = allCompromisos.filter(c=>String(c.auditId)===String(auditId));
+  const compromisosHTML = compromisosLigados.length ? compromisosLigados.map(c=>`
+    <div class="modal-item" style="display:block">
+      <div style="display:flex;justify-content:space-between;gap:10px">
+        <span>${c.descripcionAccion||''}</span>
+        <span>${c.estado==='VENCIDO'?'<span class="badge badge-alert">Vencido</span>':c.estado==='CERRADO'?'<span class="badge badge-ok">Cerrado</span>':'<span class="badge badge-warn">'+(c.estado||'ABIERTO')+'</span>'}</span>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">${c.areaEjecutora||'—'} · Responsable: ${c.responsable||'—'} · Seguimiento: ${c.responsableSeguimiento||'—'} · Fecha: ${c.fechaCompromiso||'—'}</div>
+    </div>`).join('') : '<div class="empty" style="padding:12px 0">Sin compromisos registrados para esta auditoría.</div>';
+
+  document.getElementById('detalle-contenido').innerHTML = `
+    <div class="modal-title">${r.pdv||'—'}</div>
+    <div class="modal-sub"><span class="tag tag-${r.tipo}">${r.tipo}</span> · ${(r.fecha||'').slice(0,10)} · Auditor: ${r.auditor||r.coordinadorZona||'—'} · Score: ${r.scoreTotal||0}/${r.scoreMax||0} (<span style="color:${clasifColor(r.clasificacion)}">${r.clasificacion||'—'}</span>)</div>
+    <div class="modal-mod-title" style="margin-top:0">Ítems evaluados</div>
+    ${itemsHTML(r.tipo, r.itemsEvaluados)}
+    <div class="modal-mod-title">Compromisos de esta visita</div>
+    ${compromisosHTML}
+  `;
+  document.getElementById('detalle-modal').classList.add('show');
+}
+
+function cerrarDetalle(){
+  document.getElementById('detalle-modal').classList.remove('show');
 }
 
 initPeriodo();
