@@ -677,6 +677,7 @@ const PDV = {
 };
 
 let cur = 1;
+let borradorPendiente = null;
 let gps = { lat: '', lng: '', acc: '' };
 let ts = '';
 let kpiVal = null;
@@ -732,6 +733,9 @@ document.querySelectorAll('input[name="coord"]').forEach(r => {
       o.value = p; o.textContent = p;
       sel.appendChild(o);
     });
+    if (borradorPendiente && borradorPendiente.coord === this.id) {
+      aplicarBorradorPendiente();
+    }
   });
 });
 
@@ -883,7 +887,19 @@ function next() {
   }
   if (cur === TOTAL) { submit(); return; }
   document.getElementById(`step${cur}`).classList.remove('active');
-  cur++;
+  let destino = cur + 1;
+  if (cur === 1) {
+    const coordSel = document.querySelector('input[name="coord"]:checked');
+    if (borradorPendiente && (!coordSel || coordSel.id !== borradorPendiente.coord)) {
+      // Otra persona confirmó su identidad: el borrador guardado no le pertenece.
+      borradorPendiente = null;
+    }
+  }
+  if (cur === 2 && borradorPendiente && borradorPendiente.cur > 2) {
+    destino = borradorPendiente.cur;
+    borradorPendiente = null;
+  }
+  cur = destino;
   if (cur === 6) generarCompromisos();
   document.getElementById(`step${cur}`).classList.add('active');
   updateUI();
@@ -1106,34 +1122,34 @@ function cargarBorrador() {
   try {
     const raw = localStorage.getItem(DRAFT_KEY);
     if (!raw) return;
-    const data = JSON.parse(raw);
-    const check = id => { const el = document.getElementById(id); if (el) { el.checked = true; el.dispatchEvent(new Event('change')); } };
-    if (data.coord) check(data.coord);
-    if (data.pdv) { document.getElementById('pdvSelect').value = data.pdv; }
-    if (data.tipo) check(data.tipo);
-    if (data.kpiVal !== null && data.kpiVal !== undefined) { kpiVal = data.kpiVal - 1; kpiDelta(1); }
-    (data.kpis||[]).forEach(id => { const el = document.getElementById(id); if (el) el.checked = true; });
-    if (data.accion) document.getElementById('accion').value = data.accion;
-    if (data.manager) check(data.manager);
-    if (data.motivoMgr) document.getElementById('motivoMgr').value = data.motivoMgr;
-    (data.novs||[]).forEach(id => { const el = document.getElementById(id); if (el) el.checked = true; });
-    if (data.descNov) document.getElementById('descNov').value = data.descNov;
-    toggleManager(); chkNov();
-    if (data.op) check(data.op);
-    if (data.pers) check(data.pers);
-    if (data.probServ) document.getElementById('probServ').value = data.probServ;
-    chkOp();
-    if (data.obs) document.getElementById('obs').value = data.obs;
-    if (data.compromisosEdit) compromisosEdit = data.compromisosEdit;
-    if (data.cur) {
-      document.getElementById(`step${cur}`).classList.remove('active');
-      cur = data.cur;
-      if (cur === 6) generarCompromisos();
-      document.getElementById(`step${cur}`).classList.add('active');
-      updateUI();
-    }
+    // No se aplica de una: primero hay que confirmar quién eres (paso 1) y el
+    // PDV (paso 2), para que un borrador de otra persona no continúe solo
+    // porque alguien más tomó el celular.
+    borradorPendiente = JSON.parse(raw);
     document.getElementById('draft-banner').classList.add('show');
   } catch(e) {}
+}
+
+function aplicarBorradorPendiente() {
+  const data = borradorPendiente;
+  if (!data) return;
+  const check = id => { const el = document.getElementById(id); if (el) { el.checked = true; el.dispatchEvent(new Event('change')); } };
+  if (data.pdv) { document.getElementById('pdvSelect').value = data.pdv; }
+  if (data.tipo) check(data.tipo);
+  if (data.kpiVal !== null && data.kpiVal !== undefined) { kpiVal = data.kpiVal - 1; kpiDelta(1); }
+  (data.kpis||[]).forEach(id => { const el = document.getElementById(id); if (el) el.checked = true; });
+  if (data.accion) document.getElementById('accion').value = data.accion;
+  if (data.manager) check(data.manager);
+  if (data.motivoMgr) document.getElementById('motivoMgr').value = data.motivoMgr;
+  (data.novs||[]).forEach(id => { const el = document.getElementById(id); if (el) el.checked = true; });
+  if (data.descNov) document.getElementById('descNov').value = data.descNov;
+  toggleManager(); chkNov();
+  if (data.op) check(data.op);
+  if (data.pers) check(data.pers);
+  if (data.probServ) document.getElementById('probServ').value = data.probServ;
+  chkOp();
+  if (data.obs) document.getElementById('obs').value = data.obs;
+  if (data.compromisosEdit) compromisosEdit = data.compromisosEdit;
 }
 
 function nuevaAuditoria() {
