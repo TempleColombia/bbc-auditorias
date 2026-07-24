@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>BBC · Capacitaciones</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;--bg:#FBF6EA;--surface:#ffffff;--surface2:#F3ECD8;--border:#e8dcc0;--text:#2b2018;--muted:#8a7a5c;--accent:#F59E0B;--green:#2e8b57;--beige:#F3E7CC;--text-strong:#2b2018;--radius:14px;--font:'DM Sans',sans-serif;--mono:'DM Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;min-height:100vh}
+.app-header{position:sticky;top:0;z-index:100;background:var(--beige);border-bottom:1px solid var(--beige);padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
+.logo-row{display:flex;align-items:center;gap:10px}
+.logo-dot{width:26px;height:26px;background:#fff;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.app-title{font-size:14px;font-weight:600;color:var(--text-strong)}.app-sub{font-size:11px;color:#8a7a5c}
+.score-chip{background:rgba(43,32,24,.08);border:1px solid rgba(43,32,24,.2);color:var(--text-strong);border-radius:20px;padding:5px 12px;font-family:var(--mono);font-size:13px}
+.draft-banner{background:var(--beige);border:1px solid var(--accent);border-radius:10px;padding:10px 14px;margin:12px 16px 0;display:none;align-items:center;justify-content:space-between;gap:10px}
+.draft-banner.show{display:flex}
+.draft-text{font-size:12px;color:var(--text-strong)}
+.draft-clear{font-size:11px;color:var(--muted);cursor:pointer;text-decoration:underline;white-space:nowrap}
+.back-btn{font-size:13px;color:var(--accent);text-decoration:none;display:flex;align-items:center;gap:4px}
+.container{padding:12px 16px 100px;max-width:520px;margin:0 auto}
+.gps-banner{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+.gps-dot{width:9px;height:9px;border-radius:50%;background:#888;flex-shrink:0}
+.gps-dot.ok{background:var(--green)}.gps-dot.loading{background:var(--accent);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.gps-label{font-size:11px;color:var(--muted);margin-bottom:1px}.gps-val{font-size:12px;font-family:var(--mono)}
+.ts-strip{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:9px 13px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.ts-label{font-size:11px;color:var(--muted)}.ts-val{font-size:12px;font-family:var(--mono);color:var(--accent)}
+.pdv-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:10px}
+.pdv-card h2{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px}
+.pdv-auto{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-top:10px;display:none}
+.pdv-auto-row{display:flex;gap:16px;flex-wrap:wrap}
+.pdv-auto-item{font-size:12px;color:var(--muted)}
+.pdv-auto-item span{color:var(--text);font-weight:500;display:block;margin-top:1px}
+select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:14px;font-family:var(--font);color:var(--text);outline:none;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+select:focus{border-color:var(--accent)}
+.section{margin-bottom:10px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);background:var(--surface)}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none}
+.sec-hdr:active{background:var(--surface2)}
+.sec-left{display:flex;align-items:center;gap:10px}
+.sec-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px}
+.ic1{background:#e8f5e9}.ic2{background:#e3f2fd}.ic3{background:#fffde7}.ic4{background:#fff3e0}
+.sec-name{font-size:14px;font-weight:600}.sec-max{font-size:11px;color:var(--muted)}
+.sec-score{font-family:var(--mono);font-size:13px;color:var(--accent);min-width:48px;text-align:right}
+.chevron{color:var(--muted);font-size:16px;transition:transform .25s}.chevron.open{transform:rotate(180deg)}
+.sec-body{display:none;padding:0 16px 16px;border-top:1px solid var(--border)}.sec-body.open{display:block}
+.item-block{margin-top:10px;background:var(--surface2);border-radius:10px;padding:10px 12px}
+.item-label{font-size:12px;color:var(--text);font-weight:500;margin-bottom:8px}
+.item-opts{display:flex;gap:6px;margin-bottom:4px}
+.opt-btn{flex:1;padding:8px 4px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-size:12px;font-family:var(--font);font-weight:500;cursor:pointer;transition:all .15s;text-align:center}
+.opt-btn.sel-ok{background:#c8e6c9;border-color:#2e8b57;color:#1b5e20}
+.opt-btn.sel-no{background:#ffcdd2;border-color:#b71c1c;color:#b71c1c}
+.opt-btn.sel-na{background:#eceff1;border-color:#90a4ae;color:#546e7a}
+.note-toggle{font-size:11px;color:var(--muted);cursor:pointer;text-decoration:underline}
+.note-area{margin-top:6px;display:none}.note-area.open{display:block}
+.note-area textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:13px;font-family:var(--font);color:var(--text);resize:none;height:52px;outline:none}
+.note-area textarea:focus{border-color:var(--accent)}
+.sec-divider{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:14px;margin-bottom:2px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.mod-score-bar{margin-top:14px;padding-top:12px;border-top:1px solid var(--border)}
+.mod-score-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.mod-score-label{font-size:12px;color:var(--muted)}.mod-score-val{font-family:var(--mono);font-size:16px;color:var(--accent)}
+.score-bar-bg{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.score-bar-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .4s}
+.field{margin-top:12px}
+.field label{display:block;font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.field textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;font-size:13px;font-family:var(--font);color:var(--text);outline:none;resize:none;line-height:1.5}
+.field textarea:focus{border-color:var(--accent)}
+.total-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 16px;margin-bottom:14px}
+.total-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.total-num{font-family:var(--mono);font-size:48px;font-weight:500;line-height:1}
+.estado-chip{padding:5px 14px;border-radius:8px;font-size:13px;font-weight:600}
+.chip-verde{background:#c8e6c9;color:#1b5e20}.chip-amarillo{background:#fff9c4;color:#8d6e00}.chip-rojo{background:#ffcdd2;color:#b71c1c}
+.total-bar-bg{height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+.total-bar-fill{height:100%;background:var(--accent);border-radius:4px;transition:width .4s}
+.mods-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px}
+.mod-chip{background:var(--surface2);border-radius:8px;padding:7px 4px;text-align:center}
+.mod-chip-name{font-size:9px;color:var(--muted);margin-bottom:3px}
+.mod-chip-val{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--accent)}
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;padding:10px 16px;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;gap:8px;z-index:100;box-shadow:0 -2px 8px rgba(0,0,0,.06)}
+.btn{flex:1;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font)}
+.btn-draft{background:var(--surface2);color:var(--muted)}
+.btn-send{background:var(--accent);color:#fff}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;display:none;z-index:200;white-space:nowrap}
+.toast.show{display:block}
+.modo-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 16px;margin:12px 16px 0}
+.modo-title{font-size:15px;font-weight:600;margin-bottom:4px}
+.modo-sub{font-size:12px;color:var(--muted);margin-bottom:16px}
+.modo-btn{width:100%;text-align:left;background:var(--surface2);border:2px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px;cursor:pointer;font-family:var(--font)}
+.modo-btn:active{border-color:var(--accent)}
+.modo-btn-title{font-size:14px;font-weight:600;color:var(--text-strong);margin-bottom:2px}
+.modo-btn-sub{font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="logo-row">
+    <a href="index.html" class="back-btn">‹</a>
+    <img alt="BBC" src="data:image/png;base64,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" style="height:24px;width:auto;border-radius:4px">
+    <div><div class="app-title" id="app-title">Capacitaciones</div><div class="app-sub" id="app-sub">Selecciona qué vas a auditar</div></div>
+  </div>
+  <div class="score-chip" id="score-chip" style="display:none">—/—</div>
+</div>
+
+<div class="draft-banner" id="draft-banner">
+  <span class="draft-text">📋 Borrador guardado — continuando donde lo dejaste</span>
+  <span class="draft-clear" onclick="nuevaAuditoria()">Empezar nueva</span>
+</div>
+
+<div class="modo-card" id="modo-card">
+  <div class="modo-title">¿Qué auditoría vas a hacer?</div>
+  <div class="modo-sub">Escoge según el momento de tu visita</div>
+  <button type="button" class="modo-btn" onclick="elegirModo('completa')">
+    <div class="modo-btn-title">🎓 Completa</div>
+    <div class="modo-btn-sub">49 preguntas · presentación, cerveza, protocolo y marca</div>
+  </button>
+  <button type="button" class="modo-btn" onclick="elegirModo('servicio')">
+    <div class="modo-btn-title">🤝 En Servicio</div>
+    <div class="modo-btn-sub">10 preguntas · versión corta para horas de servicio</div>
+  </button>
+</div>
+
+<div class="container" id="form-area" style="display:none">
+  <!-- GPS -->
+  <div class="gps-banner">
+    <div class="gps-dot loading" id="gps-dot"></div>
+    <div><div class="gps-label">Ubicación GPS</div><div class="gps-val" id="gps-val">Obteniendo ubicación...</div></div>
+  </div>
+
+  <!-- Timestamp -->
+  <div class="ts-strip">
+    <span class="ts-label">Inicio de auditoría</span>
+    <span class="ts-val" id="ts-val">—</span>
+    <span style="font-size:11px;color:var(--muted)">🔒 No editable</span>
+  </div>
+
+  <!-- PDV -->
+  <div class="pdv-card">
+    <h2>Punto de Venta</h2>
+    <select id="f_pdv" onchange="onPDV()">
+      <option value="">— Selecciona un PDV —</option>
+    </select>
+    <div class="pdv-auto" id="pdv-auto">
+      <div class="pdv-auto-row">
+        <div class="pdv-auto-item">Zona<span id="a-zona">—</span></div>
+        <div class="pdv-auto-item">Coordinador<span id="a-coord">—</span></div>
+        <div class="pdv-auto-item">Tipo<span id="a-tipo">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="modulos-container"></div>
+
+  <!-- Hallazgos -->
+  <div class="section">
+    <div class="sec-hdr" onclick="toggleSec(this)">
+      <div class="sec-left">
+        <div class="sec-icon ic3">⚠️</div>
+        <div><div class="sec-name">Hallazgos & notas</div><div class="sec-max">Observaciones críticas</div></div>
+      </div>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="sec-body">
+      <div class="field" style="margin-top:12px">
+        <label>Hallazgos críticos</label>
+        <textarea id="hallazgos" rows="3" placeholder="Un hallazgo por línea..." oninput="generarTareas()"></textarea>
+      </div>
+      <div class="field">
+        <label>Notas adicionales</label>
+        <textarea id="notas" rows="2" placeholder="Observaciones generales..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compromisos (derivados de hallazgos) -->
+  <div class="section" id="tasks-section" style="display:none">
+    <div class="sec-hdr" onclick="toggleSec(this)">
+      <div class="sec-left">
+        <div class="sec-icon ic3">📋</div>
+        <div><div class="sec-name">Compromisos</div><div class="sec-max">Responsable y fecha por hallazgo</div></div>
+      </div>
+      <span class="chevron open">▾</span>
+    </div>
+    <div class="sec-body open" id="tasks-body" style="padding-top:12px"></div>
+  </div>
+
+  <!-- Total -->
+  <div class="total-section">
+    <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Puntaje Total</div>
+    <div class="total-row">
+      <div class="total-num" id="total-num">—</div>
+      <div class="estado-chip" id="estado-chip">—</div>
+    </div>
+    <div class="total-bar-bg"><div class="total-bar-fill" id="total-bar" style="width:0%"></div></div>
+    <div class="mods-summary" id="mods-summary"></div>
+  </div>
+</div>
+
+<div class="bottom-bar" id="bottom-bar" style="display:none">
+  <button class="btn btn-draft" onclick="guardarBorrador()">💾 Borrador</button>
+  <button class="btn btn-send" id="btn-enviar" onclick="enviar()">Guardar en Sheets</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+let MODO = '';
+let TIPO_AUDITORIA = '';
+let DRAFT_KEY = '';
+const MASTER_SHEET_URL='https://script.google.com/a/macros/templecolombia.com/s/AKfycbzu9-M_2kSDKSQqCPxgbrnwAjU5OSMmUGs1YxnnmeUoOpFPhEooYUBnNtvQz0bvnQFUeA/exec';
+const MASTER_TOKEN='temple2026';
+
+const MODULOS_COMPLETA = [
+  { id:1, nombre:"Presentación Personal", icon:"👔", cls:"ic1", max:17, items:[
+    {id:"cap_pp_colaborador_presenta_aseo", label:"¿El colaborador presenta aseo personal adecuado ?", tipo:'yn'},
+    {id:"cap_pp_uniforme_encuentra_limpio", label:"¿El uniforme se encuentra limpio y es exclusivo del punto de venta?", tipo:'yn'},
+    {id:"cap_pp_observa_lavado_manos", label:"¿Se observa lavado de manos entre actividades?", tipo:'yn'},
+    {id:"cap_pp_colaborador_usa_camibuso", label:"¿El colaborador usa el camibuso claro entregado en dotación?", tipo:'yn'},
+    {id:"cap_pp_jean_azul_claro", label:"¿El jean es azul claro, sin rotos ni desgastes?", tipo:'yn'},
+    {id:"cap_pp_usan_tenis_cerrados", label:"¿Se usan tenis cerrados que cubren completamente el pie?", tipo:'yn'},
+    {id:"cap_pp_delantal_está_uso", label:"¿El delantal está en uso durante la operación?", tipo:'yn'},
+    {id:"cap_pp_cabello_está_recogido", label:"¿El cabello está recogido (trenza, cebolla o pinzas)?", tipo:'yn'},
+    {id:"cap_pp_colaborador_tiene_barba", label:"¿El colaborador tiene barba o vello facial? (certificado médico válido)", tipo:'yn'},
+    {id:"cap_pp_uñas_están_cortas", label:"¿Las uñas están cortas, limpias y sin esmalte?", tipo:'yn'},
+    {id:"cap_pp_maquillaje_personal_mesa", label:"¿El maquillaje del personal de mesa es discreto?", tipo:'yn'},
+    {id:"cap_pp_meseras_solo_usan", label:"¿Las meseras solo usan un par de aretes pequeños?", tipo:'yn'},
+    {id:"cap_pp_colaborador_cocina_usa", label:"¿El colaborador en cocina usa la gorra beige y cofia de dotación?", tipo:'yn'},
+    {id:"cap_pp_delantal_está_limpio", label:"¿El delantal está limpio, es beige y no tiene manchas oscuras?", tipo:'yn'},
+    {id:"cap_pp_blusa_pantalón_son", label:"¿La blusa y pantalón son blancos?", tipo:'yn'},
+    {id:"cap_pp_personal_cocina_cumple", label:"¿El personal de cocina cumple la norma de no usar maquillaje ni pestañas postizas?", tipo:'yn'},
+    {id:"cap_pp_personal_cocina_porta", label:"¿El personal de cocina porta accesorios como manillas, piercings, expansiones o cadenas?", tipo:'yn'},
+  ]},
+  { id:2, nombre:"Cerveza", icon:"🍺", cls:"ic2", max:8, items:[
+    {id:"cap_cv_reconoce_ingredientes_básicos", label:"¿Reconoce los ingredientes básicos de la cerveza?", tipo:'yn'},
+    {id:"cap_cv_sabe_diferencia_entre", label:"¿Sabe la diferencia entre cervezas tipo Lager y tipo Ale?", tipo:'yn'},
+    {id:"cap_cv_reconoce_qué_abv", label:"¿Reconoce qué es el ABV?", tipo:'yn'},
+    {id:"cap_cv_sabe_qué_ibu", label:"¿Sabe qué es el IBU?", tipo:'yn'},
+    {id:"cap_cv_reconoce_pasos_servido", label:"¿Reconoce los pasos del servido perfecto?", tipo:'yn'},
+    {id:"cap_cv_identifica_menos_estilos", label:"¿Identifica al menos 3 estilos de cerveza que maneja BBC?", tipo:'yn'},
+    {id:"cap_cv_sabe_qué_temperatura", label:"¿Sabe a qué temperatura se debe servir cada estilo de cerveza?", tipo:'yn'},
+    {id:"cap_cv_sabe_maridar_cervezas", label:"¿Sabe maridar cervezas BBC con al menos 2 platos de la carta?", tipo:'yn'},
+  ]},
+  { id:3, nombre:"Protocolo de Servicio", icon:"🤝", cls:"ic3", max:17, items:[
+    {id:"cap_ps_persona_saluda_amablemente", label:"¿La persona saluda amablemente en la llegada del cliente?", tipo:'yn'},
+    {id:"cap_ps_muestran_ubicaciones_disponibles", label:"¿Muestran ubicaciones disponibles y/o acompañan hasta la mesa?", tipo:'yn'},
+    {id:"cap_ps_actitud_personal_fue", label:"¿La actitud del personal fue amable?", tipo:'yn'},
+    {id:"cap_ps_actitud_personal_fue2", label:"¿La actitud del personal fue atenta?", tipo:'yn'},
+    {id:"cap_ps_personal_lo_atendió", label:"¿El personal que lo atendió tenía un lenguaje corporal adecuado?", tipo:'yn'},
+    {id:"cap_ps_ofrecieron_sugerencias_proactivas", label:"¿Se ofrecieron sugerencias proactivas de producto? (Temporada primero)", tipo:'yn'},
+    {id:"cap_ps_ofrecen_comidas_acompañantes", label:"¿Ofrecen comidas o acompañantes para acompañar los pedido?", tipo:'yn'},
+    {id:"cap_ps_personal_compartió_mencionó", label:"¿El personal compartió o mencionó algo distintivo de la marca o los productos? (ej. Estilos de cerveza, historia)?", tipo:'yn'},
+    {id:"cap_ps_personal_sirve_primera", label:"¿El personal sirve la primera cerveza al cliente?", tipo:'yn'},
+    {id:"cap_ps_hacen_seguimientos_limpieza", label:"¿Hacen seguimientos de limpieza y segundas visitas?", tipo:'yn'},
+    {id:"cap_ps_personal_promovió_forma", label:"¿El personal promovió de forma natural otra ronda, acompañamiento, maridaje, etc.?", tipo:'yn'},
+    {id:"cap_ps_ofrecieron_productos_para", label:"¿Ofrecieron productos para llevar?", tipo:'yn'},
+    {id:"cap_ps_preguntaron_por_método", label:"¿Preguntaron por el método de pago?", tipo:'yn'},
+    {id:"cap_ps_preguntaron_inclusión_propina", label:"¿Preguntaron la inclusión de la propina?", tipo:'yn'},
+    {id:"cap_ps_entregaron_factura_electrónica", label:"¿Entregaron factura electrónica?", tipo:'yn'},
+    {id:"cap_ps_personal_invitó_calificar", label:"¿El personal invitó a calificar la experiencia?", tipo:'yn'},
+    {id:"cap_ps_despidieron_amablemente_e", label:"¿Se despidieron amablemente e invitaron a regresar?", tipo:'yn'},
+  ]},
+  { id:4, nombre:"Marca / Conocimiento General", icon:"🎓", cls:"ic4", max:7, items:[
+    {id:"cap_mc_conoce_año_creación", label:"¿Conoce el año de creación de BBC?", tipo:'yn'},
+    {id:"cap_mc_identifica_modelo_año", label:"¿Identifica el modelo y año de la camioneta BBC?", tipo:'yn'},
+    {id:"cap_mc_reconoce_origen_ginebra", label:"¿Reconoce el origen de Ginebra Bosque?", tipo:'yn'},
+    {id:"cap_mc_ha_tenido_retroalimentación", label:"¿Ha tenido retroalimentación con su manager o coordinador?", tipo:'yn'},
+    {id:"cap_mc_conoce_caja_herramientas", label:"¿Conoce la caja de herramientas BBC?", tipo:'yn'},
+    {id:"cap_mc_identifica_carpeta_legales", label:"¿Identifica la carpeta de legales?", tipo:'yn'},
+    {id:"cap_mc_qué_sabe_grupo", label:"¿Qué sabe del grupo Temple?", tipo:'yn'},
+  ]},
+];
+
+const MODULOS_SERVICIO = [
+  { id:1, nombre:"Servicio en Horario", icon:"🤝", cls:"ic1", max:10, items:[
+    {id:"cs_cliente_recibido_rapidez", label:"¿El cliente fue recibido con rapidez, amabilidad y ubicado adecuadamente?", tipo:'yn'},
+    {id:"cs_colaborador_explicó_menú", label:"¿El colaborador explicó el menú, asesoró según gustos y recomendó productos?", tipo:'yn'},
+    {id:"cs_pedido_tomado_correctamente", label:"¿El pedido fue tomado correctamente, confirmado y con actitud cordial?", tipo:'yn'},
+    {id:"cs_pedido_llegó_completo", label:"¿El pedido llegó completo, en buen tiempo y con los implementos necesarios?", tipo:'yn'},
+    {id:"cs_durante_visita_hubo", label:"¿Durante la visita hubo acompañamiento, atención a necesidades adicionales y retiro oportuno de elementos usados?", tipo:'yn'},
+    {id:"cs_ofrecieron_nuevas_opciones", label:"¿Se ofrecieron nuevas opciones de consumo (refill, otra ronda o producto para llevar)?", tipo:'yn'},
+    {id:"cs_cuenta_atendida_agilidad", label:"¿La cuenta fue atendida con agilidad, cobro correcto y entrega de factura?", tipo:'yn'},
+    {id:"cs_cliente_recibió_despedida", label:"¿El cliente recibió una despedida amable y agradecimiento por la visita?", tipo:'yn'},
+    {id:"cs_actitud_general_equipo", label:"¿La actitud general del equipo fue servicial y profesional durante toda la experiencia?", tipo:'yn'},
+    {id:"cs_estaba_completo_personal", label:"¿Estaba completo el personal del PDV para el servicio?", tipo:'yn'},
+  ]},
+];
+let MODULOS = [];
+
+const PDV_DATA = [
+  {n:'AMANTA SAS - ARMENIA',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'AMANTA SAS ARMENIA PORTAL QUINDIO',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'AMANTA SAS PALO DE AGUA',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'AMANTA SAS PERIERA',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'ARTESANALES PREMIUM CALI CHIPICHAPE',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'ARTESANALES PREMIUM CALI GRANADA',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'ARTESANALES PREMIUM CALI RÍO CALI',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'ARTESANALES PREMIUM FLORA CALI',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'ARTESANALES PREMIUN CALI AEROPUERTO',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'BAP COMPANY FLORENCIA CUNDUY',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'BAP COMPANY ZOMAC S.A.S',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'BBC CARTAGO AMANTA SAS',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'BBC MEDELLIN',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'BEER PALS JAVERIANA',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'BEER PALS SAS CL 109',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'BIRRAPEDIA SAS - TULUA',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'BODEGA BOSA CENTRO',z:'SUR Propios',c:'YENCY',t:'BODEGA'},
+  {n:'BODEGA CALLE 100',z:'NORTE Propios',c:'GERMAN',t:'BODEGA'},
+  {n:'BODEGA CALLE 43',z:'SUR Propios',c:'YENCY',t:'BODEGA'},
+  {n:'BODEGA CALLE 67',z:'NORTE Propios',c:'GERMAN',t:'BODEGA'},
+  {n:'BODEGA CALLE 93',z:'NORTE Propios',c:'GERMAN',t:'BODEGA'},
+  {n:'BODEGA CHICO',z:'NORTE Propios',c:'GERMAN',t:'BODEGA'},
+  {n:'BODEGA CORFERIAS',z:'SUR Propios',c:'YENCY',t:'BODEGA'},
+  {n:'BODEGA DIVER PLAZA',z:'SUR Propios',c:'YENCY',t:'PUB'},
+  {n:'BODEGA GRAN ESTACIÓN',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'BODEGA HEROES',z:'NORTE Propios',c:'GERMAN',t:'BODEGA'},
+  {n:'BODEGA IMPERIAL',z:'NORTE Propios',c:'GERMAN',t:'BODEGA'},
+  {n:'BODEGA KUZUDAMA MALL PLAZA',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'BODEGA LOURDES',z:'NORTE Propios',c:'GERMAN',t:'BODEGA'},
+  {n:'BODEGA MODELO',z:'SUR Propios',c:'YENCY',t:'BODEGA'},
+  {n:'BODEGA PARK WAY',z:'SUR Propios',c:'YENCY',t:'BODEGA'},
+  {n:'BODEGA PASADENA',z:'NORTE Propios',c:'GERMAN',t:'BODEGA'},
+  {n:'BODEGA PLAZA CLARO',z:'SUR Propios',c:'YENCY',t:'BODEGA'},
+  {n:'BODEGA PORTAL CALLE 80',z:'SUR Propios',c:'YENCY',t:'BODEGA'},
+  {n:'BODEGA RESTREPO',z:'SUR Propios',c:'YENCY',t:'BODEGA'},
+  {n:'BODEGA SABANETA MERA CERON',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'BODEGA TERRAZA PASTEUR',z:'SUR Propios',c:'YENCY',t:'BODEGA'},
+  {n:'BODEGA VILLA DEL PRADO',z:'NORTE Propios',c:'GERMAN',t:'BODEGA'},
+  {n:'BODEGA VILLA DEL ROSARIO INV APONTE SAS',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'BREWERY BODEGA SEBASTIAN PASTO',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'BREWERY SAS PASTO ESTUDIANTES',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'BURBANO CONTRERAS NAVAS - CUCUTA',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'DUYAN INVERSIONES SAS SOACHA TERREROS',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'EL BREWER BODEGA BOGOTA COLINA 152',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'GESSAG SAS PALMIRA LLANOGRANDE',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'GRUPO INGERLIN CALI PARQUE DEL PERRO',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'GRUPO INGERLIN JARDIN PLAZA',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'GRUPO INGERLIN PUERTO 125',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'GRUPO INGERLIN SAS - LAS PALMAS',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'GRUPO INGERLIN SAS - SAN FERNANDO',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'GRUPO PROYECATR ICO SAS - NUESTRO BOGOTA',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'HARBOUR TOWN BOGOTA ALSACIA',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'HARBOUR TOWN SAS HAYUELOS',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'INDUSTRIAS VANDELAY S.A.S CHIA',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'INDUSTRIAS VANDELAY UNICENTRO BOGOTA',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'INVERSIONES AHG - CC ACQUA IBAGUE',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'INVERSIONES AHG - PUB BUCARAMANGA',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'INVERSIONES AHG BOGOTÁ CALLE 165',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'INVERSIONES AHG CENTRO EMPRESARIAL 127',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'INVERSIONES AHG IBAGUE VERGEL PLAZA',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'INVERSIONES AHG LA FLORIDA',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'INVERSIONES AHG UNICENTRO OCCIDENTE',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'MALTAURBANA SAS MANIZALES',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'MERA CERON BODEGA MEDELLIN LA 70',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'MINIPUB CALLE 97',z:'NORTE Propios',c:'GERMAN',t:'BODEGA'},
+  {n:'OIKOS BODEGA BBC TOCANCIPA',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'OLD STYLE BOGOTA TEQUENDAMA',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'OLD STYLE BOGOTA VARDI',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'PERLA DEL LUPULO BODEGA UNICENTRO PEREIR',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'POLA INVESTMENT BODEGA CALLE 100 WTC',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'POLA INVESTMENT BOGOTÁ SALITRE',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'POLA INVESTMENT GROUP - BODEGA CALLE 90',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'PUB ANDINO',z:'NORTE Propios',c:'GERMAN',t:'PUB'},
+  {n:'PUB AVDA 19',z:'NORTE Propios',c:'GERMAN',t:'PUB'},
+  {n:'PUB BARRANQUILLA CANTOR COMPANY',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'PUB BBC MOVISTAR ARENA',z:'SUR Propios',c:'YENCY',t:'PUB'},
+  {n:'PUB BELAIRE',z:'NORTE Propios',c:'GERMAN',t:'PUB'},
+  {n:'PUB CALLE 63',z:'NORTE Propios',c:'GERMAN',t:'PUB'},
+  {n:'PUB CALLE 85',z:'NORTE Propios',c:'GERMAN',t:'PUB'},
+  {n:'PUB CANDELARIA',z:'SUR Propios',c:'YENCY',t:'PUB'},
+  {n:'PUB CEDRITOS',z:'NORTE Propios',c:'GERMAN',t:'PUB'},
+  {n:'PUB CENTRO MAYOR',z:'SUR Propios',c:'YENCY',t:'PUB'},
+  {n:'PUB CHAPINERO KUZUDAMA SAS',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'PUB COLINA',z:'NORTE Propios',c:'GERMAN',t:'PUB'},
+  {n:'PUB CONECTA',z:'SUR Propios',c:'YENCY',t:'PUB'},
+  {n:'PUB GALERIAS',z:'SUR Propios',c:'YENCY',t:'PUB'},
+  {n:'PUB MANIZALES',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'PUB PARQUE 93',z:'NORTE Propios',c:'GERMAN',t:'PUB'},
+  {n:'PUB PEPE SIERRA',z:'NORTE Propios',c:'GERMAN',t:'PUB'},
+  {n:'PUB PLAZA CENTRAL',z:'SUR Propios',c:'YENCY',t:'PUB'},
+  {n:'PUB PLAZA DE LAS AMERICAS',z:'SUR Propios',c:'YENCY',t:'PUB'},
+  {n:'PUB ROSALES',z:'NORTE Propios',c:'GERMAN',t:'PUB'},
+  {n:'PUB SALITRE',z:'SUR Propios',c:'YENCY',t:'PUB'},
+  {n:'PUB SAN MARTIN',z:'SUR Propios',c:'YENCY',t:'PUB'},
+  {n:'PUB SANTAFE KUZUDAMA SAS',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'PUB TITAN',z:'SUR Propios',c:'YENCY',t:'PUB'},
+  {n:'PUB USAQUEN',z:'NORTE Propios',c:'GERMAN',t:'PUB'},
+  {n:'PUB VALBUENA BROTHERS SAS - ESTRADA MED',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'PUB VILLA DEL RIO AHG',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'RESILIENCIA FC S.A.S. - POPAYAN',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'RESILIENCIA POPAYAN CENTRO HISTORICO',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'RESILIENCIA POPAYAN NORTE',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'SANTAMARTA',z:'Sur Fraq',c:'MILENA',t:'BODEGA'},
+  {n:'VALBUENA BROTHERS - MEDELLIN AMSTERDAM',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'VALBUENA BROTHERS CIUDAD DE RIO',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'VALBUENA BROTHERS COMPANY CC LLANOGRANDE',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'VALBUENA BROTHERS SAS -LAURELES MEDELLIN',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'VALBUENA BROTHERS SQUARE',z:'Andes Fraq',c:'NATALIA',t:'BODEGA'},
+  {n:'VILLA DE LEYVA - POLA INVESTMENT GROUP',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'VOLANDO ALTO SAS PUB CALLE 19',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'ZONA BBC BOGOTA CALLE 140',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'ZONA BBC BOGOTA PORTO ALEGRE',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'ZONA BBC S.A.S. - GRANADA HILLS',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+  {n:'ZONA BBC SAS CALLE 150',z:'Centro FRQ',c:'JAVIER',t:'BODEGA'},
+];
+
+
+let gpsData={lat:'',lng:'',address:'Sin GPS'};
+let tsInicio='';
+let respuestas={};
+let scores=[];
+
+// Init
+window.onload=function(){
+  tsInicio=formatTs(new Date());
+  document.getElementById('ts-val').textContent=tsInicio;
+  initGPS();
+  buildPDV();
+  // si ya hay un borrador de alguno de los 2 modos, se entra directo a ese (sin mostrar el selector)
+  if(localStorage.getItem('bbc_draft_capacitaciones_completa')) elegirModo('completa');
+  else if(localStorage.getItem('bbc_draft_capacitaciones_servicio')) elegirModo('servicio');
+};
+
+function elegirModo(modo){
+  MODO=modo;
+  MODULOS = modo==='completa' ? MODULOS_COMPLETA : MODULOS_SERVICIO;
+  TIPO_AUDITORIA = 'capacitaciones-'+modo;
+  DRAFT_KEY = 'bbc_draft_capacitaciones_'+modo;
+  const maxTotal = MODULOS.reduce((a,m)=>a+m.max,0);
+  document.getElementById('app-title').textContent = modo==='completa' ? 'Capacitaciones — Completa' : 'Capacitaciones — Servicio';
+  document.getElementById('app-sub').textContent = modo==='completa' ? 'Auditoría completa de entrenamiento y servicio' : 'Versión corta, para hacer en horas de servicio';
+  document.getElementById('score-chip').style.display='';
+  document.getElementById('score-chip').textContent = '—/'+maxTotal;
+  document.getElementById('modo-card').style.display='none';
+  document.getElementById('form-area').style.display='block';
+  document.getElementById('bottom-bar').style.display='flex';
+  buildModulos();
+  loadDraft();
+}
+
+function formatTs(d){
+  if(!(d instanceof Date)) d=new Date(d);
+  return d.toLocaleDateString('es-CO')+' '+d.toLocaleTimeString('es-CO');
+}
+
+function initGPS(){
+  if(!navigator.geolocation){document.getElementById('gps-val').textContent='GPS no disponible';return;}
+  navigator.geolocation.getCurrentPosition(pos=>{
+    gpsData.lat=pos.coords.latitude.toFixed(6);
+    gpsData.lng=pos.coords.longitude.toFixed(6);
+    gpsData.address=gpsData.lat+', '+gpsData.lng;
+    document.getElementById('gps-val').textContent=gpsData.address;
+    document.getElementById('gps-dot').className='gps-dot ok';
+    fetch('https://nominatim.openstreetmap.org/reverse?lat='+gpsData.lat+'&lon='+gpsData.lng+'&format=json')
+      .then(r=>r.json()).then(d=>{if(d.display_name){gpsData.address=d.display_name;document.getElementById('gps-val').textContent=d.display_name.substring(0,60)+'...';}}).catch(()=>{});
+  },()=>{document.getElementById('gps-val').textContent='Error de GPS';document.getElementById('gps-dot').className='gps-dot err';});
+}
+
+function buildPDV(){
+  const sel=document.getElementById('f_pdv');
+  PDV_DATA.sort((a,b)=>a.n.localeCompare(b.n)).forEach(p=>{
+    const o=document.createElement('option');
+    o.value=p.n;o.dataset.z=p.z;o.dataset.c=p.c;o.dataset.t=p.t;
+    o.textContent=p.n;sel.appendChild(o);
+  });
+}
+
+function onPDV(){
+  const sel=document.getElementById('f_pdv');
+  const opt=sel.options[sel.selectedIndex];
+  if(!opt.value)return;
+  document.getElementById('a-zona').textContent=opt.dataset.z||'—';
+  document.getElementById('a-coord').textContent=opt.dataset.c||'—';
+  document.getElementById('a-tipo').textContent=opt.dataset.t||'—';
+  document.getElementById('pdv-auto').style.display='block';
+}
+
+function buildModulos(){
+  const cont=document.getElementById('modulos-container');
+  scores=new Array(MODULOS.length).fill(0);
+  MODULOS.forEach((mod,mi)=>{
+    const sec=document.createElement('div');
+    sec.className='section';
+    let itemsHTML='';
+    mod.items.forEach(item=>{
+      itemsHTML+=`<div class="item-block">
+        <div class="item-label">${item.label}</div>
+        <div class="item-opts">
+          <button class="opt-btn" onclick="resp('${item.id}','ok',this,${mi})">✓ Sí/Ok</button>
+          <button class="opt-btn" onclick="resp('${item.id}','no',this,${mi})">✗ No</button>
+          <button class="opt-btn" onclick="resp('${item.id}','na',this,${mi})">— N/A</button>
+        </div>
+        <span class="note-toggle" onclick="toggleNote('n_${item.id}')">+ nota</span>
+        <div class="note-area" id="na_${item.id}"><textarea id="n_${item.id}" placeholder="Observación..."></textarea></div>
+      </div>`;
+    });
+    sec.innerHTML=`<div class="sec-hdr" onclick="toggleSec(this)">
+      <div class="sec-left">
+        <div class="sec-icon ${mod.cls}">${mod.icon}</div>
+        <div><div class="sec-name">${mod.nombre}</div><div class="sec-max">/${mod.max} pts</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="sec-score" id="score-m${mi}">0/${mod.max}</div>
+        <span class="chevron">▾</span>
+      </div>
+    </div>
+    <div class="sec-body">
+      ${itemsHTML}
+      <div class="mod-score-bar">
+        <div class="mod-score-row"><span class="mod-score-label">Puntaje módulo</span><span class="mod-score-val" id="mval-${mi}">0/${mod.max}</span></div>
+        <div class="score-bar-bg"><div class="score-bar-fill" id="mbar-${mi}" style="width:0%"></div></div>
+      </div>
+    </div>`;
+    cont.appendChild(sec);
+  });
+}
+
+function resp(id,val,btn,mi){
+  respuestas[id]=val;
+  const parent=btn.parentElement;
+  parent.querySelectorAll('.opt-btn').forEach(b=>{b.className='opt-btn';});
+  btn.classList.add(val==='ok'?'sel-ok':val==='no'?'sel-no':'sel-na');
+  calcTotal();
+}
+
+function toggleNote(id){
+  const area=document.getElementById('na_'+id.replace('n_',''));
+  area.classList.toggle('open');
+}
+
+function toggleSec(hdr){
+  const body=hdr.nextElementSibling;
+  const chev=hdr.querySelector('.chevron');
+  body.classList.toggle('open');
+  chev.classList.toggle('open');
+}
+
+function calcTotal(){
+  let total=0;
+  MODULOS.forEach((mod,mi)=>{
+    let ok=0,aplicables=0;
+    mod.items.forEach(item=>{
+      if(item.informativo)return; // no cuenta para el puntaje
+      const r=respuestas[item.id];
+      if(r==='ok'){ok++;aplicables++;}
+      else if(r==='no'){aplicables++;}
+    });
+    const s=aplicables>0?Math.round(ok/aplicables*mod.max):0;
+    scores[mi]=s;
+    total+=s;
+    document.getElementById('score-m'+mi).textContent=s+'/'+mod.max;
+    document.getElementById('mval-'+mi).textContent=s+'/'+mod.max;
+    document.getElementById('mbar-'+mi).style.width=(aplicables>0?ok/aplicables*100:0)+'%';
+  });
+  const maxTotal=MODULOS.reduce((a,m)=>a+m.max,0);
+  document.getElementById('total-num').textContent=total;
+  document.getElementById('total-bar').style.width=(total/maxTotal*100)+'%';
+  document.getElementById('score-chip').textContent=total+'/'+maxTotal;
+  const estado=total>=Math.round(maxTotal*.85)?'VERDE':total>=Math.round(maxTotal*.70)?'AMARILLO':'ROJO';
+  const chip=document.getElementById('estado-chip');
+  chip.textContent=(estado==='VERDE'?'🟢':estado==='AMARILLO'?'🟡':'🔴')+' '+estado;
+  chip.className='estado-chip chip-'+estado.toLowerCase();
+
+  // Mini resumen módulos
+  const ms=document.getElementById('mods-summary');
+  ms.innerHTML=MODULOS.map((m,i)=>`<div class="mod-chip"><div class="mod-chip-name">${m.nombre.split(' ')[0]}</div><div class="mod-chip-val">${scores[i]}/${m.max}</div></div>`).join('');
+}
+
+function txt(id){const e=document.getElementById(id);return e?e.value.trim():'';}
+
+function uid(){return Date.now().toString()+Math.random().toString(36).slice(2,7);}
+
+// Estado de compromisos por hallazgo (índice = línea del textarea de hallazgos)
+let compromisosEdit={};
+
+function actualizarCompromiso(idx,campo,valor){
+  if(!compromisosEdit[idx])compromisosEdit[idx]={};
+  compromisosEdit[idx][campo]=valor;
+}
+
+function generarTareas(){
+  const hallazgos=(document.getElementById('hallazgos').value||'').split('\n').filter(h=>h.trim());
+  if(!hallazgos.length){document.getElementById('tasks-section').style.display='none';return;}
+  const mapa={'uniforme':'Coordinador','aseo':'Coordinador','uñas':'Coordinador','cabello':'Coordinador','cerveza':'Coordinador','abv':'Coordinador','ibu':'Coordinador','maridar':'Coordinador','servido':'Coordinador','saluda':'Coordinador','actitud':'Coordinador','factura':'Gte Ops','propina':'Gte Ops','marca':'Coordinador','legales':'Gte Ops','herramientas':'Coordinador'};
+  document.getElementById('tasks-section').style.display='block';
+  const today=new Date();
+  const areas=['Coordinador','Mantenimiento','Compras','Gte Ops','Otro'];
+  document.getElementById('tasks-body').innerHTML=hallazgos.map((h,idx)=>{
+    const hl=h.toLowerCase();let areaSugerida='Coordinador',dias=7;
+    for(const[k,r] of Object.entries(mapa)){if(hl.includes(k)){areaSugerida=r;break;}}
+    if(hl.includes('no funciona')||hl.includes('dañad')||hl.includes('sin funcionar'))dias=3;
+    const fechaSugerida=new Date(today);fechaSugerida.setDate(fechaSugerida.getDate()+dias);
+    const fStrISO=fechaSugerida.toISOString().slice(0,10);
+    const criticidad=dias===3?'ALTA':'MEDIA';
+    const prev=compromisosEdit[idx]||{};
+    const area=prev.area||areaSugerida;
+    const fecha=prev.fecha||fStrISO;
+    const responsable=prev.responsable!==undefined?prev.responsable:'';
+    const responsableSeguimiento=prev.responsableSeguimiento!==undefined?prev.responsableSeguimiento:'';
+    compromisosEdit[idx]={area,fecha,responsable,responsableSeguimiento,criticidad,descripcion:h};
+    return `<div class="item-block">
+      <div class="item-label">${h}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px">
+        <select onchange="actualizarCompromiso(${idx},'area',this.value)" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 8px;font-size:12px;color:var(--text);font-family:var(--font)">
+          ${areas.map(o=>`<option value="${o}" ${o===area?'selected':''}>${o}</option>`).join('')}
+        </select>
+        <input type="date" value="${fecha}" onchange="actualizarCompromiso(${idx},'fecha',this.value)" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 8px;font-size:12px;color:var(--text);font-family:var(--font)">
+      </div>
+      <input type="text" placeholder="Responsable (nombre)" value="${responsable}" oninput="actualizarCompromiso(${idx},'responsable',this.value)" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 8px;font-size:12px;color:var(--text);font-family:var(--font);margin-bottom:6px">
+      <input type="text" placeholder="Responsable de seguimiento" value="${responsableSeguimiento}" oninput="actualizarCompromiso(${idx},'responsableSeguimiento',this.value)" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 8px;font-size:12px;color:var(--text);font-family:var(--font)">
+    </div>`;
+  }).join('');
+}
+
+// Guardado principal — sin Sheet legacy previo, se escribe directo al maestro (mismo patrón que Cocina)
+async function guardarEnMaestro(auditId,pdv,zona,coord,tipo,total,maxTotal){
+  const scorePct=(total/maxTotal*100);
+  const clasifUniversal=scorePct>=95?'Excelente':scorePct>=85?'Bien':scorePct>=80?'Por mejorar':scorePct>=70?'Regular':'Crítico';
+  const auditoria={
+    id:auditId,tipo:TIPO_AUDITORIA,pdv,zona,modalidad:'FRANQUICIA',tipoPdv:tipo,
+    fecha:new Date().toISOString().slice(0,10),hora:new Date().toTimeString().slice(0,5),
+    auditor:coord,manager:'',coordinadorZona:coord,receptor:'',
+    camposAdicionales:JSON.stringify({}),
+    scoreTotal:total,scoreMax:maxTotal,scorePct:scorePct.toFixed(1),clasificacion:clasifUniversal,
+    itemsEvaluados:JSON.stringify(respuestas),creadoEn:new Date().toISOString()
+  };
+  const hallazgos=[],compromisos=[];
+  Object.values(compromisosEdit).forEach(c=>{
+    if(!c.descripcion)return;
+    const categoriaId=(c.area||'general').toLowerCase().replace(/\s+/g,'_');
+    const hallazgoId=uid();
+    hallazgos.push({
+      id:hallazgoId,auditId,auditTipo:TIPO_AUDITORIA,pdv,zona,coordinador:coord,
+      categoriaId,categoriaNombre:c.area||'General',descripcion:c.descripcion,criticidad:c.criticidad,
+      tipo:'HALLAZGO',creadoEn:new Date().toISOString()
+    });
+    compromisos.push({
+      id:uid(),hallazgoId,auditId,pdv,zona,coordinador:coord,auditTipo:TIPO_AUDITORIA,categoriaId,
+      descripcionAccion:c.descripcion,responsable:c.responsable||'',areaEjecutora:c.area||'',
+      fechaCompromiso:c.fecha||'',estado:'ABIERTO',evidencias:JSON.stringify([]),reincidenciaCount:0,
+      fechaCierre:'',evidenciaCierre:'',validadoPor:'',pdfEnviado:false,tipo:'COMPROMISO',creadoEn:new Date().toISOString(),
+      responsableSeguimiento:c.responsableSeguimiento||''
+    });
+  });
+  await fetch(MASTER_SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({token:MASTER_TOKEN,action:'save_auditoria',auditoria,hallazgos,compromisos})});
+}
+
+function construirActaCapacitacionesHTML(pdv,zona,coord,total,maxTotal,estado){
+  const filasModulos=MODULOS.map((m,mi)=>`<tr><td>${m.nombre}</td><td>${scores[mi]||0} / ${m.max}</td></tr>`).join('');
+  const compromisos=Object.values(compromisosEdit).filter(c=>c.descripcion);
+  const filasCompromisos=compromisos.map(c=>
+    `<tr><td>${c.descripcion}</td><td>${c.responsable||''}</td><td>${c.responsableSeguimiento||''}</td><td>${c.area||''}</td><td>${c.fecha||''}</td></tr>`
+  ).join('');
+  return `
+    <div style="text-align:center;border-bottom:3px solid #F59E0B;padding-bottom:12px;margin-bottom:16px">
+      <h2 style="color:#c9790a">🍺 BBC Colombia · Temple Colombia</h2>
+      <h3>Acta de Compromisos — Capacitaciones (${MODO==='completa'?'Completa':'En Servicio'})</h3>
+    </div>
+    <table style="width:100%;border-collapse:collapse;font-size:12px">
+      <tr><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">PDV</th><td style="border:1px solid #ccc;padding:6px 8px">${pdv}</td><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Fecha</th><td style="border:1px solid #ccc;padding:6px 8px">${tsInicio}</td></tr>
+      <tr><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Zona</th><td style="border:1px solid #ccc;padding:6px 8px">${zona}</td><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Coordinador</th><td style="border:1px solid #ccc;padding:6px 8px">${coord}</td></tr>
+    </table>
+    <h3 style="margin-top:20px">Resultado global: ${total}/${maxTotal} — ${estado}</h3>
+    <table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:8px">
+      <thead><tr><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Módulo</th><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Puntaje</th></tr></thead>
+      <tbody>${filasModulos}</tbody>
+    </table>
+    <h3 style="margin-top:20px">Compromisos</h3>
+    <table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead><tr><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Hallazgo</th><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Responsable</th><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Seguimiento</th><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Área</th><th style="background:#F59E0B;color:#fff;padding:6px 8px;text-align:left">Fecha compromiso</th></tr></thead>
+      <tbody>${filasCompromisos||'<tr><td colspan="4">Sin compromisos registrados</td></tr>'}</tbody>
+    </table>
+    <h3 style="margin-top:20px">Notas adicionales</h3>
+    <p>${txt('notas')||'—'}</p>
+    <div style="display:flex;gap:24px;margin-top:40px">
+      <div style="flex:1;border-top:1px solid #333;padding-top:6px;text-align:center;font-size:12px">Firma Auditor<br>${coord}</div>
+      <div style="flex:1;border-top:1px solid #333;padding-top:6px;text-align:center;font-size:12px">Firma Manager / Receptor</div>
+    </div>
+  `;
+}
+
+async function enviarActaPdfCapacitaciones(pdv,zona,coord,total,maxTotal,estado){
+  const destinatarios=prompt('¿A qué correo(s) enviar el Acta de Compromisos? (separa varios con coma)','');
+  if(!destinatarios)return;
+  mostrarToast('Enviando correo con el PDF adjunto…');
+  const asunto=`Capacitaciones (${MODO==='completa'?'Completa':'En Servicio'}) — ${pdv} — ${tsInicio}`;
+  const actaHtml=construirActaCapacitacionesHTML(pdv,zona,coord,total,maxTotal,estado);
+  try{
+    await fetch(MASTER_SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token:MASTER_TOKEN,action:'enviar_acta_pdf',actaHtml,destinatarios,asunto})});
+    mostrarToast('✓ Enviado — revisa la bandeja de '+destinatarios);
+  }catch(e){
+    mostrarToast('⚠ Error de conexión al enviar el correo','#ef4444');
+  }
+}
+
+async function enviar(){
+  const btn=document.getElementById('btn-enviar');
+  const pdv=txt('f_pdv');
+  if(!pdv){mostrarToast('Selecciona un PDV','#ef4444');return;}
+  const sinResp=[];
+  MODULOS.forEach(mod=>mod.items.forEach(item=>{if(!respuestas[item.id])sinResp.push(item.label);}));
+  if(sinResp.length>0){mostrarToast('Faltan '+sinResp.length+' ítems por responder','#ef4444');return;}
+
+  btn.textContent='Enviando...';btn.disabled=true;
+  const sel=document.getElementById('f_pdv');
+  const opt=sel.options[sel.selectedIndex];
+  const zona=opt.dataset.z||'';
+  const coord=opt.dataset.c||'';
+  const tipo=opt.dataset.t||'';
+  let total=0;scores.forEach(s=>total+=s);
+  const maxTotal=MODULOS.reduce((a,m)=>a+m.max,0);
+  const estado=total>=Math.round(maxTotal*.85)?'VERDE':total>=Math.round(maxTotal*.70)?'AMARILLO':'ROJO';
+
+  try{
+    const auditId=uid();
+    await guardarEnMaestro(auditId,pdv,zona,coord,tipo,total,maxTotal);
+    mostrarToast('✓ Guardado correctamente');
+    btn.textContent='✓ Auditoría enviada';btn.style.background='#22c55e';btn.style.cursor='not-allowed';
+    try{localStorage.removeItem(DRAFT_KEY);}catch(e){}
+    const bottomBar=document.querySelector('.bottom-bar');
+    const btnCorreo=document.createElement('button');
+    btnCorreo.className='btn';
+    btnCorreo.style.background='#1a2e1a';btnCorreo.style.border='1px solid #22c55e';btnCorreo.style.color='#22c55e';
+    btnCorreo.textContent='✉ Enviar Acta PDF';
+    btnCorreo.onclick=()=>enviarActaPdfCapacitaciones(pdv,zona,coord,total,maxTotal,estado);
+    bottomBar.insertBefore(btnCorreo,btn);
+  }catch(e){mostrarToast('Error de red','#ef4444');btn.textContent='Guardar en Sheets';btn.disabled=false;}
+}
+
+function guardarBorrador(){
+  const draft={respuestas,scores,pdv:txt('f_pdv'),hallazgos:txt('hallazgos'),notas:txt('notas'),ts:tsInicio,compromisosEdit};
+  try{localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));mostrarToast('Borrador guardado');}catch(e){}
+}
+
+function loadDraft(){
+  try{
+    const d=JSON.parse(localStorage.getItem(DRAFT_KEY)||'{}');
+    if(!d.pdv) return;
+    document.getElementById('f_pdv').value=d.pdv;onPDV();
+    respuestas=d.respuestas||{};
+    Object.entries(respuestas).forEach(([id,val])=>{
+      const btns=document.querySelectorAll(`[onclick*="'${id}'"]`);
+      btns.forEach(btn=>{if(btn.onclick&&btn.onclick.toString().includes("'"+val+"'"))btn.classList.add(val==='ok'?'sel-ok':val==='no'?'sel-no':'sel-na');});
+    });
+    if(d.hallazgos)document.getElementById('hallazgos').value=d.hallazgos;
+    if(d.notas)document.getElementById('notas').value=d.notas;
+    if(d.compromisosEdit)compromisosEdit=d.compromisosEdit;
+    generarTareas();
+    calcTotal();
+    document.getElementById('draft-banner').classList.add('show');
+  }catch(e){}
+}
+
+function nuevaAuditoria(){
+  if(!confirm('¿Descartar el borrador actual y empezar una nueva auditoría?'))return;
+  try{
+    localStorage.removeItem('bbc_draft_capacitaciones_completa');
+    localStorage.removeItem('bbc_draft_capacitaciones_servicio');
+  }catch(e){}
+  location.reload();
+}
+
+function mostrarToast(msg,color='#22c55e'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.style.background=color;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+</script>
+</body>
+</html>
