@@ -109,7 +109,18 @@ select:focus{border-color:var(--accent)}
   <span class="draft-clear" onclick="nuevaAuditoria()">Empezar nueva</span>
 </div>
 
-<div class="modo-card" id="modo-card">
+<div class="modo-card" id="persona-card">
+  <div class="modo-title">¿Quién eres?</div>
+  <div class="modo-sub">Selecciona tu nombre para iniciar la auditoría</div>
+  <button type="button" class="modo-btn" onclick="elegirPersona('Sebastián Arias')">
+    <div class="modo-btn-title">Sebastián Arias</div>
+  </button>
+  <button type="button" class="modo-btn" onclick="elegirPersona('Julieth Jimenez')">
+    <div class="modo-btn-title">Julieth Jimenez</div>
+  </button>
+</div>
+
+<div class="modo-card" id="modo-card" style="display:none">
   <div class="modo-title">¿Qué auditoría vas a hacer?</div>
   <div class="modo-sub">Escoge según el momento de tu visita</div>
   <button type="button" class="modo-btn" onclick="elegirModo('completa')">
@@ -409,6 +420,8 @@ let gpsData={lat:'',lng:'',address:'Sin GPS'};
 let tsInicio='';
 let respuestas={};
 let scores=[];
+let PERSONA_ACTUAL='';
+const PERSONA_KEY='bbc_persona_capacitaciones';
 
 // Init
 window.onload=function(){
@@ -416,10 +429,27 @@ window.onload=function(){
   document.getElementById('ts-val').textContent=tsInicio;
   initGPS();
   buildPDV();
-  // si ya hay un borrador de alguno de los 2 modos, se entra directo a ese (sin mostrar el selector)
-  if(localStorage.getItem('bbc_draft_capacitaciones_completa')) elegirModo('completa');
-  else if(localStorage.getItem('bbc_draft_capacitaciones_servicio')) elegirModo('servicio');
+
+  let personaGuardada='';
+  try{ personaGuardada=localStorage.getItem(PERSONA_KEY)||''; }catch(e){}
+  const hayBorrador = localStorage.getItem('bbc_draft_capacitaciones_completa') || localStorage.getItem('bbc_draft_capacitaciones_servicio');
+
+  if(personaGuardada){
+    PERSONA_ACTUAL=personaGuardada;
+    document.getElementById('persona-card').style.display='none';
+    // si ya hay un borrador de alguno de los 2 modos, se entra directo a ese (sin mostrar el selector)
+    if(localStorage.getItem('bbc_draft_capacitaciones_completa')) elegirModo('completa');
+    else if(localStorage.getItem('bbc_draft_capacitaciones_servicio')) elegirModo('servicio');
+    else document.getElementById('modo-card').style.display='block';
+  }
 };
+
+function elegirPersona(nombre){
+  PERSONA_ACTUAL=nombre;
+  try{ localStorage.setItem(PERSONA_KEY,nombre); }catch(e){}
+  document.getElementById('persona-card').style.display='none';
+  document.getElementById('modo-card').style.display='block';
+}
 
 function elegirModo(modo){
   MODO=modo;
@@ -470,7 +500,7 @@ function onPDV(){
   const opt=sel.options[sel.selectedIndex];
   if(!opt.value)return;
   document.getElementById('a-zona').textContent=opt.dataset.z||'—';
-  document.getElementById('a-coord').textContent=opt.dataset.c||'—';
+  document.getElementById('a-coord').textContent=PERSONA_ACTUAL;
   document.getElementById('a-tipo').textContent=opt.dataset.t||'—';
   document.getElementById('pdv-auto').style.display='block';
 }
@@ -707,7 +737,7 @@ async function enviar(){
   const sel=document.getElementById('f_pdv');
   const opt=sel.options[sel.selectedIndex];
   const zona=opt.dataset.z||'';
-  const coord=opt.dataset.c||'';
+  const coord=PERSONA_ACTUAL;
   const tipo=opt.dataset.t||'';
   let total=0;scores.forEach(s=>total+=s);
   const maxTotal=MODULOS.reduce((a,m)=>a+m.max,0);
