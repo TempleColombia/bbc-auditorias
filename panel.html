@@ -204,12 +204,10 @@ input[type=file]#ev-archivos{width:100%;font-size:12px;margin-top:2px;}
   <div class="stat-grid" id="stats-puntos"></div>
   <div id="tendencia-puntos" style="margin-bottom:20px"></div>
   <div id="estado-puntos"></div>
+  <div id="heatmap-puntos"></div>
   <div id="alarma-puntos"></div>
   <div id="ranking-puntos"></div>
-  <div id="heatmap-puntos"></div>
   <div id="cerrados-puntos"></div>
-  <div class="sec-title">Visitas — Puntos Propios</div>
-  <div class="tbl-wrap" id="tabla-puntos"></div>
 </div>
 
 <!-- HACCP -->
@@ -693,11 +691,10 @@ function renderPuntos(){
   document.getElementById('stats-puntos').innerHTML = statsHTML(rows);
   document.getElementById('tendencia-puntos').innerHTML = tendenciaHTML(['puntos-propios']);
   document.getElementById('estado-puntos').innerHTML = estadoPuntosHTML(rows);
+  document.getElementById('heatmap-puntos').innerHTML = heatmapHTML(rows);
   document.getElementById('alarma-puntos').innerHTML = alarmaHTML(rows);
   document.getElementById('ranking-puntos').innerHTML = rankingHTML(rows);
-  document.getElementById('heatmap-puntos').innerHTML = heatmapHTML(rows);
   document.getElementById('cerrados-puntos').innerHTML = compromisosCerradosHTML(['puntos-propios']);
-  document.getElementById('tabla-puntos').innerHTML = tablaAuditoriasHTML(rows, false);
 }
 
 /* ── COMPROMISOS (no se filtra por período: un compromiso puede seguir abierto más allá del mes en que se creó) ── */
