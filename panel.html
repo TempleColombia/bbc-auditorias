@@ -378,17 +378,91 @@ const ZONA_MAP_GENERALES = {
 };
 const ORDEN_ZONAS_GENERALES = ['Sur','Andes','Centro Fraq','Centro Prop'];
 
+// Mismo catálogo de 114 PDVs que usa el selector de auditoria_general.html (f_pdv / virt_PDV_DATA /
+// hor_PDV_DATA — los 3 modos comparten esta misma lista), copiado aquí para poder detectar PDVs
+// con CERO visitas, igual que se hace con Puntos Propios.
+const CATALOGO_GENERALES = {
+  "Sur Fraq": [
+    "ARTESANALES PREMIUM CALI CHIPICHAPE", "ARTESANALES PREMIUM CALI GRANADA",
+    "ARTESANALES PREMIUM CALI RÍO CALI", "ARTESANALES PREMIUM FLORA CALI",
+    "ARTESANALES PREMIUN CALI AEROPUERTO", "BAP COMPANY FLORENCIA CUNDUY", "BAP COMPANY ZOMAC S.A.S",
+    "BIRRAPEDIA SAS - TULUA", "BREWERY BODEGA SEBASTIAN PASTO", "BREWERY SAS PASTO ESTUDIANTES",
+    "GESSAG SAS PALMIRA LLANOGRANDE", "GRUPO INGERLIN CALI PARQUE DEL PERRO",
+    "GRUPO INGERLIN JARDIN PLAZA", "GRUPO INGERLIN PUERTO 125", "GRUPO INGERLIN SAS - LAS PALMAS",
+    "GRUPO INGERLIN SAS - SAN FERNANDO", "INVERSIONES AHG - CC ACQUA IBAGUE",
+    "INVERSIONES AHG IBAGUE VERGEL PLAZA", "RESILIENCIA FC S.A.S. - POPAYAN",
+    "RESILIENCIA POPAYAN CENTRO HISTORICO", "RESILIENCIA POPAYAN NORTE", "SANTAMARTA"
+  ],
+  "Andes Fraq": [
+    "AMANTA SAS - ARMENIA", "AMANTA SAS ARMENIA PORTAL QUINDIO", "AMANTA SAS PALO DE AGUA",
+    "AMANTA SAS PERIERA", "BBC CARTAGO AMANTA SAS", "BBC MEDELLIN", "BODEGA SABANETA MERA CERON",
+    "BODEGA VILLA DEL ROSARIO INV APONTE SAS", "BURBANO CONTRERAS NAVAS - CUCUTA",
+    "INVERSIONES AHG - PUB BUCARAMANGA", "INVERSIONES AHG LA FLORIDA", "MALTAURBANA SAS MANIZALES",
+    "MERA CERON BODEGA MEDELLIN LA 70", "PERLA DEL LUPULO BODEGA UNICENTRO PEREIR",
+    "PUB BARRANQUILLA CANTOR COMPANY", "PUB MANIZALES", "PUB VALBUENA BROTHERS SAS - ESTRADA MED",
+    "VALBUENA BROTHERS - MEDELLIN AMSTERDAM", "VALBUENA BROTHERS CIUDAD DE RIO",
+    "VALBUENA BROTHERS COMPANY CC LLANOGRANDE", "VALBUENA BROTHERS SAS -LAURELES MEDELLIN",
+    "VALBUENA BROTHERS SQUARE"
+  ],
+  "Centro FRQ": [
+    "BEER PALS JAVERIANA", "BEER PALS SAS CL 109", "BODEGA GRAN ESTACIÓN", "BODEGA KUZUDAMA MALL PLAZA",
+    "DUYAN INVERSIONES SAS SOACHA TERREROS", "EL BREWER BODEGA BOGOTA COLINA 152",
+    "GRUPO PROYECATR ICO SAS - NUESTRO BOGOTA", "HARBOUR TOWN BOGOTA ALSACIA",
+    "HARBOUR TOWN SAS HAYUELOS", "INDUSTRIAS VANDELAY S.A.S CHIA",
+    "INDUSTRIAS VANDELAY UNICENTRO BOGOTA", "INVERSIONES AHG BOGOTÁ CALLE 165",
+    "INVERSIONES AHG CENTRO EMPRESARIAL 127", "INVERSIONES AHG UNICENTRO OCCIDENTE",
+    "OIKOS BODEGA BBC TOCANCIPA", "OLD STYLE BOGOTA TEQUENDAMA", "OLD STYLE BOGOTA VARDI",
+    "POLA INVESTMENT BODEGA CALLE 100 WTC", "POLA INVESTMENT BOGOTÁ SALITRE",
+    "POLA INVESTMENT GROUP - BODEGA CALLE 90", "PUB CHAPINERO KUZUDAMA SAS", "PUB SANTAFE KUZUDAMA SAS",
+    "PUB VILLA DEL RIO AHG", "VILLA DE LEYVA - POLA INVESTMENT GROUP", "VOLANDO ALTO SAS PUB CALLE 19",
+    "ZONA BBC BOGOTA CALLE 140", "ZONA BBC BOGOTA PORTO ALEGRE", "ZONA BBC S.A.S. - GRANADA HILLS",
+    "ZONA BBC SAS CALLE 150"
+  ],
+  "NORTE Propios": [
+    "BODEGA CALLE 100", "BODEGA CALLE 67", "BODEGA CALLE 93", "BODEGA CHICO", "BODEGA HEROES",
+    "BODEGA IMPERIAL", "BODEGA LOURDES", "BODEGA PASADENA", "BODEGA VILLA DEL PRADO",
+    "MINIPUB CALLE 97", "PUB ANDINO", "PUB AVDA 19", "PUB BELAIRE", "PUB CALLE 63", "PUB CALLE 85",
+    "PUB CEDRITOS", "PUB COLINA", "PUB PARQUE 93", "PUB PEPE SIERRA", "PUB ROSALES", "PUB USAQUEN"
+  ],
+  "SUR Propios": [
+    "BODEGA BOSA CENTRO", "BODEGA CALLE 43", "BODEGA CORFERIAS", "BODEGA DIVER PLAZA", "BODEGA MODELO",
+    "BODEGA PARK WAY", "BODEGA PLAZA CLARO", "BODEGA PORTAL CALLE 80", "BODEGA RESTREPO",
+    "BODEGA TERRAZA PASTEUR", "PUB BBC MOVISTAR ARENA", "PUB CANDELARIA", "PUB CENTRO MAYOR",
+    "PUB CONECTA", "PUB GALERIAS", "PUB PLAZA CENTRAL", "PUB PLAZA DE LAS AMERICAS", "PUB SALITRE",
+    "PUB SAN MARTIN", "PUB TITAN"
+  ]
+};
+
+// Los envíos históricos migrados usaban nombres de PDV libres/abreviados (p.ej. "ANDINO" en vez de
+// "PUB ANDINO"); los envíos actuales siempre salen del selector fijo, así que ya no pasa. Se
+// normaliza (sin tildes, mayúsculas) para no marcar como "sin visita" un PDV que sí se visitó
+// pero quedó con un nombre distinto en el histórico.
+function normalizarPdv(s){
+  return (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().trim();
+}
+const CATALOGO_GENERALES_NORM = {};
+Object.entries(CATALOGO_GENERALES).forEach(([zonaCruda, pdvs])=>{
+  pdvs.forEach(pdv => { CATALOGO_GENERALES_NORM[normalizarPdv(pdv)] = {pdv, zonaCruda}; });
+});
+
 // Meta: 2 visitas/mes por PDV — General, Virtual y Hora de Servicio cuentan por igual.
-// A diferencia de Puntos Propios no hay un catálogo fijo de PDVs, así que solo se puede
-// detectar cobertura baja (<2 visitas) entre los PDVs que sí aparecen, no los que nunca aparecen.
 function estadoVisitasGenerales(rows){
   const porZona = {};
+  const zonaDe = (zonaCruda) => porZona[ZONA_MAP_GENERALES[zonaCruda] || zonaCruda] ||
+    (porZona[ZONA_MAP_GENERALES[zonaCruda] || zonaCruda] = {porPdv:{}, total:0});
+
+  // Sembrar el catálogo completo en 0 para poder detectar los que no tuvieron ninguna visita
+  Object.entries(CATALOGO_GENERALES).forEach(([zonaCruda, pdvs])=>{
+    pdvs.forEach(pdv => { zonaDe(zonaCruda).porPdv[pdv] = zonaDe(zonaCruda).porPdv[pdv] || 0; });
+  });
+
   rows.forEach(r=>{
-    const zona = ZONA_MAP_GENERALES[r.zona] || r.zona || 'Sin zona';
-    if(!porZona[zona]) porZona[zona] = {porPdv:{}, total:0};
-    const pdv = r.pdv||'—';
-    porZona[zona].porPdv[pdv] = (porZona[zona].porPdv[pdv]||0) + 1;
-    porZona[zona].total++;
+    const match = CATALOGO_GENERALES_NORM[normalizarPdv(r.pdv)];
+    const zonaCruda = match ? match.zonaCruda : (r.zona || 'Sin zona');
+    const pdv = match ? match.pdv : (r.pdv || '—');
+    const z = zonaDe(zonaCruda);
+    z.porPdv[pdv] = (z.porPdv[pdv] || 0) + 1;
+    z.total++;
   });
   return porZona;
 }
@@ -404,26 +478,26 @@ function estadoGeneralesHTML(rows){
   });
   if(!zonas.length) return '';
 
-  const totalPdvs = new Set(rows.map(r=>r.pdv||'—')).size;
-  const totalVisitas = rows.length;
-  const totalBajoMeta = zonas.reduce((acc,z)=>acc + Object.values(porZona[z].porPdv).filter(n=>n<2).length, 0);
-
+  let totalPdvs=0, totalVisitas=0, totalSinVisita=0, totalUnaVisita=0;
   const bloques = zonas.map(z=>{
     const d = porZona[z];
     const pdvs = Object.entries(d.porPdv);
-    const bajoMeta = pdvs.filter(([,n])=>n<2).map(([pdv])=>pdv).sort();
+    const sinVisita = pdvs.filter(([,n])=>n===0).map(([pdv])=>pdv).sort();
+    const unaVisita = pdvs.filter(([,n])=>n===1).map(([pdv])=>pdv).sort();
     const promVisitas = (d.total/pdvs.length).toFixed(1);
+    totalPdvs += pdvs.length; totalVisitas += d.total;
+    totalSinVisita += sinVisita.length; totalUnaVisita += unaVisita.length;
     return `<div style="margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--brd)">
       <div style="font-weight:700;font-size:13px;margin-bottom:4px">${z} <span style="color:var(--muted);font-weight:400;font-size:11px">— ${pdvs.length} PDVs · ${d.total} visitas · ${promVisitas} visitas/PDV en promedio</span></div>
-      ${bajoMeta.length
-        ? `<div style="font-size:12px"><span class="badge badge-warn">⚠️ ${bajoMeta.length} con menos de 2 visitas</span> ${bajoMeta.join(', ')}</div>`
-        : `<div style="font-size:12px"><span class="badge badge-ok">✅ Todos con 2+ visitas</span></div>`}
+      ${sinVisita.length?`<div style="font-size:12px;margin-bottom:3px"><span class="badge badge-alert">❌ ${sinVisita.length} sin ninguna visita</span> ${sinVisita.join(', ')}</div>`:''}
+      ${unaVisita.length?`<div style="font-size:12px"><span class="badge badge-warn">⚠️ ${unaVisita.length} con solo 1 visita</span> ${unaVisita.join(', ')}</div>`:''}
+      ${!sinVisita.length && !unaVisita.length?`<div style="font-size:12px"><span class="badge badge-ok">✅ Todos con 2+ visitas</span></div>`:''}
     </div>`;
   }).join('');
 
   return `<div class="alarma-box" style="background:var(--yd);border-color:rgba(217,154,31,.35)">
     <div class="alarma-title" style="color:var(--yellow)">📍 Cobertura por zona este período — meta: 2 visitas/mes por PDV (General, Virtual u Horario cuentan igual)</div>
-    <div style="font-size:11px;color:var(--muted);margin-bottom:12px">Total: ${totalPdvs} PDVs visitados · ${totalVisitas} visitas · ${totalBajoMeta} PDV${totalBajoMeta===1?'':'s'} con menos de 2 visitas — solo se detectan PDVs con cobertura baja, no hay catálogo fijo para saber cuáles no tuvieron ninguna visita.</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:12px">Total: ${totalPdvs} PDVs en el catálogo · ${totalVisitas} visitas · ${totalSinVisita} sin ninguna visita · ${totalUnaVisita} con solo 1 visita</div>
     ${bloques}
   </div>`;
 }
