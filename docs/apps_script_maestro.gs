@@ -130,6 +130,32 @@ function saveAuditoria_(payload) {
   return {status: 'saved', id: auditoria.id, hallazgos: hallazgos.length, compromisos: compromisos.length};
 }
 
+// Borra auditorías por id (y sus Hallazgos/Compromisos asociados por auditId).
+// Uso puntual: limpiar filas huérfanas de una migración de histórico.
+function deleteAuditorias_(payload) {
+  const ids = (payload.ids || []).map(String);
+  if (!ids.length) return {error: 'Sin ids para borrar'};
+
+  const borrarPorColumna_ = (sheet, colIndex, idsSet) => {
+    const values = sheet.getDataRange().getValues();
+    let borrados = 0;
+    for (let i = values.length - 1; i >= 1; i--) {
+      if (idsSet.has(String(values[i][colIndex]))) {
+        sheet.deleteRow(i + 1);
+        borrados++;
+      }
+    }
+    return borrados;
+  };
+
+  const idsSet = new Set(ids);
+  const auditoriasBorradas = borrarPorColumna_(getTab_(TAB_AUDITORIAS), 0, idsSet);
+  const hallazgosBorrados = borrarPorColumna_(getTab_(TAB_HALLAZGOS), 1, idsSet);
+  const compromisosBorrados = borrarPorColumna_(getTab_(TAB_COMPROMISOS), 2, idsSet);
+
+  return {status: 'deleted', auditoriasBorradas, hallazgosBorrados, compromisosBorrados};
+}
+
 function updateCompromiso_(payload) {
   const sheet = getTab_(TAB_COMPROMISOS);
   const headers = HEADERS[TAB_COMPROMISOS];
@@ -267,6 +293,7 @@ function doPost(e) {
 
     switch (payload.action) {
       case 'save_auditoria':    return ok(saveAuditoria_(payload));
+      case 'delete_auditorias': return ok(deleteAuditorias_(payload));
       case 'update_compromiso': return ok(updateCompromiso_(payload));
       case 'agregar_evidencia_compromiso': return ok(agregarEvidenciaCompromiso_(payload));
       case 'get_compromisos':   return ok(getCompromisos_(payload.filters));
