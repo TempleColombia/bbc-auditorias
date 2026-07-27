@@ -184,8 +184,14 @@ input[type=file]#ev-archivos{width:100%;font-size:12px;margin-top:2px;}
   <div class="stat-grid" id="stats-generales"></div>
   <div id="tendencia-generales" style="margin-bottom:20px"></div>
   <div id="estado-generales"></div>
-  <div id="heatmap-generales"></div>
   <div class="filters">
+    <select class="fil" id="fZonaGeneral" onchange="renderGenerales()">
+      <option value="">Todas las zonas</option>
+      <option value="Sur">Sur</option>
+      <option value="Andes">Andes</option>
+      <option value="Centro Fraq">Centro Fraq</option>
+      <option value="Centro Prop">Centro Prop</option>
+    </select>
     <select class="fil" id="fSubtipo" onchange="renderGenerales()">
       <option value="">Las 3 sub-auditorías</option>
       <option value="general">Solo General</option>
@@ -193,6 +199,7 @@ input[type=file]#ev-archivos{width:100%;font-size:12px;margin-top:2px;}
       <option value="hora-servicio">Solo Servicio</option>
     </select>
   </div>
+  <div id="heatmap-generales"></div>
   <div id="alarma-generales"></div>
   <div id="ranking-generales"></div>
   <div id="cerrados-generales"></div>
@@ -465,6 +472,14 @@ function estadoVisitasGenerales(rows){
     z.total++;
   });
   return porZona;
+}
+
+// Misma lógica de match que estadoVisitasGenerales, pero por fila individual —
+// permite filtrar el resto de la pestaña (heatmap, ranking, etc.) por zona de negocio.
+function zonaDeRow(r){
+  const match = CATALOGO_GENERALES_NORM[normalizarPdv(r.pdv)];
+  const zonaCruda = match ? match.zonaCruda : (r.zona || 'Sin zona');
+  return ZONA_MAP_GENERALES[zonaCruda] || zonaCruda;
 }
 
 function estadoGeneralesHTML(rows){
@@ -837,11 +852,13 @@ function renderAlimentos(){
 /* ── GENERALES ── */
 function renderGenerales(){
   const subtipo = document.getElementById('fSubtipo').value;
+  const zonaFiltro = document.getElementById('fZonaGeneral').value;
   const tipos = subtipo ? [subtipo] : ['general','visita-virtual','hora-servicio'];
-  const rows = allAuditorias.filter(a=>tipos.includes(a.tipo) && enPeriodo(a.fecha));
-  // La cobertura por zona siempre combina las 3 sub-auditorías (la meta de 2 visitas/mes
-  // no distingue cuál de las 3 se hizo), sin importar el filtro de subtipo elegido arriba.
+  let rows = allAuditorias.filter(a=>tipos.includes(a.tipo) && enPeriodo(a.fecha));
+  // La cobertura por zona siempre combina las 3 sub-auditorías y las 4 zonas juntas (la meta de
+  // 2 visitas/mes no distingue cuál de las 3 se hizo) — no se filtra por subtipo ni por zona.
   const rowsTodas = allAuditorias.filter(a=>['general','visita-virtual','hora-servicio'].includes(a.tipo) && enPeriodo(a.fecha));
+  if(zonaFiltro) rows = rows.filter(r=>zonaDeRow(r)===zonaFiltro);
   document.getElementById('stats-generales').innerHTML = statsHTML(rows);
   document.getElementById('tendencia-generales').innerHTML = tendenciaHTML(tipos);
   document.getElementById('estado-generales').innerHTML = estadoGeneralesHTML(rowsTodas);
