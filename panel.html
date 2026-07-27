@@ -566,31 +566,77 @@ function alarmaHTML(rows){
   </div>`;
 }
 
-function rankingHTML(rows){
+let rankingSort = {}; // { [containerId]: {key, dir} } — recuerda el orden elegido por el usuario en cada pestaña
+
+const RANKING_RENDER_MAP = {
+  'ranking-alimentos': ()=>renderAlimentos(),
+  'ranking-generales': ()=>renderGenerales(),
+  'ranking-puntos': ()=>renderPuntos(),
+  'ranking-capacitaciones': ()=>renderCapacitaciones()
+};
+
+function onRankingSort(id, key){
+  const cur = rankingSort[id] || {key:'prom', dir:1};
+  rankingSort[id] = (cur.key===key) ? {key, dir:-cur.dir} : {key, dir:1};
+  if(RANKING_RENDER_MAP[id]) RANKING_RENDER_MAP[id]();
+}
+
+function rankingHTML(rows, id){
   rows = rows.filter(r=>!esSinEvaluar(r));
   if(!rows.length) return '';
   const porPdv = {};
   rows.forEach(r=>{
     const pdv = r.pdv||'—';
-    if(!porPdv[pdv]) porPdv[pdv] = {sum:0, n:0, lastId:r.id};
+    if(!porPdv[pdv]) porPdv[pdv] = {sum:0, n:0, lastId:r.id, auditores:new Set()};
     porPdv[pdv].sum += parseFloat(r.scorePct||0);
     porPdv[pdv].n++;
     porPdv[pdv].lastId = r.id;
+    const auditor = r.auditor||r.coordinadorZona;
+    if(auditor) porPdv[pdv].auditores.add(auditor);
   });
-  const ranking = Object.entries(porPdv).map(([pdv,d])=>({pdv, prom: d.sum/d.n, n:d.n, lastId:d.lastId})).sort((a,b)=>a.prom-b.prom);
+  const ranking = Object.entries(porPdv).map(([pdv,d])=>({
+    pdv, prom: d.sum/d.n, n:d.n, lastId:d.lastId,
+    auditor: [...d.auditores].join(', ') || '—'
+  }));
+
+  const sort = rankingSort[id] || {key:'prom', dir:1};
+  ranking.sort((a,b)=>{
+    const va=a[sort.key], vb=b[sort.key];
+    if(typeof va==='string') return sort.dir*va.localeCompare(vb);
+    return sort.dir*(va-vb);
+  });
+
+  const th = (label,key)=>{
+    const active = sort.key===key;
+    return `<th style="cursor:pointer${active?';color:var(--amber)':''}" onclick="onRankingSort('${id}','${key}')">${label}${active?(sort.dir===1?' ▲':' ▼'):''}</th>`;
+  };
+
   return `<div class="ranking-wrap">
-    <div class="ranking-title">📉 Ranking de PDVs este período (peor a mejor)</div>
-    ${ranking.map((r,i)=>{
-      const color = r.prom>=85?'var(--green)':r.prom>=70?'var(--yellow)':'var(--red)';
-      return `<div class="ranking-row" onclick="verDetalle('${r.lastId}')">
-        <div class="ranking-pos">${i+1}</div>
-        <div>
-          <div class="ranking-pdv">${r.pdv}${r.n>1?' <span style="color:var(--muted);font-weight:400">('+r.n+' auditorías)</span>':''}</div>
-          <div class="ranking-bar-track"><div class="ranking-bar-fill" style="width:${r.prom}%;background:${color}"></div></div>
-        </div>
-        <div class="ranking-score" style="color:${color}">${r.prom.toFixed(0)}%</div>
-      </div>`;
-    }).join('')}
+    <div class="ranking-title">📉 Ranking de PDVs este período <span style="text-transform:none;font-weight:400;color:var(--muted)">— clic en un encabezado para ordenar</span></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr>
+        <th>#</th>
+        ${th('PDV','pdv')}
+        ${th('Auditor','auditor')}
+        ${th('Visitas','n')}
+        ${th('Score','prom')}
+      </tr></thead>
+      <tbody>${ranking.map((r,i)=>{
+        const color = r.prom>=85?'var(--green)':r.prom>=70?'var(--yellow)':'var(--red)';
+        return `<tr onclick="verDetalle('${r.lastId}')" style="cursor:pointer">
+          <td style="font-family:'DM Mono',monospace;font-weight:700;color:var(--muted)">${i+1}</td>
+          <td style="font-weight:600;font-size:12px">${r.pdv}</td>
+          <td style="font-size:11px;color:var(--muted)">${r.auditor}</td>
+          <td style="font-family:'DM Mono',monospace;font-size:12px">${r.n}</td>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div class="ranking-bar-track" style="flex:1;min-width:60px"><div class="ranking-bar-fill" style="width:${r.prom}%;background:${color}"></div></div>
+              <span style="color:${color};font-weight:800;font-family:'DM Mono',monospace;font-size:12px;white-space:nowrap">${r.prom.toFixed(0)}%</span>
+            </div>
+          </td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table></div>
   </div>`;
 }
 
@@ -651,7 +697,7 @@ function renderAlimentos(){
   document.getElementById('stats-alimentos').innerHTML = statsHTML(rows);
   document.getElementById('tendencia-alimentos').innerHTML = tendenciaHTML(['cocina']);
   document.getElementById('alarma-alimentos').innerHTML = alarmaHTML(rows);
-  document.getElementById('ranking-alimentos').innerHTML = rankingHTML(rows);
+  document.getElementById('ranking-alimentos').innerHTML = rankingHTML(rows, 'ranking-alimentos');
   document.getElementById('heatmap-alimentos').innerHTML = heatmapHTML(rows);
   document.getElementById('cerrados-alimentos').innerHTML = compromisosCerradosHTML(['cocina']);
   document.getElementById('tabla-alimentos').innerHTML = tablaAuditoriasHTML(rows, false);
@@ -665,7 +711,7 @@ function renderGenerales(){
   document.getElementById('stats-generales').innerHTML = statsHTML(rows);
   document.getElementById('tendencia-generales').innerHTML = tendenciaHTML(tipos);
   document.getElementById('alarma-generales').innerHTML = alarmaHTML(rows);
-  document.getElementById('ranking-generales').innerHTML = rankingHTML(rows);
+  document.getElementById('ranking-generales').innerHTML = rankingHTML(rows, 'ranking-generales');
   document.getElementById('heatmap-generales').innerHTML = heatmapHTML(rows);
   document.getElementById('cerrados-generales').innerHTML = compromisosCerradosHTML(tipos);
   document.getElementById('tabla-generales').innerHTML = tablaAuditoriasHTML(rows, true);
@@ -679,7 +725,7 @@ function renderCapacitaciones(){
   document.getElementById('stats-capacitaciones').innerHTML = statsHTML(rows);
   document.getElementById('tendencia-capacitaciones').innerHTML = tendenciaHTML(tipos);
   document.getElementById('alarma-capacitaciones').innerHTML = alarmaHTML(rows);
-  document.getElementById('ranking-capacitaciones').innerHTML = rankingHTML(rows);
+  document.getElementById('ranking-capacitaciones').innerHTML = rankingHTML(rows, 'ranking-capacitaciones');
   document.getElementById('heatmap-capacitaciones').innerHTML = heatmapHTML(rows);
   document.getElementById('cerrados-capacitaciones').innerHTML = compromisosCerradosHTML(tipos);
   document.getElementById('tabla-capacitaciones').innerHTML = tablaAuditoriasHTML(rows, true);
@@ -693,7 +739,7 @@ function renderPuntos(){
   document.getElementById('estado-puntos').innerHTML = estadoPuntosHTML(rows);
   document.getElementById('heatmap-puntos').innerHTML = heatmapHTML(rows);
   document.getElementById('alarma-puntos').innerHTML = alarmaHTML(rows);
-  document.getElementById('ranking-puntos').innerHTML = rankingHTML(rows);
+  document.getElementById('ranking-puntos').innerHTML = rankingHTML(rows, 'ranking-puntos');
   document.getElementById('cerrados-puntos').innerHTML = compromisosCerradosHTML(['puntos-propios']);
 }
 
