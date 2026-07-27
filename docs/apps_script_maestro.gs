@@ -156,6 +156,24 @@ function deleteAuditorias_(payload) {
   return {status: 'deleted', auditoriasBorradas, hallazgosBorrados, compromisosBorrados};
 }
 
+// Actualiza campos puntuales de una Auditoria (sin tocar Hallazgos/Compromisos).
+// Uso: recalcular clasificacion/scorePct tras un cambio de umbrales.
+function updateAuditoria_(payload) {
+  const sheet = getTab_(TAB_AUDITORIAS);
+  const headers = HEADERS[TAB_AUDITORIAS];
+  const row = findRowById_(sheet, payload.id);
+  if (row === -1) return {error: 'Auditoria no encontrada: ' + payload.id};
+
+  const campos = ['clasificacion', 'scorePct', 'scoreTotal'];
+  campos.forEach(campo => {
+    if (payload[campo] !== undefined) {
+      const col = headers.indexOf(campo) + 1;
+      if (col > 0) sheet.getRange(row, col).setValue(payload[campo]);
+    }
+  });
+  return {status: 'updated', id: payload.id};
+}
+
 function updateCompromiso_(payload) {
   const sheet = getTab_(TAB_COMPROMISOS);
   const headers = HEADERS[TAB_COMPROMISOS];
@@ -294,6 +312,7 @@ function doPost(e) {
     switch (payload.action) {
       case 'save_auditoria':    return ok(saveAuditoria_(payload));
       case 'delete_auditorias': return ok(deleteAuditorias_(payload));
+      case 'update_auditoria':  return ok(updateAuditoria_(payload));
       case 'update_compromiso': return ok(updateCompromiso_(payload));
       case 'agregar_evidencia_compromiso': return ok(agregarEvidenciaCompromiso_(payload));
       case 'get_compromisos':   return ok(getCompromisos_(payload.filters));

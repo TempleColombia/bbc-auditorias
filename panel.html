@@ -162,6 +162,7 @@ input[type=file]#ev-archivos{width:100%;font-size:12px;margin-top:2px;}
 
 <!-- RESUMEN -->
 <div class="section active" id="tab-resumen">
+  <div id="resumen-alertas"></div>
   <div class="sec-title">Resultado del período por categoría</div>
   <div class="cat-grid" id="catGrid"><div class="spin-wrap" style="grid-column:1/-1"><div class="spinner"></div></div></div>
 </div>
@@ -202,6 +203,7 @@ input[type=file]#ev-archivos{width:100%;font-size:12px;margin-top:2px;}
 <div class="section" id="tab-puntos">
   <div class="stat-grid" id="stats-puntos"></div>
   <div id="tendencia-puntos" style="margin-bottom:20px"></div>
+  <div id="estado-puntos"></div>
   <div id="alarma-puntos"></div>
   <div id="ranking-puntos"></div>
   <div id="heatmap-puntos"></div>
@@ -316,6 +318,61 @@ const SCHEMAS = {
   cocina: [{"id": "almacenamiento", "nombre": "Almacenamiento", "items": [{"id": "peps", "nombre": "Rotación y almacenamiento PEPS"}, {"id": "rotulacion", "nombre": "Rotulación y control de vida útil"}]}, {"id": "limpieza", "nombre": "Limpieza", "items": [{"id": "limpieza_general", "nombre": "Orden y limpieza general"}, {"id": "freidoras", "nombre": "Manejo y limpieza de freidoras"}]}, {"id": "equipos", "nombre": "Equipos", "items": [{"id": "equipos_utensilios", "nombre": "Funcionamiento de equipos y utensilios"}, {"id": "equipos_frio_calor", "nombre": "Funcionamiento equipos frío/calor"}]}, {"id": "personal", "nombre": "Personal", "items": [{"id": "higiene_personal", "nombre": "Manipulación e higiene personal"}]}, {"id": "proceso", "nombre": "Proceso", "items": [{"id": "estandarizacion", "nombre": "Estandarización y preparación"}, {"id": "descongelacion", "nombre": "Descongelación segura de productos"}]}, {"id": "documentacion", "nombre": "Documentación", "items": [{"id": "formatos", "nombre": "Diligenciamiento de formatos"}]}, {"id": "operacion", "nombre": "Operación", "items": [{"id": "disponibilidad", "nombre": "Disponibilidad y operación"}]}]
 };
 
+// Catálogo fijo de Puntos Propios (mismo listado que auditoria.html) — permite detectar
+// puntos NO visitados en el período, algo que no se puede saber solo con las filas de auditorías.
+const CATALOGO_PUNTOS = {
+  NORTE: [
+    'PUB ANDINO','PUB AVDA 19','PUB PARQUE 93','PUB USAQUÉN',
+    'PUB CEDRITOS','PUB CALLE 85','PUB ROSALES','PUB PEPE SIERRA',
+    'PUB BELAÍRE','PUB COLINA','PUB CALLE 63',
+    'BODEGA VILLA DEL PRADO','BODEGA PASADENA','BODEGA LOURDES',
+    'MINIPUB CALLE 97','BODEGA CALLE 67','BODEGA CHICO',
+    'BODEGA HÉROES','BODEGA IMPERIAL','BODEGA CALLE 93','BODEGA CALLE 100'
+  ],
+  SUR: [
+    'PUB SALITRE','PUB CANDELARIA','PUB TITÁN','PUB GALERÍAS',
+    'PUB SAN MARTÍN','PUB CENTRO MAYOR','PUB PLAZA AMÉRICAS',
+    'PUB PLAZA CENTRAL','PUB CONECTA','PUB MOVISTAR ARENA',
+    'BODEGA TERRAZA PASTEUR','BODEGA DIVER PLAZA','BODEGA CORFERIAS',
+    'BODEGA RESTREPO','BODEGA BOSA CENTRO','BODEGA CALLE 43',
+    'BODEGA PARK WAY','BODEGA MODELO','BODEGA PORTAL CALLE 80','BODEGA PLAZA CLARO'
+  ]
+};
+const TODOS_LOS_PUNTOS = [...CATALOGO_PUNTOS.NORTE, ...CATALOGO_PUNTOS.SUR];
+
+// Meta: cada punto propio debe recibir al menos 2 visitas/mes de su coordinador de zona,
+// y al menos una de ellas en horario real de servicio (5pm en adelante) para observar la operación.
+function estadoVisitasPuntos(rows){
+  const porPdv = {};
+  rows.forEach(r=>{
+    const pdv = r.pdv||'';
+    if(!porPdv[pdv]) porPdv[pdv] = [];
+    porPdv[pdv].push(r);
+  });
+  const noVisitados = TODOS_LOS_PUNTOS.filter(p => !porPdv[p] || porPdv[p].length===0);
+  const unaVisita = TODOS_LOS_PUNTOS.filter(p => porPdv[p] && porPdv[p].length===1);
+  const soloAntes5pm = TODOS_LOS_PUNTOS.filter(p=>{
+    const visitas = (porPdv[p]||[]).filter(v=>v.creadoEn && !isNaN(new Date(v.creadoEn)));
+    if(!visitas.length) return false;
+    return visitas.every(v => new Date(v.creadoEn).getHours() < 17);
+  });
+  return {noVisitados, unaVisita, soloAntes5pm};
+}
+
+function estadoPuntosHTML(rows){
+  const {noVisitados, unaVisita, soloAntes5pm} = estadoVisitasPuntos(rows);
+  if(!noVisitados.length && !unaVisita.length && !soloAntes5pm.length){
+    return `<div class="ranking-wrap"><div class="ranking-title" style="color:var(--green)">✅ Cobertura de puntos</div>
+      <div style="font-size:12px;color:var(--muted)">Los ${TODOS_LOS_PUNTOS.length} puntos propios fueron visitados al menos 2 veces este período, con al menos una visita en horario de servicio.</div></div>`;
+  }
+  return `<div class="alarma-box" style="background:var(--yd);border-color:rgba(217,154,31,.35)">
+    <div class="alarma-title" style="color:var(--yellow)">📍 Cobertura de puntos este período — meta: 2 visitas/mes por punto</div>
+    ${noVisitados.length?`<div class="alarma-item"><b style="text-decoration:none;cursor:default">❌ ${noVisitados.length} sin ninguna visita:</b> ${noVisitados.join(', ')}</div>`:''}
+    ${unaVisita.length?`<div class="alarma-item"><b style="text-decoration:none;cursor:default">⚠️ ${unaVisita.length} con solo 1 visita (falta la 2ª):</b> ${unaVisita.join(', ')}</div>`:''}
+    ${soloAntes5pm.length?`<div class="alarma-item"><b style="text-decoration:none;cursor:default">🕐 ${soloAntes5pm.length} visitados solo antes de las 5pm (no se observó el servicio real):</b> ${soloAntes5pm.join(', ')}</div>`:''}
+  </div>`;
+}
+
 let allAuditorias = [];
 let allCompromisos = [];
 
@@ -362,7 +419,14 @@ function mesAnterior(ym){
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
 }
 
-function promedioScore(rows){ return rows.length ? rows.reduce((s,r)=>s+parseFloat(r.scorePct||0),0)/rows.length : null; }
+// Puntos Propios: visitas de inicio de mes donde aún no hay KPI del mes anterior que evaluar
+// (scoreTotal=0 real pero sin fallas — no debe contar como score ni bajar el promedio/ranking)
+function esSinEvaluar(r){ return r.tipo==='puntos-propios' && parseFloat(r.scoreTotal||0)===0; }
+
+function promedioScore(rows){
+  const evaluadas = rows.filter(r=>!esSinEvaluar(r));
+  return evaluadas.length ? evaluadas.reduce((s,r)=>s+parseFloat(r.scorePct||0),0)/evaluadas.length : null;
+}
 
 function tendenciaHTML(tipos){
   const actual = periodoActual();
@@ -394,8 +458,40 @@ function renderAll(){
   renderCompromisos();
 }
 
-/* ── RESUMEN ── */
+/* ── RESUMEN (vista gerencial: corta, con tendencia multi-mes y alertas clave) ── */
+function tendenciaMultiMesHTML(tipos, meses){
+  meses = meses || 6;
+  const now = new Date();
+  const data = [];
+  for(let i=meses-1;i>=0;i--){
+    const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
+    const ym = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+    const rows = allAuditorias.filter(a=>tipos.includes(a.tipo) && (a.fecha||'').slice(0,7)===ym);
+    data.push({prom: promedioScore(rows), label: d.toLocaleDateString('es-CO',{month:'short'}).replace('.','')});
+  }
+  if(data.filter(d=>d.prom!==null).length<2) return '';
+  return `<div style="display:flex;align-items:flex-end;gap:3px;height:32px;margin-top:8px">
+    ${data.map(d=>{
+      const h = d.prom===null ? 3 : Math.max(4,(d.prom/100)*30);
+      const color = d.prom===null?'var(--s3)':(d.prom>=85?'var(--green)':d.prom>=70?'var(--yellow)':'var(--red)');
+      const titulo = d.prom===null?'sin datos':d.prom.toFixed(0)+'%';
+      return `<div title="${d.label}: ${titulo}" style="flex:1;height:${h}px;background:${color};border-radius:2px 2px 0 0"></div>`;
+    }).join('')}
+  </div>
+  <div style="display:flex;gap:3px;margin-top:2px">${data.map(d=>`<div style="flex:1;text-align:center;font-size:8px;color:var(--dim);text-transform:uppercase">${d.label}</div>`).join('')}</div>`;
+}
+
+function resumenAlertasHTML(){
+  const vencidos = allCompromisos.filter(c=>c.estado==='VENCIDO');
+  if(!vencidos.length) return '';
+  return `<div class="alarma-box" onclick="goTabById('compromisos')" style="cursor:pointer">
+    <div class="alarma-title">⏰ ${vencidos.length} compromiso${vencidos.length===1?'':'s'} vencido${vencidos.length===1?'':'s'} de meses anteriores</div>
+    <div style="font-size:12px;color:var(--muted)">Ya pasaron su fecha comprometida y siguen abiertos. Toca para ir a la pestaña Compromisos.</div>
+  </div>`;
+}
+
 function renderResumen(){
+  document.getElementById('resumen-alertas').innerHTML = resumenAlertasHTML();
   document.getElementById('catGrid').innerHTML = CATEGORIAS.map(cat=>{
     const rows = allAuditorias.filter(a => cat.tipos.includes(a.tipo) && enPeriodo(a.fecha));
     if(!cat.construida){
@@ -405,14 +501,24 @@ function renderResumen(){
       </div>`;
     }
     const n = rows.length;
-    const prom = n ? (rows.reduce((s,r)=>s+parseFloat(r.scorePct||0),0)/n) : 0;
+    const prom = promedioScore(rows);
     const abiertos = compromisosAbiertos(cat.tipos);
+    let coberturaBadge = '';
+    if(cat.id==='puntos'){
+      const {noVisitados, unaVisita} = estadoVisitasPuntos(rows);
+      if(noVisitados.length || unaVisita.length){
+        coberturaBadge = `<div style="margin-top:6px"><span class="badge badge-warn">📍 ${noVisitados.length} sin visitar · ${unaVisita.length} con 1 sola visita</span></div>`;
+      } else {
+        coberturaBadge = `<div style="margin-top:6px"><span class="badge badge-ok">📍 Los ${TODOS_LOS_PUNTOS.length} puntos cubiertos</span></div>`;
+      }
+    }
     return `<div class="cat-card" onclick="goTabById('${cat.tab}')">
       <div class="cat-name">${cat.nombre}</div>
       <div class="cat-n">${n}</div>
-      <div class="cat-sub">auditoría${n===1?'':'s'} este período${n?' · promedio '+prom.toFixed(0)+'%':''}</div>
-      <div style="margin-top:8px">${tendenciaHTML(cat.tipos)}</div>
+      <div class="cat-sub">auditoría${n===1?'':'s'} este período${prom!==null?' · promedio '+prom.toFixed(0)+'%':''}</div>
+      ${tendenciaMultiMesHTML(cat.tipos)}
       <div style="margin-top:8px"><span class="badge ${abiertos>0?'badge-warn':'badge-ok'}">🤝 ${abiertos} compromiso${abiertos===1?'':'s'} abierto${abiertos===1?'':'s'}</span></div>
+      ${coberturaBadge}
     </div>`;
   }).join('');
 }
@@ -426,12 +532,14 @@ function goTabById(tabId){
 function statsHTML(rows){
   if(!rows.length) return '<div class="empty" style="grid-column:1/-1">Sin auditorías registradas en este período.</div>';
   const n = rows.length;
-  const prom = rows.reduce((s,r)=>s+parseFloat(r.scorePct||0),0)/n;
+  const evaluadas = rows.filter(r=>!esSinEvaluar(r));
+  const prom = evaluadas.length ? evaluadas.reduce((s,r)=>s+parseFloat(r.scorePct||0),0)/evaluadas.length : 0;
   const porClasif = {};
-  rows.forEach(r=>{ porClasif[r.clasificacion]=(porClasif[r.clasificacion]||0)+1; });
+  evaluadas.forEach(r=>{ porClasif[r.clasificacion]=(porClasif[r.clasificacion]||0)+1; });
   const criticas = porClasif['Crítico']||0;
+  const sinEvaluar = n - evaluadas.length;
   return `
-    <div class="stat c-amber"><div class="stat-n">${n}</div><div class="stat-l">Auditorías</div></div>
+    <div class="stat c-amber"><div class="stat-n">${n}</div><div class="stat-l">Auditorías</div>${sinEvaluar?`<div class="stat-sub">${sinEvaluar} sin KPI evaluado aún</div>`:''}</div>
     <div class="stat c-green"><div class="stat-n">${prom.toFixed(0)}%</div><div class="stat-l">Promedio</div></div>
     <div class="stat c-red"><div class="stat-n">${criticas}</div><div class="stat-l">Críticas</div></div>`;
 }
@@ -446,8 +554,8 @@ function tablaAuditoriasHTML(rows, mostrarTipo){
       ${mostrarTipo?`<td><span class="tag tag-${r.tipo}">${r.tipo}</span></td>`:''}
       <td style="font-weight:600">${r.pdv||'—'}</td>
       <td style="font-size:11px;color:var(--muted)">${r.auditor||r.coordinadorZona||'—'}</td>
-      <td>${r.scoreTotal||0}/${r.scoreMax||0}</td>
-      <td><span style="color:${clasifColor(r.clasificacion)};font-weight:600;font-size:11px">${r.clasificacion||'—'}</span></td>
+      <td>${esSinEvaluar(r) ? '<span style="color:var(--muted)">—</span>' : (r.scoreTotal||0)+'/'+(r.scoreMax||0)}</td>
+      <td>${esSinEvaluar(r) ? '<span class="badge badge-muted">Sin KPI evaluado</span>' : `<span style="color:${clasifColor(r.clasificacion)};font-weight:600;font-size:11px">${r.clasificacion||'—'}</span>`}</td>
     </tr>`).join('')}</tbody></table>`;
 }
 
@@ -461,6 +569,7 @@ function alarmaHTML(rows){
 }
 
 function rankingHTML(rows){
+  rows = rows.filter(r=>!esSinEvaluar(r));
   if(!rows.length) return '';
   const porPdv = {};
   rows.forEach(r=>{
@@ -583,6 +692,7 @@ function renderPuntos(){
   const rows = allAuditorias.filter(a=>a.tipo==='puntos-propios' && enPeriodo(a.fecha));
   document.getElementById('stats-puntos').innerHTML = statsHTML(rows);
   document.getElementById('tendencia-puntos').innerHTML = tendenciaHTML(['puntos-propios']);
+  document.getElementById('estado-puntos').innerHTML = estadoPuntosHTML(rows);
   document.getElementById('alarma-puntos').innerHTML = alarmaHTML(rows);
   document.getElementById('ranking-puntos').innerHTML = rankingHTML(rows);
   document.getElementById('heatmap-puntos').innerHTML = heatmapHTML(rows);
@@ -614,6 +724,10 @@ function renderCompromisos(){
       const vencido = r.estado==='VENCIDO';
       const estadoReal = vencido ? 'ABIERTO' : (r.estado||'ABIERTO');
       const nEv = parseEvidencias(r).length;
+      let diasAtraso = 0;
+      if(vencido && r.fechaCompromiso){
+        diasAtraso = Math.floor((new Date() - new Date(r.fechaCompromiso)) / 86400000);
+      }
       return `<tr>
       <td><span class="tag tag-${r.auditTipo}">${r.auditTipo||'—'}</span></td>
       <td style="font-weight:600;font-size:12px">${r.pdv||'—'}</td>
@@ -621,7 +735,7 @@ function renderCompromisos(){
       <td style="font-size:11px;color:var(--muted)">${r.areaEjecutora||'—'}</td>
       <td style="font-size:12px">${r.responsable||'—'}</td>
       <td style="font-size:12px">${r.responsableSeguimiento||'—'}</td>
-      <td style="font-size:11px;white-space:nowrap">${r.fechaCompromiso||'—'}${vencido?' <span class="badge badge-alert">Vencido</span>':''}</td>
+      <td style="font-size:11px;white-space:nowrap">${r.fechaCompromiso||'—'}${vencido?` <span class="badge badge-alert">Vencido${diasAtraso>0?' · '+diasAtraso+'d':''}</span>`:''}</td>
       <td>
         <select class="estado-sel est-${estadoReal.toLowerCase()}" onchange="onCambioEstado('${r.id}',this.value,this)">
           <option value="ABIERTO" ${estadoReal==='ABIERTO'?'selected':''}>Abierto</option>

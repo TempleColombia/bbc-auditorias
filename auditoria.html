@@ -1025,7 +1025,8 @@ function collect() {
 /* ── MASTER SHEET (dual-write, additivo) ───────── */
 async function enviarComprosoAlMaestro(auditId, data) {
   const scorePct = (data.kpisCumplidos / 8) * 100;
-  const clasifUniversal = scorePct>=95?'Excelente':scorePct>=85?'Bien':scorePct>=80?'Por mejorar':scorePct>=70?'Regular':'Crítico';
+  const kpis = data.kpisCumplidos;
+  const clasifUniversal = kpis>=8?'Excelente':kpis>=6?'Bien':kpis>=5?'Regular':kpis>=4?'Por mejorar':'Crítico';
   const auditoria = {
     id: auditId, tipo:'puntos-propios', pdv: data.pdv, zona: data.zona, modalidad:'PUNTO_PROPIO', tipoPdv: data.tipoVisita,
     fecha: new Date().toISOString().slice(0,10), hora: new Date().toTimeString().slice(0,5),
