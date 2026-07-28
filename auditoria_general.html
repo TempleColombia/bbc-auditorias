@@ -1406,6 +1406,8 @@ function construirActaGeneralHTML(d){
     </table>
     <h3 style="margin-top:20px">Notas adicionales</h3>
     <p>${d.notas||'—'}</p>
+    <h3 style="margin-top:20px">Evidencias fotográficas</h3>
+    ${(d.fotos&&d.fotos.length) ? `<div>${d.fotos.map(f=>`<img src="${f}" style="width:140px;height:140px;object-fit:cover;border-radius:6px;border:1px solid #ccc;margin:4px">`).join('')}</div>` : '<p style="color:#888">Sin fotos de evidencia registradas</p>'}
     <div style="display:flex;gap:24px;margin-top:40px">
       <div style="flex:1;border-top:1px solid #333;padding-top:6px;text-align:center;font-size:12px">Firma Auditor<br>${d.coord}</div>
       <div style="flex:1;border-top:1px solid #333;padding-top:6px;text-align:center;font-size:12px">Firma Manager / Receptor</div>
@@ -1514,6 +1516,7 @@ async function enviar(){
       scores: scores.slice(),
       hallazgos: txt('hallazgos'),
       notas: txt('notas'),
+      fotos: fotos.filter(f=>f),
       obs: {}
     };
     // Capturar observaciones por módulo
@@ -2218,6 +2221,9 @@ const hor_MODULOS = [
     {id:'h_actitud', label:'Actitud y cordialidad en el servicio', tipo:'yn'},
     {id:'h_uniforme', label:'Uniformes completos (servicio y cocina)', tipo:'yn'},
     {id:'h_aseo_per', label:'Aseo personal y sin accesorios', tipo:'yn'},
+    {id:'h_musica', label:'Uso correcto de la plataforma de música autorizada por la marca', tipo:'yn'},
+    {id:'h_meta_dia', label:'El manager y su equipo tienen clara la meta del día', tipo:'yn'},
+    {id:'h_nps', label:'El equipo conoce el indicador de NPS', tipo:'yn'},
     {id:'h_campana_pop', label:'📋 Informativo (no suma al puntaje) — El PDV tiene visibilidad de las campañas activas (material POP, promociones)?', tipo:'yn', informativo:true},
     {id:'h_campana_mecanica', label:'📋 Informativo (no suma al puntaje) — El equipo del PDV conoce las mecánicas de las promociones vigentes?', tipo:'yn', informativo:true},
   ]},
