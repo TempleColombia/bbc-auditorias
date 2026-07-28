@@ -949,7 +949,7 @@ function generarCompromisos() {
   if (probServ) fuentes.push({ descripcion: probServ, area: 'Coordinador', criticidad: 'ALTA' });
 
   const today = new Date();
-  const areas = ['Coordinador','Mantenimiento','Compras','Gte Ops','Otro'];
+  const areas = ['Coordinador','Manager','Mantenimiento','Compras','Gte Ops','Otro'];
   const list = document.getElementById('compromisos-list');
 
   if (!fuentes.length) {
