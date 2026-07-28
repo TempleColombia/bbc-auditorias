@@ -525,17 +525,25 @@ function estadoGeneralesHTML(rows){
   </div>`;
 }
 
-// ── Cobertura por PDV de las 6 auditorías (Resumen / Home) ──
-// Catálogo maestro único: los 114 PDVs de Auditorías Generales (confirmado como la lista
-// correcta — Alimentos/Cocina tiene 5 PDVs adicionales que no cuentan como vigentes).
-// Puntos Propios usa su propio catálogo de 41 PDVs (los mismos 41 "Centro Prop" de arriba)
-// pero con 2 nombres distintos — se resuelven con este alias antes de cruzar contra el maestro.
+// ── Tablero de cobertura y resultado por PDV (Resumen / Home) ──
+// Alimentos, Calidad (HACCP) y Mantenimiento (cuando exista) solo se hacen en los 41 puntos
+// propios — no en franquicias — así que este tablero se enfoca solo en esos 41 PDVs, donde
+// las 5 auditorías construidas (Generales, Puntos Propios, Alimentos, HACCP, Capacitaciones)
+// realmente aplican todas a la vez. Catálogo maestro: los 114 PDVs de Auditorías Generales
+// (confirmado como el correcto), filtrado a zona Centro Prop.
+// Puntos Propios usa su propio catálogo con 2 nombres distintos — se resuelven con este alias.
 const ALIAS_PUNTOS_A_MAESTRO = {
   'PUB MOVISTAR ARENA': 'PUB BBC MOVISTAR ARENA',
   'PUB PLAZA AMERICAS': 'PUB PLAZA DE LAS AMERICAS'
 };
 const METAS_MENSUALES_PDV = {generales:2, puntos:2, alimentos:1, haccp:1, capacitaciones:1};
-const NOMBRES_AUDITORIA_PDV = {generales:'Generales', puntos:'Puntos Propios', alimentos:'Alimentos', haccp:'Calidad (HACCP)', capacitaciones:'Capacitaciones'};
+const COLUMNAS_COBERTURA_PDV = [
+  {tipo:'generales', nombre:'Generales'},
+  {tipo:'puntos', nombre:'Puntos Propios'},
+  {tipo:'alimentos', nombre:'Alimentos'},
+  {tipo:'haccp', nombre:'Calidad (HACCP)'},
+  {tipo:'capacitaciones', nombre:'Capacitaciones'}
+];
 
 function normalizarPuntos(pdv){
   const norm = normalizarPdv(pdv);
@@ -543,11 +551,14 @@ function normalizarPuntos(pdv){
 }
 
 function construirMatrizPDVs(rows){
-  const porPdv = {}; // key = nombre canónico del catálogo maestro
+  const porPdv = {}; // key = nombre canónico del catálogo maestro — solo Centro Prop (los 41 propios)
   Object.entries(CATALOGO_GENERALES).forEach(([zonaCruda, pdvs])=>{
-    const zona = ZONA_MAP_GENERALES[zonaCruda] || zonaCruda;
+    if((ZONA_MAP_GENERALES[zonaCruda]||zonaCruda) !== 'Centro Prop') return;
+    const subzona = zonaCruda==='NORTE Propios' ? 'NORTE' : 'SUR';
     pdvs.forEach(pdv=>{
-      porPdv[pdv] = {pdv, zona, esCentroProp: zona==='Centro Prop', conteos:{generales:0, puntos:0, alimentos:0, haccp:0, capacitaciones:0}};
+      porPdv[pdv] = {pdv, subzona,
+        conteos:{generales:0, puntos:0, alimentos:0, haccp:0, capacitaciones:0},
+        sumas:{generales:0, puntos:0, alimentos:0, haccp:0, capacitaciones:0}};
     });
   });
 
@@ -562,66 +573,69 @@ function construirMatrizPDVs(rows){
 
     const normKey = bucket==='puntos' ? normalizarPuntos(r.pdv) : normalizarPdv(r.pdv);
     const match = CATALOGO_GENERALES_NORM[normKey];
-    if(!match) return; // PDV no está en el catálogo maestro (ej. nombre distinto no mapeado) — se ignora
+    if(!match) return; // PDV no está en el catálogo maestro o no es Centro Prop — se ignora
     const registro = porPdv[match.pdv];
-    if(registro) registro.conteos[bucket]++;
+    if(!registro) return; // franquicia — no aplica a este tablero
+    registro.conteos[bucket]++;
+    registro.sumas[bucket] += parseFloat(r.scorePct||0);
   });
 
   return Object.values(porPdv);
 }
 
-function faltantesDePdv(registro){
-  const faltan = [];
-  ['generales','alimentos','haccp','capacitaciones'].forEach(tipo=>{
-    const meta = METAS_MENSUALES_PDV[tipo];
-    if(registro.conteos[tipo] < meta) faltan.push({tipo, actual:registro.conteos[tipo], meta});
-  });
-  if(registro.esCentroProp && registro.conteos.puntos < METAS_MENSUALES_PDV.puntos){
-    faltan.push({tipo:'puntos', actual:registro.conteos.puntos, meta:METAS_MENSUALES_PDV.puntos});
-  }
-  return faltan;
+function celdaCoberturaHTML(registro, tipo){
+  const meta = METAS_MENSUALES_PDV[tipo];
+  const n = registro.conteos[tipo];
+  if(n===0) return `<td style="text-align:center;background:var(--rd);color:var(--red);font-weight:800;font-size:11px;padding:8px 6px">— <span style="font-weight:400;font-size:9px">0/${meta}</span></td>`;
+  const prom = registro.sumas[tipo]/n;
+  const color = prom>=85?'var(--green)':prom>=70?'var(--yellow)':'var(--red)';
+  const bg = prom>=85?'var(--gd)':prom>=70?'var(--yd)':'var(--rd)';
+  const faltaTxt = n<meta ? `<div style="font-size:9px;font-weight:400">${n}/${meta}</div>` : '';
+  return `<td style="text-align:center;background:${bg};color:${color};font-weight:800;font-size:12px;padding:8px 6px">${prom.toFixed(0)}%${faltaTxt}</td>`;
 }
 
 function coberturaPDVsHTML(rows){
   const matriz = construirMatrizPDVs(rows);
-  const porZona = {};
-  matriz.forEach(reg=>{ (porZona[reg.zona] = porZona[reg.zona]||[]).push(reg); });
+  const norte = matriz.filter(r=>r.subzona==='NORTE').sort((a,b)=>a.pdv.localeCompare(b.pdv));
+  const sur = matriz.filter(r=>r.subzona==='SUR').sort((a,b)=>a.pdv.localeCompare(b.pdv));
 
-  const zonas = Object.keys(porZona).sort((a,b)=>{
-    const ia=ORDEN_ZONAS_GENERALES.indexOf(a), ib=ORDEN_ZONAS_GENERALES.indexOf(b);
-    if(ia===-1 && ib===-1) return a.localeCompare(b);
-    if(ia===-1) return 1; if(ib===-1) return -1;
-    return ia-ib;
-  });
+  const filaHTML = r => `<tr onclick="verDetallePorPdv('${r.pdv}')" style="cursor:pointer">
+    <td style="font-weight:600;font-size:12px;padding:8px 10px;white-space:nowrap">${r.pdv}</td>
+    ${COLUMNAS_COBERTURA_PDV.map(c=>celdaCoberturaHTML(r,c.tipo)).join('')}
+  </tr>`;
 
-  let totalConFaltante = 0;
-  const bloques = zonas.map(zona=>{
-    const regs = porZona[zona].slice().sort((a,b)=>a.pdv.localeCompare(b.pdv));
-    const conFaltante = regs.map(r=>({...r, faltan:faltantesDePdv(r)})).filter(r=>r.faltan.length);
-    const alDia = regs.length - conFaltante.length;
-    totalConFaltante += conFaltante.length;
-    const filas = conFaltante.map(r=>{
-      const chips = r.faltan.map(f=>`<span class="badge badge-alert" style="margin:2px 4px 2px 0">${NOMBRES_AUDITORIA_PDV[f.tipo]} ${f.actual}/${f.meta}</span>`).join('');
-      return `<div style="padding:8px 0;border-bottom:1px solid var(--s2)">
-        <div style="font-weight:600;font-size:12px;margin-bottom:4px">${r.pdv}</div>
-        <div>${chips}</div>
-      </div>`;
-    }).join('');
-    return `<details style="margin-bottom:8px">
-      <summary style="cursor:pointer;font-weight:700;font-size:13px;padding:10px 12px;background:var(--s2);border-radius:8px;list-style:none">
-        ${zona} <span style="color:var(--muted);font-weight:400;font-size:11px">— ${regs.length} PDVs · ${alDia} al día · ${conFaltante.length} con auditoría(s) faltante(s)</span>
-      </summary>
-      <div style="padding:8px 4px 4px">
-        ${conFaltante.length ? filas : '<div style="font-size:12px;color:var(--muted);padding:8px 0">✅ Todos los PDVs de esta zona están al día este mes.</div>'}
-      </div>
-    </details>`;
-  }).join('');
+  const grupoHTML = (etiqueta, regs) => regs.length ? `
+    <tr><td colspan="${COLUMNAS_COBERTURA_PDV.length+1}" style="background:var(--s2);font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding:6px 10px">${etiqueta} — ${regs.length} PDVs</td></tr>
+    ${regs.map(filaHTML).join('')}
+  ` : '';
+
+  const totalPdvs = matriz.length;
+  const conAlgoFaltante = matriz.filter(r=>COLUMNAS_COBERTURA_PDV.some(c=>{
+    return r.conteos[c.tipo] < METAS_MENSUALES_PDV[c.tipo];
+  })).length;
 
   return `<div class="ranking-wrap">
-    <div class="ranking-title">🗺️ Cobertura por PDV — resumen de las 6 auditorías <span style="text-transform:none;font-weight:400;color:var(--muted)">— ${totalConFaltante} PDV${totalConFaltante===1?'':'s'} con al menos una auditoría faltante este mes</span></div>
-    <div style="font-size:11px;color:var(--muted);margin-bottom:12px">Metas mensuales: Generales y Puntos Propios 2 visitas/mes · Alimentos, Calidad (HACCP) y Capacitaciones 1 visita/mes. Puntos Propios solo aplica a los PDVs de zona Centro Prop.</div>
-    ${bloques}
+    <div class="ranking-title">🗺️ Resultado por PDV — Puntos Propios <span style="text-transform:none;font-weight:400;color:var(--muted)">— ${totalPdvs} PDVs · ${conAlgoFaltante} con alguna auditoría faltante este mes</span></div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:12px">Alimentos, Calidad (HACCP) y Mantenimiento solo se auditan en puntos propios, no en franquicias — por eso este tablero es solo de los 41 PDVs propios. Metas: Generales y Puntos Propios 2 visitas/mes · el resto 1 visita/mes. Color = promedio de puntaje; el número pequeño es visitas/meta cuando no se cumple. Clic en un PDV para ver su detalle.</div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>PDV</th>${COLUMNAS_COBERTURA_PDV.map(c=>`<th style="text-align:center">${c.nombre}</th>`).join('')}</tr></thead>
+      <tbody>
+        ${grupoHTML('Norte', norte)}
+        ${grupoHTML('Sur', sur)}
+      </tbody>
+    </table></div>
   </div>`;
+}
+
+// Abre el detalle de la auditoría más reciente de este PDV (cualquiera de las 5 categorías) este período
+function verDetallePorPdv(pdv){
+  const candidatos = allAuditorias.filter(a=>{
+    const normKey = ['general','visita-virtual','hora-servicio'].includes(a.tipo) || a.tipo==='cocina' || a.tipo==='haccp' || ['capacitaciones-completa','capacitaciones-servicio'].includes(a.tipo)
+      ? normalizarPdv(a.pdv) : (a.tipo==='puntos-propios' ? normalizarPuntos(a.pdv) : null);
+    return normKey && CATALOGO_GENERALES_NORM[normKey] && CATALOGO_GENERALES_NORM[normKey].pdv===pdv && enPeriodo(a.fecha);
+  }).sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||''));
+  if(!candidatos.length){ mostrarToast('Sin auditorías registradas este período para '+pdv, '#eab308'); return; }
+  verDetalle(candidatos[0].id);
 }
 
 let allAuditorias = [];
