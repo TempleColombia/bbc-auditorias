@@ -276,18 +276,6 @@ table.acta-tabla th{background:var(--accent);color:#fff}
   <!-- TAB 4: RESUMEN -->
   <div class="tab-pane" id="pane-4">
     <div id="resumen-wrap"></div>
-    <div class="card">
-      <div class="card-header">Retroalimentación / Capacitación ejecutada</div>
-      <div class="card-body">
-        <textarea class="obs-input" id="r-retro" placeholder="¿Qué se retroalimentó o capacitó durante la visita?"></textarea>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-header">Novedades y observaciones generales</div>
-      <div class="card-body">
-        <textarea class="obs-input" id="r-novedades" placeholder="Novedades adicionales…"></textarea>
-      </div>
-    </div>
   </div>
 
   <!-- TAB 5: INFORME EJECUTIVO -->
@@ -393,7 +381,6 @@ let state = {
   datos: {pdv:'',fecha:'',hora:'',auditor:'',manager:'',jefeCocina:'',coordinadorZona:'',receptor:'',tipoPdv:'',modalidad:''},
   items: {}, // itemId -> {calificacion, observacion, fotos:[fotoKeys]}
   compromisos: {}, // categoriaId+'|HALLAZGO' o '|RECOMENDACION' -> {responsable, areaEjecutora, fechaCompromiso}
-  retro: '', novedades: '',
   creadoEn: null
 };
 
@@ -969,8 +956,6 @@ const AppUI = {
   async construirActaHTML(){
     const g = calcularScoreGlobal();
     const clas = clasificar(g.pct);
-    state.retro = document.getElementById('r-retro') ? document.getElementById('r-retro').value : state.retro;
-    state.novedades = document.getElementById('r-novedades') ? document.getElementById('r-novedades').value : state.novedades;
     const d = state.datos;
 
     let filasItems = '';
@@ -1028,11 +1013,6 @@ const AppUI = {
         <thead><tr><th>Tipo</th><th>Descripción</th><th>Responsable</th><th>Seguimiento</th><th>Área ejecutora</th><th>Fecha compromiso</th></tr></thead>
         <tbody>${filasCompromisos || '<tr><td colspan="6">Sin compromisos registrados</td></tr>'}</tbody>
       </table>
-
-      <h3 style="margin-top:20px">Retroalimentación / Capacitación ejecutada</h3>
-      <p>${state.retro || '—'}</p>
-      <h3 style="margin-top:12px">Novedades y observaciones generales</h3>
-      <p>${state.novedades || '—'}</p>
 
       <h3 style="margin-top:20px">Evidencias fotográficas</h3>
       ${fotosHtml || '<p style="color:#666">Sin fotos de evidencia registradas</p>'}
@@ -1149,8 +1129,6 @@ const AppUI = {
 
     const g = calcularScoreGlobal();
     const clas = clasificar(g.pct);
-    state.retro = document.getElementById('r-retro').value;
-    state.novedades = document.getElementById('r-novedades').value;
 
     const auditoria = {
       id: state.id, tipo:'cocina', pdv: state.datos.pdv, zona:'', modalidad: state.datos.modalidad,
