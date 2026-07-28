@@ -685,12 +685,21 @@ const DRAFT_KEY='bbc_v6';
 // Sheet maestro "BBC Auditorías - Sistema Integral" — Compromisos cross-cutting (no reemplaza SCRIPT_URL, es adicional)
 const MASTER_SHEET_URL='https://script.google.com/a/macros/templecolombia.com/s/AKfycbzu9-M_2kSDKSQqCPxgbrnwAjU5OSMmUGs1YxnnmeUoOpFPhEooYUBnNtvQz0bvnQFUeA/exec';
 const MASTER_TOKEN='temple2026';
+// Link directo a la pestaña Compromisos del panel — se incluye en el correo del Acta para que
+// el responsable de seguimiento pueda actualizar el estado sin tener que buscar la página.
+const PANEL_COMPROMISOS_URL='https://templecolombia.github.io/bbc-auditorias/panel.html?tab=compromisos';
 
 // ── DEFINICIÓN DE MÓDULOS ──
 // tipo: 'yn' = sí/no, 'info' = campo informativo (no puntúa)
 const MODULOS = [
   { id:1, nombre:'Experiencia', icon:'🍺', cls:'ic1', max:15, items:[
-    {id:'m1_menu_pct', label:'Menú disponible (%)', tipo:'pct'},
+    // El % de "menú disponible" quedaba a criterio propio del auditor (número libre 0-100);
+    // se reemplaza por un checklist de categorías del menú para que el % salga calculado solo.
+    {id:'m1_menu_cerv', label:'Menú: Cervezas disponibles', tipo:'yn'},
+    {id:'m1_menu_lic', label:'Menú: Licores disponibles', tipo:'yn'},
+    {id:'m1_menu_bsa', label:'Menú: Bebidas sin alcohol disponibles', tipo:'yn'},
+    {id:'m1_menu_alim', label:'Menú: Alimentos disponibles', tipo:'yn'},
+    {id:'m1_menu_post', label:'Menú: Postres disponibles', tipo:'yn'},
     {id:'m1_precios', label:'Precios actualizados', tipo:'yn'},
     {id:'m1_cat', label:'Categorías completas', tipo:'yn'},
     {id:'m1_cristal', label:'Cristalería completa', tipo:'yn'},
@@ -775,6 +784,7 @@ const MODULOS = [
 // envían como columnas nuevas al final de la fila para no romper el orden
 // de columnas existente en la hoja de Historial Operaciones.
 const LEGALES_IDS = ['m5_leg_camara','m5_leg_matricula','m5_leg_sayco','m5_leg_bomberos','m5_leg_turismo','m5_leg_sanitaria','m5_leg_emergencias','m5_leg_saneamiento','m5_leg_rut','m5_leg_rit','m5_leg_facturacion','m5_leg_apertura','m5_leg_suelos','m5_leg_tanques','m5_leg_manipulacion','m5_leg_examenes','m5_leg_auditiva','m5_formatos'];
+const MENU_CAT_IDS = ['m1_menu_cerv','m1_menu_lic','m1_menu_bsa','m1_menu_alim','m1_menu_post'];
 
 function legalesRollup(){
   const vals=LEGALES_IDS.map(id=>respuestas[id]).filter(v=>v&&v!=='na');
@@ -1421,9 +1431,13 @@ async function enviarActaPdfGeneral(datosReporte){
   mostrarToast('Enviando correo con el PDF adjunto…');
   const asunto=`Auditoría General — ${datosReporte.pdv} — ${datosReporte.fecha}`;
   const actaHtml=construirActaGeneralHTML(datosReporte);
+  const responsables=[...new Set(Object.values(compromisosEdit).filter(c=>c.descripcion).map(c=>c.responsableSeguimiento||c.responsable).filter(Boolean))].join(', ');
   try{
     await fetch(MASTER_SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({token:MASTER_TOKEN,action:'enviar_acta_pdf',actaHtml,destinatarios,asunto})});
+      body:JSON.stringify({token:MASTER_TOKEN,action:'enviar_acta_pdf',actaHtml,destinatarios,asunto,
+        pdv:datosReporte.pdv,fecha:datosReporte.fecha,coord:datosReporte.coord,
+        estadoTexto:`${datosReporte.total}% (${datosReporte.estado})`,
+        linkCompromisos:PANEL_COMPROMISOS_URL,responsables})});
     mostrarToast('✓ Enviado — revisa la bandeja de '+destinatarios);
   }catch(e){
     mostrarToast('⚠ Error de conexión al enviar el correo','#ef4444');
@@ -1477,7 +1491,10 @@ async function enviar(){
     fotosActivas.length,
     // Detalle de documentación legal (18 ítems) — columnas nuevas, agregadas al final
     // para no correr las columnas existentes de la hoja
-    ...LEGALES_IDS.flatMap(id=>[respuestas[id]||'',txt('n_'+id)||''])
+    ...LEGALES_IDS.flatMap(id=>[respuestas[id]||'',txt('n_'+id)||'']),
+    // Checklist de categorías de menú (reemplaza el % libre de "Menú disponible") — también
+    // agregado al final por la misma razón.
+    ...MENU_CAT_IDS.flatMap(id=>[respuestas[id]||'',txt('n_'+id)||''])
   ];
 
   const btn=document.getElementById('btn-enviar');
@@ -2019,9 +2036,12 @@ async function virt_enviarActaPdfVirtual(pdv,zona,coord,promGlobal,estado){
   virt_mostrarToast('Enviando correo con el PDF adjunto…');
   const asunto=`Visita Virtual — ${pdv} — ${virt_tsInicio}`;
   const actaHtml=virt_construirActaVirtualHTML(pdv,zona,coord,promGlobal,estado);
+  const responsables=[...new Set([1,2,3].map(i=>virt_txt('virt_c'+i+'_respSeg')||virt_txt('virt_c'+i+'_resp')).filter(Boolean))].join(', ');
   try{
     await fetch(virt_MASTER_SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({token:virt_MASTER_TOKEN,action:'enviar_acta_pdf',actaHtml,destinatarios,asunto})});
+      body:JSON.stringify({token:virt_MASTER_TOKEN,action:'enviar_acta_pdf',actaHtml,destinatarios,asunto,
+        pdv,fecha:virt_tsInicio,coord,estadoTexto:estado,
+        linkCompromisos:PANEL_COMPROMISOS_URL,responsables})});
     virt_mostrarToast('✓ Enviado — revisa la bandeja de '+destinatarios);
   }catch(e){
     virt_mostrarToast('⚠ Error de conexión al enviar el correo','#ef4444');
@@ -2633,9 +2653,12 @@ async function hor_enviarActaPdfHorario(pdv,zona,coord,total,maxTotal,estado){
   hor_mostrarToast('Enviando correo con el PDF adjunto…');
   const asunto=`Hora de Servicio — ${pdv} — ${hor_tsInicio}`;
   const actaHtml=hor_construirActaHorarioHTML(pdv,zona,coord,total,maxTotal,estado);
+  const responsables=[...new Set(Object.values(hor_compromisosEdit).filter(c=>c.descripcion).map(c=>c.responsableSeguimiento||c.responsable).filter(Boolean))].join(', ');
   try{
     await fetch(hor_MASTER_SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({token:hor_MASTER_TOKEN,action:'enviar_acta_pdf',actaHtml,destinatarios,asunto})});
+      body:JSON.stringify({token:hor_MASTER_TOKEN,action:'enviar_acta_pdf',actaHtml,destinatarios,asunto,
+        pdv,fecha:hor_tsInicio,coord,estadoTexto:`${total}/${maxTotal} (${estado})`,
+        linkCompromisos:PANEL_COMPROMISOS_URL,responsables})});
     hor_mostrarToast('✓ Enviado — revisa la bandeja de '+destinatarios);
   }catch(e){
     hor_mostrarToast('⚠ Error de conexión al enviar el correo','#ef4444');

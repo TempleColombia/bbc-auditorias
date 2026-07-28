@@ -287,13 +287,35 @@ function enviarActaPdf_(payload) {
     pdfBlob = DriveApp.getFileById(tempFile.id).getAs('application/pdf');
     pdfBlob.setName(asunto + '.pdf');
 
-    GmailApp.sendEmail(destinatarios, asunto,
-      'Se adjunta el Acta de Compromisos en PDF.\n\nEste correo fue generado automáticamente por el Sistema de Auditorías BBC Colombia — Temple Colombia.',
+    GmailApp.sendEmail(destinatarios, asunto, construirMensajeActa_(payload),
       {attachments: [pdfBlob], name: 'BBC Auditorías'});
   } finally {
     DriveApp.getFileById(tempFile.id).setTrashed(true);
   }
   return {status: 'enviado', destinatarios};
+}
+
+// Mensaje del correo: si el llamador manda pdv/fecha/coord (Auditorías Generales/Virtual/Horario)
+// arma un texto específico con el resultado, el link a Compromisos y el responsable de
+// seguimiento; si no (Cocina, Puntos Propios, Capacitaciones — aún no migrados a este formato)
+// usa el texto genérico de siempre.
+function construirMensajeActa_(payload) {
+  if (!payload.pdv) {
+    return 'Se adjunta el Acta de Compromisos en PDF.\n\nEste correo fue generado automáticamente por el Sistema de Auditorías BBC Colombia — Temple Colombia.';
+  }
+  const partes = [];
+  partes.push('Se adjunta el Acta de la auditoría realizada en ' + payload.pdv +
+    (payload.fecha ? ' el ' + payload.fecha : '') +
+    (payload.coord ? ' por ' + payload.coord : '') +
+    (payload.estadoTexto ? ' — resultado: ' + payload.estadoTexto : '') + '.');
+  if (payload.linkCompromisos) {
+    partes.push('Los compromisos generados en esta visita deben ser actualizados por su responsable de seguimiento en el siguiente enlace:\n' + payload.linkCompromisos);
+  }
+  if (payload.responsables) {
+    partes.push('Responsable(s) de seguimiento de estos compromisos: ' + payload.responsables + '. Queda a su cargo mantener actualizado el estado de cada compromiso.');
+  }
+  partes.push('Este correo fue generado automáticamente por el Sistema de Auditorías BBC Colombia — Temple Colombia.');
+  return partes.join('\n\n');
 }
 
 // ── Router ─────────────────────────────────────────────────
