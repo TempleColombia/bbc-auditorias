@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>Auditoría de Calidad (HACCP) · BBC Colombia</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{color-scheme:light;
+  --green:#1b4332;--green-light:#2e8b57;--green-pale:#e8f5e9;
+  --amber:#e65100;--amber-pale:#fff3e0;--red:#b71c1c;--red-pale:#ffebee;
+  --blue:#1565c0;--blue-pale:#e3f2fd;
+  --gray:#546e7a;--gray-light:#eceff1;--border:#e8dcc0;
+  --text:#2b2018;--white:#fff;--shadow:0 2px 8px rgba(0,0,0,.12);
+  --accent:#F59E0B;--accent-dark:#c9790a;--beige:#F3E7CC;--beige-pale:#FBF6EA;--text-strong:#2b2018;
+}
+body{font-family:Arial,Helvetica,sans-serif;background:var(--beige-pale);color:var(--text);font-size:14px;padding-bottom:90px}
+a{color:inherit}
+
+/* HEADER PERMANENTE */
+.app-header{position:sticky;top:0;z-index:50;background:var(--beige);color:var(--text-strong);box-shadow:var(--shadow)}
+.app-header .logo-img{height:28px;display:block}
+.app-header-top{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;gap:10px}
+.app-header h1{font-size:15px;font-weight:700;letter-spacing:.2px}
+.app-header .sub{font-size:11px;opacity:.8;margin-top:1px}
+.hdr-actions{display:flex;gap:6px;align-items:center;flex-shrink:0}
+.hdr-btn{background:rgba(43,32,24,.08);border:1px solid rgba(43,32,24,.2);color:var(--text-strong);border-radius:8px;padding:6px 9px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap}
+.hdr-btn:active{background:rgba(255,255,255,.28)}
+.progress-ring{position:relative;width:38px;height:38px;flex-shrink:0}
+.progress-ring svg{transform:rotate(-90deg)}
+.progress-ring .pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+.tabs{display:flex;background:#fff;border-bottom:2px solid var(--border);overflow-x:auto}
+.tab-btn{flex:1;padding:11px 6px;font-size:11px;font-weight:700;color:var(--gray);border:none;background:none;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+.tab-btn.active{color:var(--accent-dark);border-bottom-color:var(--accent)}
+.tab-btn:disabled{opacity:.4}
+
+.content{max-width:720px;margin:0 auto;padding:16px}
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+
+.card{background:#fff;border-radius:10px;box-shadow:var(--shadow);margin-bottom:14px}
+.card-header{background:var(--accent);color:#fff;padding:10px 16px;font-size:12px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;border-radius:10px 10px 0 0}
+.card-body{padding:16px}
+
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.form-group{display:flex;flex-direction:column}
+.form-group label{font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.3px;margin-bottom:5px}
+.form-group input,.form-group select,.form-group textarea{border:1px solid var(--border);border-radius:6px;padding:9px 10px;font-size:14px;color:var(--text);background:#fff;font-family:inherit}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(245,158,11,.15)}
+.form-group.full{grid-column:1/-1}
+.autocomplete-wrap{position:relative}
+.autocomplete-list{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px;box-shadow:var(--shadow);z-index:40;max-height:200px;overflow-y:auto}
+.autocomplete-list.show{display:block}
+.autocomplete-item{padding:10px 12px;font-size:14px;cursor:pointer;border-bottom:1px solid var(--gray-light)}
+.autocomplete-item:last-child{border-bottom:none}
+.autocomplete-item:active{background:var(--green-pale)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:none;border-radius:8px;padding:12px 18px;font-size:14px;font-weight:700;cursor:pointer}
+.btn-primary{background:var(--accent);color:var(--text-strong)}
+.btn-secondary{background:var(--gray-light);color:var(--text)}
+.btn-block{width:100%}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* EVALUACIÓN — un ítem a la vez */
+.item-progress{font-size:12px;color:var(--gray);font-weight:700;margin-bottom:6px}
+.item-card{background:#fff;border-radius:12px;box-shadow:var(--shadow);padding:20px;min-height:calc(100vh - 260px);display:flex;flex-direction:column}
+.item-cat{font-size:11px;font-weight:700;color:var(--green-light);text-transform:uppercase;letter-spacing:.5px}
+.item-name{font-size:19px;font-weight:800;margin:6px 0 4px;line-height:1.3}
+.item-max{font-size:12px;color:var(--gray);margin-bottom:18px}
+.score-options{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.score-option{display:flex;align-items:center;gap:10px;border:2px solid var(--border);border-radius:10px;padding:14px;min-height:48px;cursor:pointer;font-weight:700;font-size:14px}
+.score-option .icon{font-size:18px}
+.score-cumple{background:var(--green-pale)}
+.score-cumple.selected{border-color:var(--green-light);background:#c8e6c9}
+.score-nocumple{background:var(--red-pale)}
+.score-nocumple.selected{border-color:var(--red);background:#ffcdd2}
+.score-noaplica{background:#e3f2fd}
+.score-noaplica.selected{border-color:var(--blue);background:#bbdefb}
+.obs-label{font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;margin-bottom:6px}
+.obs-input{width:100%;border:1px solid var(--border);border-radius:8px;padding:10px;font-size:13px;min-height:70px;font-family:inherit;resize:vertical}
+.foto-btn{margin-top:10px;background:var(--gray-light);border:1px dashed var(--gray);border-radius:8px;padding:10px;font-size:12px;font-weight:700;color:var(--gray);cursor:pointer;text-align:center}
+.foto-grid{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.foto-thumb{position:relative;width:64px;height:64px;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
+.foto-thumb img{width:100%;height:100%;object-fit:cover}
+.foto-thumb .del{position:absolute;top:2px;right:2px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:11px;line-height:1;cursor:pointer}
+.item-nav{display:flex;gap:10px;margin-top:auto;padding-top:16px}
+.score-bar-wrap{background:var(--gray-light);border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:700;color:var(--gray);margin-bottom:12px}
+.score-bar-wrap b{color:var(--accent-dark);font-size:15px}
+
+/* EVIDENCIAS TAB */
+.evidencia-cat-title{font-size:12px;font-weight:800;color:var(--accent-dark);text-transform:uppercase;margin:14px 0 6px}
+.evidencia-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px}
+.evidencia-grid img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;border:1px solid var(--border)}
+.empty-note{color:var(--gray);font-size:13px;padding:20px;text-align:center}
+
+/* HALLAZGOS */
+.hallazgo-card{border-left:4px solid var(--red);margin-bottom:12px}
+.hallazgo-card.recomendacion{border-left-color:var(--blue)}
+.hallazgo-card .card-header{display:flex;justify-content:space-between;align-items:center;background:var(--red)}
+.hallazgo-card.recomendacion .card-header{background:var(--blue)}
+.badge-tag{font-size:10px;font-weight:800;padding:2px 8px;border-radius:6px;background:rgba(255,255,255,.25)}
+.categoria-vacia{opacity:.5;padding:10px 16px;font-size:12px;color:var(--gray);background:#fff;border-radius:8px;margin-bottom:8px}
+
+/* RESUMEN */
+.score-global{text-align:center;padding:24px}
+.score-global .num{font-size:52px;font-weight:900;line-height:1}
+.score-global .clas{font-size:16px;font-weight:800;margin-top:6px;padding:4px 14px;border-radius:20px;display:inline-block}
+.clas-excelente{background:#1b5e20;color:#fff}
+.clas-bien{background:#c8e6c9;color:#1b5e20}
+.clas-porMejorar{background:#fff9c4;color:#8d6e00}
+.clas-regular{background:#ffe0b2;color:#a94500}
+.clas-critico{background:#ffcdd2;color:#b71c1c}
+.mod-row{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--border);font-size:13px}
+.mod-row:last-child{border-bottom:none}
+.mod-row .pct{font-weight:800}
+
+/* INFORME / IMPRESIÓN */
+.acta-actions{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.acta-actions .btn{flex:1;min-width:140px}
+#acta-print{display:none}
+table.acta-tabla{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+table.acta-tabla th,table.acta-tabla td{border:1px solid #ccc;padding:6px 8px;text-align:left}
+table.acta-tabla th{background:var(--accent);color:#fff}
+.firma-box{display:flex;gap:24px;margin-top:40px}
+.firma-linea{flex:1;border-top:1px solid #333;padding-top:6px;text-align:center;font-size:12px}
+
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#212121;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;z-index:200;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.show{opacity:1}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex}
+.modal-box{background:#fff;border-radius:12px;max-width:420px;width:100%;max-height:80vh;overflow-y:auto;padding:20px}
+.modal-box h3{margin-bottom:12px;font-size:16px}
+.draft-item{border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px;cursor:pointer}
+.draft-item:active{background:var(--gray-light)}
+.draft-item .pdv{font-weight:700;font-size:13px}
+.draft-item .meta{font-size:11px;color:var(--gray)}
+
+@media print{
+  body *{visibility:hidden}
+  #acta-print,#acta-print *{visibility:visible}
+  #acta-print{display:block !important;position:absolute;top:0;left:0;width:100%;padding:20px}
+  .app-header,.tabs{display:none !important}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="app-header">
+  <div class="app-header-top">
+    <div style="display:flex;align-items:center;gap:10px">
+      <img class="logo-img" alt="BBC" src="logo-bbc.png" style="height:40px;width:auto;border-radius:4px">
+      <div>
+        <h1>Auditoría de Calidad (HACCP)</h1>
+        <div class="sub" id="hdr-sub">BBC Colombia · Temple Colombia</div>
+      </div>
+    </div>
+    <div class="hdr-actions">
+      <button class="hdr-btn" onclick="AppUI.guardarProgreso(true)">💾 Guardar</button>
+      <button class="hdr-btn" onclick="AppUI.abrirModalCargar()">📋 Cargar</button>
+      <button class="hdr-btn" onclick="AppUI.confirmarNueva()">🆕 Nueva</button>
+      <div class="progress-ring" title="Avance">
+        <svg width="38" height="38">
+          <circle cx="19" cy="19" r="16" stroke="rgba(43,32,24,.18)" stroke-width="4" fill="none"></circle>
+          <circle id="ring-progress" cx="19" cy="19" r="16" stroke="#F59E0B" stroke-width="4" fill="none" stroke-dasharray="100.5" stroke-dashoffset="100.5" stroke-linecap="round"></circle>
+        </svg>
+        <div class="pct" id="ring-pct">0%</div>
+      </div>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="1" onclick="AppUI.irATab(1)">1. Auditoría</button>
+    <button class="tab-btn" data-tab="2" onclick="AppUI.irATab(2)">2. Evidencias</button>
+    <button class="tab-btn" data-tab="3" onclick="AppUI.irATab(3)">3. Hallazgos</button>
+    <button class="tab-btn" data-tab="4" onclick="AppUI.irATab(4)">4. Resumen</button>
+    <button class="tab-btn" data-tab="5" onclick="AppUI.irATab(5)">5. Informe</button>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- TAB 1: AUDITORÍA -->
+  <div class="tab-pane active" id="pane-1">
+    <div class="card" id="datos-generales-card">
+      <div class="card-header">Datos del PDV</div>
+      <div class="card-body">
+        <div class="form-grid">
+          <div class="form-group full autocomplete-wrap">
+            <label>PDV</label>
+            <input id="g-pdv" placeholder="Escribe o selecciona el PDV" autocomplete="off">
+            <div class="autocomplete-list" id="ac-g-pdv"></div>
+          </div>
+          <div class="form-group">
+            <label>Fecha (automática)</label>
+            <input type="date" id="g-fecha" disabled>
+          </div>
+          <div class="form-group">
+            <label>Hora (automática)</label>
+            <input type="time" id="g-hora" disabled>
+          </div>
+          <div class="form-group autocomplete-wrap">
+            <label>Auditor</label>
+            <input id="g-auditor" placeholder="Nombre del auditor" autocomplete="off">
+            <div class="autocomplete-list" id="ac-g-auditor"></div>
+          </div>
+          <div class="form-group">
+            <label>Manager del PDV</label>
+            <input id="g-manager" placeholder="Nombre">
+          </div>
+          <div class="form-group">
+            <label>Jefe de Cocina</label>
+            <input id="g-jefeCocina" placeholder="Nombre">
+          </div>
+          <div class="form-group">
+            <label>Coordinador de Zona</label>
+            <select id="g-coordinadorZona">
+              <option value="">Selecciona…</option>
+              <option>Javier Oviedo B</option>
+              <option>Natalia Jiménez</option>
+              <option>Milena Rengifo</option>
+              <option>Germán Piragauta</option>
+              <option>Yency Delgadillo</option>
+              <option>Otro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Persona que Recibe</label>
+            <input id="g-receptor" placeholder="Nombre">
+          </div>
+          <div class="form-group">
+            <label>Tipo PDV</label>
+            <select id="g-tipoPdv">
+              <option value="">Selecciona…</option>
+              <option value="PUB">PUB</option>
+              <option value="BODEGA">BODEGA</option>
+              <option value="ISLA">ISLA</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Modalidad</label>
+            <select id="g-modalidad">
+              <option value="">Selecciona…</option>
+              <option value="PROPIO">PROPIO</option>
+              <option value="FRANQUICIA">FRANQUICIA</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-block" style="margin-top:16px" onclick="AppUI.comenzarEvaluacion()">Comenzar evaluación →</button>
+      </div>
+    </div>
+
+    <div id="evaluacion-wrap" style="display:none">
+      <div class="item-progress" id="item-progress-label"></div>
+      <div class="score-bar-wrap">
+        <span>Puntaje acumulado</span>
+        <b id="score-acumulado">0 / 0</b>
+      </div>
+      <div class="item-card" id="item-card"></div>
+    </div>
+  </div>
+
+  <!-- TAB 2: EVIDENCIAS -->
+  <div class="tab-pane" id="pane-2">
+    <div id="evidencias-wrap"></div>
+  </div>
+
+  <!-- TAB 3: HALLAZGOS -->
+  <div class="tab-pane" id="pane-3">
+    <div id="hallazgos-wrap"></div>
+  </div>
+
+  <!-- TAB 4: RESUMEN -->
+  <div class="tab-pane" id="pane-4">
+    <div id="resumen-wrap"></div>
+  </div>
+
+  <!-- TAB 5: INFORME EJECUTIVO -->
+  <div class="tab-pane" id="pane-5">
+    <div class="acta-actions">
+      <button class="btn btn-primary" onclick="AppUI.guardarYFinalizar()">✔ Guardar auditoría</button>
+    </div>
+    <div class="acta-actions">
+      <button class="btn btn-secondary" onclick="window.print()">⬇ Descargar PDF</button>
+      <button class="btn btn-secondary" onclick="AppUI.enviarCorreo()">✉ Enviar por correo</button>
+      <button class="btn btn-secondary" onclick="window.print()">🖨 Imprimir</button>
+    </div>
+    <div id="informe-preview"></div>
+  </div>
+
+</div>
+
+<div id="acta-print"></div>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-overlay" id="modal-cargar">
+  <div class="modal-box">
+    <h3>Cargar auditoría guardada</h3>
+    <div id="lista-borradores"></div>
+    <button class="btn btn-secondary btn-block" onclick="AppUI.cerrarModal()">Cerrar</button>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   BBC AUDITORÍAS · Auditoría de Calidad (HACCP)
+   Namespace de almacenamiento: bbc_haccp_*
+   Fuente de verdad: Google Sheets vía Apps Script (localStorage = borrador offline)
+   ═══════════════════════════════════════════════════════════ */
+
+// ── Config de conexión (reemplaza esta URL tras desplegar el Apps Script) ──
+const APPS_SCRIPT_URL = 'https://script.google.com/a/macros/templecolombia.com/s/AKfycbzu9-M_2kSDKSQqCPxgbrnwAjU5OSMmUGs1YxnnmeUoOpFPhEooYUBnNtvQz0bvnQFUeA/exec';
+const APPS_TOKEN = 'temple2026';
+// Link directo a la pestaña Compromisos del panel — se incluye en el correo del Acta para que
+// el responsable de seguimiento pueda actualizar el estado sin tener que buscar la página.
+const PANEL_COMPROMISOS_URL = 'https://templecolombia.github.io/bbc-auditorias/panel.html?tab=compromisos';
+
+// ── Schema — único lugar donde viven los ítems de esta auditoría ──
+const AUDIT_SCHEMAS = {
+  haccp: {
+    tipo: 'haccp',
+    nombre: 'Auditoría de Calidad (HACCP)',
+    version: '1.0',
+    umbrales: {excelente:95, bien:85, porMejorar:80, regular:70},
+    categorias: [
+      {id:'op', nombre:'Operaciones', items:[
+        {id:'op01', nombre:'Caducidad — Los productos en el área de preparación están dentro de la fecha de caducidad (dentro de la vida útil secundaria del producto o usar antes de fecha de caducidad).El inventario de barriles llenos están dentro del periodo de vigencia - No hay producto con fecha vencida.', pts:5},
+        {id:'op02', nombre:'Rotulación — Se cumple con la Resolución de rotulado 5109 de 2005.  Las preparaciones elaboradas en la operación se encuentran identificadas mediante el rótulo establecido que identifique la fecha de apertura.', pts:1},
+        {id:'op03', nombre:'Rotulación — Se encuentra demarcada y separa la zona de almacenamiento de los alimentos ALERGENOS; el personal cuenta con el conocimiento claro.', pts:0.5},
+        {id:'op04', nombre:'Rotación y conservación — Se cumple con la rotación de PEPS (Primeras en entrar/vencer pimeras en salir) y existe correcto almacenamiento de los alimentos con vida útil vigente sin presencia de deterioro.', pts:1},
+        {id:'op05', nombre:'Árticulos en desuso — No se evidencia presencia de artículos que están temporalmente fuera de uso o se consideren elementos en desuso, en caso de haber los artículos dañados o averiados deben estar señalizados correctamente indicando su falla y/o daño y fecha estipulada de recogida.', pts:0.5},
+        {id:'op06', nombre:'Zona No Conforme — Se cuenta con una zona permanente y debidamente señalizada para el almacenamiento de producto no conforme.', pts:0.5},
+        {id:'op07', nombre:'Planimetría — Los equipos de frío y estantería cuentan con la planimetría establecida sin ningún otro producto ajeno a la operación o bebidas empezadas.', pts:1},
+        {id:'op08', nombre:'Mascotas — Ningún establecimiento debe de permitir el ingreso de mascotas, no contamos con el permiso de pet friendly.', pts:0.5},
+        {id:'op09', nombre:'Almacenamiento — Para el almacenamiento de barriles, alimentos y productos se encuentran ordenados y/o en estantería. Cumpliendo con la adecuada separación entre pisos y paredes. (USO DE ESTIBAS).', pts:1},
+        {id:'op10', nombre:'Contaminación cruzada — Los productos crudos se encuentran separados de los productos precocidos o listos para el consumo.', pts:1},
+        {id:'op11', nombre:'Contaminación cruzada — La descongelación se lleva a cabo bajo refrigeración o bajo una fuente de agua corriente a la temperatura adecuada fuera de la zona de peligro.', pts:1},
+        {id:'op12', nombre:'Instrumentos de medición — Se cuenta con termómetros de frío, calor, grameras y básculas en buen estado para las áreas correspondientes del punto de venta.', pts:1},
+        {id:'op13', nombre:'Recepción — Los productos se reciben con temperaturas a conformidad de acuerdo a lo establecido y se realiza control a vehículos de transporte (proveedores) verificando que cumplan  temperaturas y condiciones de limpieza. Se verifica transportador (canastillas, cambros, etc.), uso de estibas y BPM del personal.', pts:1},
+        {id:'op14', nombre:'Unidades de frio — El nivel de agua y banco de hielo son adecuados en el sistema enfriador.(chiller)', pts:1},
+        {id:'op15', nombre:'Unidades de frio — Los equipos de unidad de frio se encuentran dentro de los limites establecidos. Refrigeración 0 - 4°C       Congelación -18°C', pts:1},
+        {id:'op16', nombre:'Control de alimentos y bebidas — La temperatura de elaboración de los productos calientes  están por encima o igual a los  75°C  y productos fríos por debajo igual a 4°C, (a excepción de nachos hasta 10°C).', pts:1},
+        {id:'op17', nombre:'Control de alimentos y bebidas — Las frutas, verduras, deben lavarse y desinfectarse. La solución desinfectante se encuentra limpia y se controlan tiempos de desinfección. Se aplica el proceso de desinfeccion de la cristaleria y menaje en la maquina lavavajillas.', pts:1},
+        {id:'op18', nombre:'Control de alimentos y bebidas — Las presiones de gas carbónico en el regulador corresponden con los estándares definidos. (1,8- 2)', pts:1},
+        {id:'op19', nombre:'Control de alimentos y bebidas — Los barriles conectados al sistema dispensador se consumen en un tiempo menor o igual a 15 dias.', pts:1},
+        {id:'op20', nombre:'Control de alimentos y bebidas — La prueba sensorial concluye que la cerveza es de buena calidad, La temperatura de la cerveza dispensada esta entre 4 a 10°C.', pts:1},
+        {id:'op21', nombre:'Sustancias químicas — El almacenamiento es exclusivo para sustancias químicas se encuentra en un lugar ventilado, no están en contacto directo con el piso. Se encuentran demarcados y preparados de acuerdo a la dosificación establecida.', pts:1},
+        {id:'op22', nombre:'Formatos de control — Control de Recepción de Materias Primas, Insumos y Empaques', pts:0.5},
+        {id:'op23', nombre:'Formatos de control — Control de BPM\'S Personal Manipulador', pts:0.5},
+        {id:'op24', nombre:'Formatos de control — Control de salida de residuos', pts:0.5},
+        {id:'op25', nombre:'Formatos de control — Control de Temperaturas Unidades de Frio', pts:0.5},
+        {id:'op26', nombre:'Formatos de control — Control de Producto en Proceso y Producto Terminado', pts:0.5},
+        {id:'op27', nombre:'Formatos de control — Control de Calidad de Cerveza en Barril', pts:0.5},
+        {id:'op28', nombre:'Formatos de control — Control de Pinchado de Barriles', pts:0.5},
+        {id:'op29', nombre:'Formatos de control — Control de Calidad, Cambio y Entrega de Aceite Vegetal', pts:0.5},
+        {id:'op30', nombre:'Formatos de control — Control de Limpieza Y Desinfección, barra, cocina y salon de clientes', pts:0.5},
+        {id:'op31', nombre:'Formatos de control — Control trampa de grasa', pts:0.5},
+        {id:'op32', nombre:'Formatos de control — Seguimiento de Avistamiento de Plagas', pts:0.5},
+        {id:'op33', nombre:'Formatos de control — Control de Preparación y Aplicación de Sustancias Químicas', pts:0.5},
+        {id:'op34', nombre:'Formatos de control — Control de Aspersión de Ambientes', pts:0.5},
+        {id:'op35', nombre:'Formatos de control — Check List de Apertura, Cierre (barra y cocina)', pts:0.5},
+      ]},
+      {id:'hig', nombre:'Higiene', items:[
+        {id:'hig01', nombre:'Limpieza y desinfección — Los pisos, paredes, ventanas y puertas se encuentran en perfecto estado de limpieza y desinfección.', pts:1},
+        {id:'hig02', nombre:'Limpieza y desinfección — Las rejillas de desagües se encuentran en perfecto estado de limpieza y desinfección.', pts:1},
+        {id:'hig03', nombre:'Limpieza y desinfección — Los mesones, estantería, lámparas, poceta u otros mobiliarios se encuentran en perfecto estado de limpieza y desinfección.', pts:1},
+        {id:'hig04', nombre:'Limpieza y desinfección — La estufa, freidora y campana extractora están en perfecto estado de limpieza y desinfección, no se encuentran residuos en los cauchos de las mismas.', pts:1},
+        {id:'hig05', nombre:'Limpieza y desinfección — La estibas están en perfecto estado de orden y limpieza.', pts:1},
+        {id:'hig06', nombre:'Limpieza y desinfección — Las neveras y congeladores están en perfecto estado de limpieza y desinfección, no se encuentran residuos en los cauchos de las mismas', pts:1},
+        {id:'hig07', nombre:'Limpieza y desinfección — Los puntos muertos (esquinas, rincones, juntas y demás) están en perfecto estado de limpieza, dispensadores de jabón, toallas, atomizadores, dilusores y demás superficies que hacen parte de la operación están limpios.', pts:1},
+        {id:'hig08', nombre:'Elementos de aseo — Se cuenta con los implementos de aseo necesarios (baldes, toallas, guantes, traperos, escobas y recogedores) (no madera). En óptimas condiciones de limpieza, colgados y organizados de tal manera que no genera contaminación.', pts:1},
+        {id:'hig09', nombre:'Elementos de aseo — Los utensilios de aseo se deben de encontrar demarcados por colores con el fin de no generar contaminación cruzada. (Utensilios de baños deben estar separados y demarcados de utensilios para área clientes y cocina)', pts:1},
+        {id:'hig10', nombre:'Elementos de aseo — Los limpiones deben permanecer limpios y en buen estado. Las sabras deben permanecer limpias y estas no pueden ser de material de alambre o que genere algún tipo de contaminación.', pts:1},
+        {id:'hig11', nombre:'Higiene de áreas — Baños bien aseados con funcionamiento adecuado y suministro de agua, canecas de basura de accionamiento no manual. Se cuentan con dotación en dispensadores de jabón, desinfectante, toallas y papel higiénico.', pts:1},
+        {id:'hig12', nombre:'Utensilios y/o menaje — Para el almacenamiento de los alimentos en neveras y estanterias se usan recipientes o envases no rotos ni con deformidades ni muy desgastados.', pts:1},
+        {id:'hig13', nombre:'Utensilios y/o menaje — Menaje, vajilla y utensilios se encuentran en buenas condiciones de limpieza y desinfección, libre de grasa, residuos de alimentos y se encuentra seca, organizada y no deteriorada.', pts:1},
+        {id:'hig14', nombre:'Servicio — Las áreas de clientes y área de barra se encuentran en perfecto estado de orden y limpieza para recibir clientes.', pts:1},
+        {id:'hig15', nombre:'Avisos — La fachada, avisos y publicidad exterior están en buenas condiciones de limpieza.', pts:1},
+        {id:'hig16', nombre:'Sistema Draft — Las mangueras de cerveza están en perfectas condiciones de higiene.  Sin manchas internas que evidencian depósitos', pts:1},
+        {id:'hig17', nombre:'Sistema Draft — Se cumplen las rutinas de limpieza del sistema dispensador.  Utilice la plantilla de registro de mantenimiento que debe estar en cada equipo.', pts:2},
+        {id:'hig18', nombre:'Sistema Draft — Las zankis están en perfectas condiciones, se aplica el protocolo de desinfección, y las que están fuera de servicio están debidamente protegidas.', pts:2},
+      ]},
+      {id:'edi', nombre:'Edificación e Instalaciones', items:[
+        {id:'edi01', nombre:'Infraestructura — Los pisos, ventanas, techos, puertas y paredes están en buenas condiciones, en contacto y sin grietas o pintura descascarada.', pts:1},
+        {id:'edi02', nombre:'Infraestructura — El area de procesos cuenta con union piso pared', pts:1},
+        {id:'edi03', nombre:'Infraestructura — Área exterior del PDV identificada y estética visualmente, letrero, toldos y parasoles en buen estado.', pts:1},
+        {id:'edi04', nombre:'Infraestructura — Los anjeos, ventilación y sistema de escape están en buen estado y funcionan correctamente.', pts:1},
+        {id:'edi05', nombre:'Infraestructura — Estantería está fija a las paredes y está en perfecto estado sin desprendimientos o presencia de óxido u otros.', pts:0.5},
+        {id:'edi06', nombre:'Infraestructura — El punto de venta cuenta con rejillas en todos los sifones.', pts:0.5},
+        {id:'edi07', nombre:'Infraestructura — Se cuenta con lavamanos de accionamiento no manual , en las cantidades suficientes (2 mínimo por pdv), sirven correctamente y están ubicadas en lugares apropiados.', pts:1},
+        {id:'edi08', nombre:'Baños y drenajes — Las partes de los baños (lavamanos e inodoro) están completas sirven y operan correctamente', pts:1},
+        {id:'edi09', nombre:'Baños y drenajes — Los drenajes están presentes en número suficiente y bien ubicados. No hay evidencia de reflujo de aguas residuales, reflujo u olor desagradable.', pts:1},
+        {id:'edi10', nombre:'Eléctrico — No se evidencias cortos o fallas eléctricas de equipos o cables expuestos.', pts:1},
+        {id:'edi11', nombre:'Hermeticidad — Las instalaciones son adecuadas para evitar contaminación exterior y/o entradas de plagas. No hay espacios o fugas de luz visibles en marcos de puertas techos y ventanas hacía el exterior.', pts:1},
+        {id:'edi12', nombre:'Iluminación — Los artefactos de iluminación están equipados para evitar la contaminación física del vidrio (ej., protector) y luminarias encienden adecuadamente, no hay focos dañados, quemados, ni fundidos.', pts:1},
+        {id:'edi13', nombre:'Mobiliario — Todo el mobiliario está en buenas condiciones, no hay muebles, mesas y sillas dañadas.', pts:1},
+      ]},
+      {id:'bpm', nombre:'BPM y Personal', items:[
+        {id:'bpm01', nombre:'BPM — El personal cumple con las normas de higiene personal.', pts:1},
+        {id:'bpm02', nombre:'BPM — El personal porta su respectiva dotación.', pts:1},
+        {id:'bpm03', nombre:'BPM — Todo el personal está libre de síntomas de enfermedad.', pts:1},
+        {id:'bpm04', nombre:'BPM — El personal no debe de contar con presencia de fragancias o aromas fuertes.', pts:1},
+        {id:'bpm05', nombre:'BPM — El personal no debe contar con maquillaje dentro de la operación y sin presencia de barba.', pts:1},
+        {id:'bpm06', nombre:'BPM — El personal no porta relojes, anillos, ni joyas, ni accesorios.', pts:1},
+        {id:'bpm07', nombre:'BPM — Las manos del manipulador se encuentran limpias, uñas cortas y sin esmalte y se realiza lavado de manos cada 40 min o en los momentos apropiados', pts:1},
+        {id:'bpm08', nombre:'BPM — El personal no presenta llagas/cortes/heridas abiertas, afecciones en la piel o enfermedades infectocontagiosas. Se toman medidas para ejercer control.', pts:1},
+        {id:'bpm09', nombre:'BPM — Se evidencian prácticas higiénicas adecuadas por parte del personal en las áreas de operación e higiene personal.', pts:1},
+        {id:'bpm10', nombre:'Capacitación continua a personal — El personal contempla los procedimientos mínimos de limpieza y desinfección en el establecimiento.', pts:1},
+        {id:'bpm11', nombre:'Capacitación continua a personal — Hay evidencia de capacitación y entrenamiento del personal nuevo y antiguo de acuerdo con el plan de capacitación. (10 horas al año)', pts:1},
+        {id:'bpm12', nombre:'Curso de manipulación — El personal cuenta con curso de manipulación vigente.', pts:1},
+        {id:'bpm13', nombre:'Estado de salud — El personal cuenta con certificado médico vigente el cual debe indicar que es apto como manipulador de alimentos.', pts:1},
+        {id:'bpm14', nombre:'Conocimiento in situ — El personal tiene conocimiento de los procedimientos e instructivos cuando se realizan preguntas durante la visita.', pts:1},
+        {id:'bpm15', nombre:'Elementos personales — El personal guarda sus pertenencias, artículos y ropa de cambio en sus respectivos locker, los cascos de moto tienen un área señalizada y están debidamente organizados distantes de la operación.', pts:1},
+      ]},
+      {id:'equ', nombre:'Equipos y Utensilios', items:[
+        {id:'equ01', nombre:'EQUIPOS DE PROCESO — El horno (Rational o pizzero) se encuentra en funcionamiento sin presencia de óxido o algún problema que dificulte su operación.', pts:1},
+        {id:'equ02', nombre:'EQUIPOS DE PROCESO — Las unidades de frio (refrigeradores , congeladores y cuerto frio) se encuentran en funcionamiento sin presencia de óxido o algún problema que dificulte su operación.', pts:1},
+        {id:'equ03', nombre:'EQUIPOS DE PROCESO — La estufa y plancha se encuentran en perfecto estado de funcionamiento sin presencia de óxido o algún problema que dificulte su operación.', pts:1},
+        {id:'equ04', nombre:'EQUIPOS DE PROCESO — La freidora está en perfecto estado de funcionamiento sin presencia de óxido o algún problema que dificulte su operación.', pts:1},
+        {id:'equ05', nombre:'EQUIPOS DE PROCESO — La maquina lavavajillas está operando con agua caliente y con alta temperatura y se encuentra en perfecto estado  funcionamiento sin presencia de óxido o algún problema que dificulte su operación.', pts:0.5},
+        {id:'equ06', nombre:'EQUIPOS DE PROCESO — Dispensadores de papel higiénico, jabón y gel están en buenas condiciones.', pts:0.5},
+        {id:'equ07', nombre:'EQUIPOS DE PROCESO — El chiller se encuentra con redes de gas y cerveza hermeticas (sin fugas).', pts:0.5},
+        {id:'equ08', nombre:'EQUIPOS DE PROCESO — La hielera está en funcionamiento, el canal de desague no está obstruido y está sin presencia de óxido o algún problema que dificulte su operación.', pts:0.5},
+      ]},
+      {id:'san', nombre:'Plan de Saneamiento Básico', items:[
+        {id:'san01', nombre:'Planes HACCP, saneamiento y emergencias. — El personal de punto de venta cuenta con el Drive de inocuidad anclado al pc, y a su vez cuentan con el conocimiento oportuno y buena disposición para atender la visita', pts:1},
+        {id:'san02', nombre:'Planes HACCP, saneamiento y emergencias. — Se cuenta con Documentacion de  plan HACCP, plan de saneamiento básico y plan de emergencia.', pts:1},
+        {id:'san03', nombre:'Control de residuos Solidos — Los contenedores de basura son suficientes, están equipados con bolsas, son fáciles de limpiar y desinfectar y están en buen estado; tapas de accionamiento no manual', pts:1},
+        {id:'san04', nombre:'Control limpieza y desinfeccion — Se cuenta con fichas técnicas y hojas de seguridad  de sustancias quimicas.Se encuentran aprobadas.', pts:1},
+        {id:'san05', nombre:'Control de calidad de agua Potable — Se cuenta con certificado de lavado y desinfeccion de tanques de almacenamiento de agua de acuerdo a res 2115 de 2007 , vigente (6 meses)', pts:1},
+        {id:'san06', nombre:'Control de Manejo integrado de plagas — En la visita se observa presencia de plagas y/o insectos que afecte la inocuidad y calidad del establecimiento, en caso de observar plagas se informa y se registra.', pts:7},
+        {id:'san07', nombre:'Control de Manejo integrado de plagas — Se cuenta con el soporte de control de plagas de acuerdo a la visitas generadas. Se aplican las recomendaciones de la empresa de fumigación. Se cuenta con fichas técnicas.', pts:1},
+        {id:'san08', nombre:'Control de Manejo integrado de plagas — Se cuenta con el plano de cebado correspondiente al punto de venta, el cual fue levantado por el proveedor.', pts:1},
+        {id:'san09', nombre:'Ente de vigilancia — Se cuenta con el concepto sanitario vigente emitido por la autoridad competente. (Especificar fecha y puntaje de la última visita).', pts:1},
+        {id:'san10', nombre:'Auditorias — Se evidencia cierre o acciones correctivas de las auditorias realizadas de global, internas o de los entes reguladores.', pts:1},
+      ]},
+    ]
+  }
+};
+const SCHEMA = AUDIT_SCHEMAS.haccp;
+
+// Personas que realizan auditorías — precargadas como sugerencias del autocompletar
+const AUDITORES_BASE = [
+  'Jhon Vargas', 'Veronica Virviescas', 'Rafael Garcia', 'Julieth Jimenez',
+  'Natalia Jiménez', 'Javier Oviedo', 'Milena Rengifo', 'Sebastián Arias',
+  'German Piragauta', 'Yency Delgadillo'
+];
+
+// Listado maestro de PDVs — fuente: Master_POC_Jul01.xlsx (77 franquicias + 41 propios)
+const PDVS_BASE = [{"nombre": "AMANTA ARMENIA", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "AMANTA SAS ARMENIA PORTAL QUINDIO", "zona": "Regional Andes", "tipoPdv": "ISLA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "AMANTA SAS PALO DE AGUA", "zona": "Regional Andes", "tipoPdv": "ISLA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "AMANTA SAS PERIERA", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "ARTESANALES PREMIUM CALI CHIPICHAPE", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "ARTESANALES PREMIUM CALI GRANADA", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "ARTESANALES PREMIUM CALI RÍO CALI", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "ARTESANALES PREMIUM FLORA CALI", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "ARTESANALES PREMIUN CALI AEROPUERTO", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "BAP COMPANY FLORENCIA CUNDUY", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "BAP COMPANY ZOMAC S.A.S", "zona": "Regional Sur", "tipoPdv": "ISLA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "BBC CARTAGO AMANTA SAS", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "BBC MEDELLIN", "zona": "Regional Andes", "tipoPdv": "PUB", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "BEER PALS JAVERIANA", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "BEER PALS SAS CL 109", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "BIRRAPEDIA SAS - TULUA", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "BODEGA BBC LA CASTELLANA", "zona": "Regional Norte", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "BODEGA BOSA CENTRO", "zona": "SUR", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "BODEGA CALLE 100", "zona": "NORTE", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "BODEGA CALLE 43", "zona": "SUR", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "BODEGA CALLE 67", "zona": "NORTE", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "BODEGA CALLE 93", "zona": "NORTE", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "BODEGA CHICO", "zona": "NORTE", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "BODEGA CORFERIAS", "zona": "SUR", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "BODEGA DIVER PLAZA", "zona": "SUR", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "BODEGA GRAN ESTACIÓN", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "BODEGA HEROES", "zona": "NORTE", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "BODEGA IMPERIAL", "zona": "NORTE", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "BODEGA KUZUDAMA MALL PLAZA", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "BODEGA LA CANDELARIA", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "BODEGA LOURDES", "zona": "NORTE", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "BODEGA MODELO", "zona": "SUR", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "BODEGA PARK WAY", "zona": "SUR", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "BODEGA PASADENA", "zona": "NORTE", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "BODEGA PLAZA CLARO", "zona": "SUR", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "BODEGA PORTAL CALLE 80", "zona": "SUR", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "BODEGA QUINTA", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "BODEGA RESTREPO", "zona": "SUR", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "BODEGA SABANETA MERA CERON", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "BODEGA SOACHA PARQUE", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "BODEGA TERRAZA PASTEUR", "zona": "SUR", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "BODEGA VILLA DEL PRADO", "zona": "NORTE", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "BODEGA VILLA DEL ROSARIO INV APONTE SAS", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "BREWERY BODEGA SEBASTIAN PASTO", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "BREWERY SAS PASTO ESTUDIANTES", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "BURBANO CONTRERAS NAVAS - CUCUTA", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "DUYAN INVERSIONES SAS SOACHA TERREROS", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "EL BREWER BODEGA BOGOTA COLINA 152", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "GESSAG SAS PALMIRA LLANOGRANDE", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "GRUPO INGERLIN CALI PARQUE DEL PERRO", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "GRUPO INGERLIN JARDIN PLAZA", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "GRUPO INGERLIN PUERTO 125", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "GRUPO INGERLIN SAS - LAS PALMAS", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "GRUPO INGERLIN SAS - SAN FERNANDO", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "GRUPO PROYECATR ICO SAS - NUESTRO BOGOTA", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "HARBOUR TOWN BOGOTA ALSACIA", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "HARBOUR TOWN SAS HAYUELOS", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "INDUSTRIAS VANDELAY S.A.S CHIA", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "INDUSTRIAS VANDELAY UNICENTRO BOGOTA", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "INVERSIONES AHG - CC ACQUA IBAGUE", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "INVERSIONES AHG - PUB BUCARAMANGA", "zona": "Regional Andes", "tipoPdv": "PUB", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "INVERSIONES AHG BOGOTÁ CALLE 165", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "INVERSIONES AHG CENTRO EMPRESARIAL 127", "zona": "Regional Centro", "tipoPdv": "PUB", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "INVERSIONES AHG IBAGUE VERGEL PLAZA", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "INVERSIONES AHG LA FLORIDA", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "INVERSIONES AHG UNICENTRO OCCIDENTE", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "MALTAURBANA SAS MANIZALES", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "MERA CERON BODEGA MEDELLIN LA 70", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "MINIPUB CALLE 97", "zona": "NORTE", "tipoPdv": "BODEGA", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "OIKOS BODEGA BBC TOCANCIPA", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "OLD STYLE BOGOTA TEQUENDAMA", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "OLD STYLE BOGOTA VARDI", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "PERLA DEL LUPULO BODEGA UNICENTRO PEREIR", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "POLA INVESTMENT BODEGA CALLE 100 WTC", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "POLA INVESTMENT BOGOTÁ SALITRE", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "POLA INVESTMENT GROUP - BODEGA CALLE 90", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "PUB ANDINO", "zona": "NORTE", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "PUB AVDA 19", "zona": "NORTE", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "PUB BARRANQUILLA CANTOR COMPANY", "zona": "Regional Andes", "tipoPdv": "PUB", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "PUB BBC MOVISTAR ARENA", "zona": "SUR", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "PUB BELAIRE", "zona": "NORTE", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "PUB CALLE 63", "zona": "NORTE", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "PUB CALLE 85", "zona": "NORTE", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "PUB CANDELARIA", "zona": "SUR", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "PUB CEDRITOS", "zona": "NORTE", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "PUB CENTRO MAYOR", "zona": "SUR", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "PUB CHAPINERO KUZUDAMA SAS", "zona": "Regional Centro", "tipoPdv": "PUB", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "PUB COLINA", "zona": "NORTE", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "PUB CONECTA", "zona": "SUR", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "PUB GALERIAS", "zona": "SUR", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "PUB MANIZALES", "zona": "Regional Andes", "tipoPdv": "PUB", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "PUB PARQUE 93", "zona": "NORTE", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "PUB PEPE SIERRA", "zona": "NORTE", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "PUB PLAZA CENTRAL", "zona": "SUR", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "PUB PLAZA DE LAS AMERICAS", "zona": "SUR", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "PUB ROSALES", "zona": "NORTE", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "PUB SALITRE", "zona": "SUR", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "PUB SAN MARTIN", "zona": "SUR", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "PUB SANTAFE KUZUDAMA SAS", "zona": "Regional Centro", "tipoPdv": "PUB", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "PUB TITAN", "zona": "SUR", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "Yency Delgadillo"}, {"nombre": "PUB USAQUEN", "zona": "NORTE", "tipoPdv": "PUB", "modalidad": "PROPIO", "coordinador": "German Piragauta"}, {"nombre": "PUB VALBUENA BROTHERS SAS - ESTRADA MED", "zona": "Regional Andes", "tipoPdv": "PUB", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "PUB VILLA DEL RIO AHG", "zona": "Regional Centro", "tipoPdv": "PUB", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "RESILIENCIA FC S.A.S. - POPAYAN", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "RESILIENCIA POPAYAN CENTRO HISTORICO", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "RESILIENCIA POPAYAN NORTE", "zona": "Regional Sur", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "SANTAMARTA", "zona": "Regional Sur", "tipoPdv": "PUB", "modalidad": "FRANQUICIA", "coordinador": "MILENA RENGIFO"}, {"nombre": "VALBUENA BROTHERS - MEDELLIN AMSTERDAM", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "VALBUENA BROTHERS CIUDAD DE RIO", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "VALBUENA BROTHERS COMPANY CC LLANOGRANDE", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "VALBUENA BROTHERS SAS -LAURELES MEDELLIN", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "VALBUENA BROTHERS SQUARE", "zona": "Regional Andes", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "NATALIA JIMENEZ"}, {"nombre": "VILLA DE LEYVA - POLA INVESTMENT GROUP", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "VOLANDO ALTO SAS PUB CALLE 19", "zona": "Regional Centro", "tipoPdv": "PUB", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "ZONA BBC BOGOTA CALLE 140", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "ZONA BBC BOGOTA PORTO ALEGRE", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "ZONA BBC S.A.S. - GRANADA HILLS", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}, {"nombre": "ZONA BBC SAS CALLE 150", "zona": "Regional Centro", "tipoPdv": "BODEGA", "modalidad": "FRANQUICIA", "coordinador": "JAVIER OVIEDO B"}];
+const ITEMS_FLAT = SCHEMA.categorias.flatMap(c => c.items.map(i => ({...i, categoriaId:c.id, categoriaNombre:c.nombre})));
+const PUNTOS_MAX_TOTAL = ITEMS_FLAT.reduce((s,i)=>s+i.pts,0);
+
+// ── Namespacing de almacenamiento ──
+const LS_DB = 'bbc_haccp_db';
+const LS_CONFIG = 'bbc_haccp_config';
+const LS_DRAFT_ACTIVO = 'bbc_haccp_draft_activo';
+const IDB_NAME = 'bbc_haccp_fotos_db';
+
+// ── Estado en memoria ──
+let state = {
+  id: null,
+  itemIndex: 0,
+  datos: {pdv:'',fecha:'',hora:'',auditor:'',manager:'',jefeCocina:'',coordinadorZona:'',receptor:'',tipoPdv:'',modalidad:''},
+  items: {}, // itemId -> {calificacion, observacion, fotos:[fotoKeys]}
+  compromisos: {}, // categoriaId+'|HALLAZGO' o '|RECOMENDACION' -> {responsable, areaEjecutora, fechaCompromiso}
+  creadoEn: null
+};
+
+// ═══ Almacenamiento: localStorage ═══
+
+function leerDB(){ try{ return JSON.parse(localStorage.getItem(LS_DB)||'[]'); }catch(e){ return []; } }
+function guardarDB(arr){ localStorage.setItem(LS_DB, JSON.stringify(arr)); }
+function leerConfig(){ try{ return JSON.parse(localStorage.getItem(LS_CONFIG)||'{}'); }catch(e){ return {}; } }
+function guardarConfig(cfg){ localStorage.setItem(LS_CONFIG, JSON.stringify(cfg)); }
+
+// ═══ IndexedDB: fotos ═══
+let idbConn = null;
+function abrirIDB(){
+  return new Promise((resolve,reject)=>{
+    if (idbConn) return resolve(idbConn);
+    const req = indexedDB.open(IDB_NAME, 1);
+    req.onupgradeneeded = e => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('fotos')) db.createObjectStore('fotos', {keyPath:'key'});
+    };
+    req.onsuccess = e => { idbConn = e.target.result; resolve(idbConn); };
+    req.onerror = e => reject(e);
+  });
+}
+async function guardarFoto(key, dataUrl){
+  const db = await abrirIDB();
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction('fotos','readwrite');
+    tx.objectStore('fotos').put({key, dataUrl});
+    tx.oncomplete = ()=>resolve(true);
+    tx.onerror = reject;
+  });
+}
+async function leerFoto(key){
+  const db = await abrirIDB();
+  return new Promise((resolve)=>{
+    const tx = db.transaction('fotos','readonly');
+    const req = tx.objectStore('fotos').get(key);
+    req.onsuccess = ()=>resolve(req.result ? req.result.dataUrl : null);
+    req.onerror = ()=>resolve(null);
+  });
+}
+async function borrarFoto(key){
+  const db = await abrirIDB();
+  return new Promise((resolve)=>{
+    const tx = db.transaction('fotos','readwrite');
+    tx.objectStore('fotos').delete(key);
+    tx.oncomplete = ()=>resolve(true);
+  });
+}
+
+// ═══ Utilidades ═══
+function uid(){ return Date.now().toString() + Math.random().toString(36).slice(2,7); }
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+function clasificar(pct){
+  const u = SCHEMA.umbrales;
+  if (pct >= u.excelente) return {label:'Excelente', css:'clas-excelente'};
+  if (pct >= u.bien) return {label:'Bien', css:'clas-bien'};
+  if (pct >= u.porMejorar) return {label:'Por mejorar', css:'clas-porMejorar'};
+  if (pct >= u.regular) return {label:'Regular', css:'clas-regular'};
+  return {label:'Crítico', css:'clas-critico'};
+}
+function calcularScorePorCategoria(catId){
+  const items = ITEMS_FLAT.filter(i=>i.categoriaId===catId);
+  let obtenido=0, max=0;
+  const sinCalificar = items.some(i=>!state.items[i.id] || !state.items[i.id].calificacion);
+  items.forEach(i=>{
+    const ev = state.items[i.id];
+    if (!ev || ev.calificacion === 'no_aplica' || !ev.calificacion) return;
+    max += i.pts;
+    if (ev.calificacion==='cumple') obtenido += i.pts;
+  });
+  const estado = sinCalificar ? 'pendiente' : (max>0 ? 'evaluado' : 'no_aplica');
+  return {obtenido, max, pct: max>0 ? (obtenido/max*100) : null, estado};
+}
+function calcularScoreGlobal(){
+  let obtenido=0, max=0;
+  ITEMS_FLAT.forEach(i=>{
+    const ev = state.items[i.id];
+    if (!ev || ev.calificacion === 'no_aplica' || !ev.calificacion) return;
+    max += i.pts;
+    if (ev.calificacion==='cumple') obtenido += i.pts;
+  });
+  return {obtenido, max, pct: max>0 ? (obtenido/max*100) : 0};
+}
+function avanceItems(){
+  const respondidos = ITEMS_FLAT.filter(i=>state.items[i.id] && state.items[i.id].calificacion).length;
+  return Math.round(respondidos / ITEMS_FLAT.length * 100);
+}
+function actualizarAnillo(){
+  const pct = avanceItems();
+  const circ = 2*Math.PI*16;
+  const ring = document.getElementById('ring-progress');
+  ring.setAttribute('stroke-dasharray', circ.toFixed(1));
+  ring.setAttribute('stroke-dashoffset', (circ*(1-pct/100)).toFixed(1));
+  document.getElementById('ring-pct').textContent = pct+'%';
+}
+
+// ═══ UI Controller ═══
+const AppUI = {
+
+  init(){
+    this.sembrarAuditoresBase();
+    this.sembrarPDVsBase();
+    const cfg = leerConfig();
+    document.getElementById('g-auditor').value = cfg.auditorDefault || '';
+    document.getElementById('g-fecha').value = new Date().toISOString().slice(0,10);
+    document.getElementById('g-hora').value = new Date().toTimeString().slice(0,5);
+    this.setupAutocomplete('g-pdv', 'pdvsConocidos', (nombre)=>this.autocompletarDatosPDV(nombre));
+    this.setupAutocomplete('g-auditor', 'auditoresConocidos');
+    this.cargarBorradorActivo();
+    actualizarAnillo();
+  },
+
+  // Autocompletar propio (no usamos <datalist> nativo: en iOS/Android móvil
+  // el datalist con frecuencia no muestra ninguna sugerencia visible)
+  setupAutocomplete(inputId, configKey, onSelect){
+    const input = document.getElementById(inputId);
+    const list = document.getElementById('ac-' + inputId);
+    const mostrar = (filtro)=>{
+      const cfg = leerConfig();
+      const opciones = (cfg[configKey] || []);
+      const texto = (filtro||'').toLowerCase().trim();
+      const filtradas = texto ? opciones.filter(o=>o.toLowerCase().includes(texto)) : opciones;
+      if (!filtradas.length){ list.classList.remove('show'); list.innerHTML=''; return; }
+      list.innerHTML = filtradas.slice(0,8).map(o=>`<div class="autocomplete-item">${o}</div>`).join('');
+      list.classList.add('show');
+    };
+    input.addEventListener('focus', ()=>mostrar(input.value));
+    input.addEventListener('input', ()=>mostrar(input.value));
+    input.addEventListener('blur', ()=>setTimeout(()=>list.classList.remove('show'), 200));
+    list.addEventListener('mousedown', (e)=>{
+      const item = e.target.closest('.autocomplete-item');
+      if (!item) return;
+      input.value = item.textContent;
+      list.classList.remove('show');
+      if (onSelect) onSelect(item.textContent);
+    });
+  },
+
+  // Al elegir un PDV de la lista, precarga Tipo PDV / Modalidad / Coordinador
+  // según el listado maestro — así todos quedan consistentes automáticamente
+  autocompletarDatosPDV(nombre){
+    const pdv = PDVS_BASE.find(p => p.nombre === nombre);
+    if (!pdv) return;
+    if (pdv.tipoPdv) document.getElementById('g-tipoPdv').value = pdv.tipoPdv;
+    if (pdv.modalidad) document.getElementById('g-modalidad').value = pdv.modalidad;
+    const sinTildes = (s)=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    const coordSelect = document.getElementById('g-coordinadorZona');
+    const coordNorm = sinTildes((pdv.coordinador || '').toLowerCase());
+    for (const opt of coordSelect.options){
+      if (opt.value && coordNorm.includes(sinTildes(opt.value.toLowerCase().split(' ')[0]))){
+        coordSelect.value = opt.value;
+        break;
+      }
+    }
+  },
+
+  sembrarAuditoresBase(){
+    const cfg = leerConfig();
+    const actuales = cfg.auditoresConocidos || [];
+    const faltantes = AUDITORES_BASE.filter(a => !actuales.includes(a));
+    if (faltantes.length){
+      cfg.auditoresConocidos = [...actuales, ...faltantes];
+      guardarConfig(cfg);
+    }
+  },
+
+  sembrarPDVsBase(){
+    const cfg = leerConfig();
+    const actuales = cfg.pdvsConocidos || [];
+    const nombresBase = PDVS_BASE.map(p => p.nombre);
+    const faltantes = nombresBase.filter(n => !actuales.includes(n));
+    if (faltantes.length){
+      cfg.pdvsConocidos = [...actuales, ...faltantes];
+      guardarConfig(cfg);
+    }
+  },
+
+  recordarValor(configKey, valor){
+    if (!valor) return;
+    const cfg = leerConfig();
+    cfg[configKey] = cfg[configKey] || [];
+    if (!cfg[configKey].includes(valor)){
+      cfg[configKey].unshift(valor);
+      cfg[configKey] = cfg[configKey].slice(0,50);
+    }
+    guardarConfig(cfg);
+  },
+
+  irATab(n){
+    if (n>1 && !state.id){ toast('Primero completa los datos del PDV y comienza la evaluación'); return; }
+    if (n>=3 && avanceItems()<100){ toast('Debes calificar los ' + ITEMS_FLAT.length + ' ítems antes de continuar (' + avanceItems() + '% completado)'); return; }
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab==String(n)));
+    document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+    document.getElementById('pane-'+n).classList.add('active');
+    if (n===2) this.renderEvidencias();
+    if (n===3) this.renderHallazgos();
+    if (n===4) this.renderResumen();
+    if (n===5) this.renderInforme();
+  },
+
+  leerDatosGenerales(){
+    ['pdv','fecha','hora','auditor','manager','jefeCocina','coordinadorZona','receptor','tipoPdv','modalidad'].forEach(k=>{
+      state.datos[k] = document.getElementById('g-'+k).value;
+    });
+  },
+
+  comenzarEvaluacion(){
+    if (!state.id){
+      // Fecha/hora se fijan al momento real de iniciar, con la hora del dispositivo — no editable
+      document.getElementById('g-fecha').value = new Date().toISOString().slice(0,10);
+      document.getElementById('g-hora').value = new Date().toTimeString().slice(0,5);
+    }
+    this.leerDatosGenerales();
+    if (!state.datos.pdv){ toast('Ingresa el PDV antes de continuar'); return; }
+    if (!state.id){ state.id = uid(); state.creadoEn = new Date().toISOString(); }
+    this.recordarValor('pdvsConocidos', state.datos.pdv);
+    this.recordarValor('auditoresConocidos', state.datos.auditor);
+    const cfg = leerConfig(); cfg.auditorDefault = state.datos.auditor; guardarConfig(cfg);
+    document.getElementById('evaluacion-wrap').style.display = 'block';
+    document.getElementById('datos-generales-card').querySelector('.btn').textContent = 'Datos guardados ✓ — edítalos arriba si es necesario';
+    this.renderItemActual();
+    this.guardarProgreso(false);
+  },
+
+  renderItemActual(){
+    const i = ITEMS_FLAT[state.itemIndex];
+    const ev = state.items[i.id] || {calificacion:null, observacion:'', fotos:[]};
+    document.getElementById('item-progress-label').textContent = `Ítem ${state.itemIndex+1} de ${ITEMS_FLAT.length} — ${i.categoriaNombre}`;
+    const card = document.getElementById('item-card');
+    card.innerHTML = `
+      <div class="item-cat">${i.categoriaNombre}</div>
+      <div class="item-name">${i.nombre}</div>
+      <div class="item-max">Puntaje máximo: ${i.pts} pts</div>
+      <div class="score-options">
+        <div class="score-option score-cumple ${ev.calificacion==='cumple'?'selected':''}" onclick="AppUI.calificar('cumple')"><span class="icon">✓</span> Cumple <span style="margin-left:auto;font-weight:800">${i.pts} pts</span></div>
+        <div class="score-option score-nocumple ${ev.calificacion==='no_cumple'?'selected':''}" onclick="AppUI.calificar('no_cumple')"><span class="icon">✕</span> No cumple <span style="margin-left:auto;font-weight:800">0 pts</span></div>
+        <div class="score-option score-noaplica ${ev.calificacion==='no_aplica'?'selected':''}" onclick="AppUI.calificar('no_aplica')"><span class="icon">—</span> No aplica <span style="margin-left:auto;font-weight:800">excluido</span></div>
+      </div>
+      <div class="obs-label">Observaciones</div>
+      <textarea class="obs-input" id="item-obs" placeholder="Cumple, pero… / No cumple porque… / No aplica, pero debe implementarse cuando…">${ev.observacion||''}</textarea>
+      <div class="foto-btn" onclick="document.getElementById('item-foto-input').click()">📷 Agregar foto de evidencia</div>
+      <input type="file" id="item-foto-input" accept="image/*" capture="environment" style="display:none" onchange="AppUI.agregarFoto(event)">
+      <div class="foto-grid" id="item-foto-grid"></div>
+      <div class="item-nav">
+        <button class="btn btn-secondary" ${state.itemIndex===0?'disabled':''} onclick="AppUI.navegarItem(-1)">← Atrás</button>
+        <button class="btn btn-primary" style="flex:1" onclick="AppUI.navegarItem(1)">${state.itemIndex===ITEMS_FLAT.length-1?'Ir a Evidencias →':'Siguiente →'}</button>
+      </div>
+    `;
+    document.getElementById('item-obs').addEventListener('input', e=>{
+      state.items[i.id] = state.items[i.id] || {calificacion:null, observacion:'', fotos:[]};
+      state.items[i.id].observacion = e.target.value;
+    });
+    this.renderFotosItem(i.id);
+    this.actualizarScoreBar();
+  },
+
+  async renderFotosItem(itemId){
+    const grid = document.getElementById('item-foto-grid');
+    const ev = state.items[itemId];
+    if (!ev || !ev.fotos || !ev.fotos.length){ grid.innerHTML=''; return; }
+    grid.innerHTML = '';
+    for (const key of ev.fotos){
+      const dataUrl = await leerFoto(key);
+      if (!dataUrl) continue;
+      const div = document.createElement('div');
+      div.className = 'foto-thumb';
+      div.innerHTML = `<img src="${dataUrl}"><button class="del" onclick="AppUI.eliminarFoto('${itemId}','${key}')">✕</button>`;
+      grid.appendChild(div);
+    }
+  },
+
+  async agregarFoto(e){
+    const file = e.target.files[0];
+    e.target.value = ''; // limpiar de una vez: si falla, el input no queda "atascado"
+    if (!file) return;
+    const max = 800;
+    try{
+      let bitmap;
+      if (window.createImageBitmap){
+        try{
+          const probe = await createImageBitmap(file);
+          const scale = Math.min(1, max/Math.max(probe.width, probe.height));
+          bitmap = await createImageBitmap(file, {resizeWidth:Math.round(probe.width*scale), resizeHeight:Math.round(probe.height*scale), resizeQuality:'medium'});
+          probe.close && probe.close();
+        }catch(_){ bitmap = null; }
+      }
+      const canvas = document.createElement('canvas');
+      let w, h;
+      if (bitmap){
+        w = bitmap.width; h = bitmap.height;
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(bitmap, 0, 0, w, h);
+        bitmap.close && bitmap.close();
+      } else {
+        const dataUrl = await new Promise((res, rej)=>{
+          const reader = new FileReader();
+          reader.onload = ev=>res(ev.target.result);
+          reader.onerror = ()=>rej(new Error('No se pudo leer el archivo'));
+          reader.readAsDataURL(file);
+        });
+        const img = await new Promise((res, rej)=>{
+          const im = new Image();
+          im.onload = ()=>res(im);
+          im.onerror = ()=>rej(new Error('No se pudo procesar la imagen'));
+          im.src = dataUrl;
+        });
+        w = img.width; h = img.height;
+        if (w > max){ h = h*max/w; w = max; }
+        if (h > max){ w = w*max/h; h = max; }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      }
+      const b64 = canvas.toDataURL('image/jpeg', 0.7);
+      const i = ITEMS_FLAT[state.itemIndex];
+      const key = state.id+'_'+i.id+'_'+uid();
+      await guardarFoto(key, b64);
+      state.items[i.id] = state.items[i.id] || {calificacion:null, observacion:'', fotos:[]};
+      state.items[i.id].fotos.push(key);
+      this.renderFotosItem(i.id);
+    }catch(err){
+      toast('⚠ No se pudo cargar la foto (memoria insuficiente) — intenta con una foto más liviana');
+    }
+  },
+
+  async eliminarFoto(itemId, key){
+    await borrarFoto(key);
+    state.items[itemId].fotos = state.items[itemId].fotos.filter(k=>k!==key);
+    this.renderFotosItem(itemId);
+  },
+
+  calificar(valor){
+    const i = ITEMS_FLAT[state.itemIndex];
+    state.items[i.id] = state.items[i.id] || {calificacion:null, observacion:'', fotos:[]};
+    state.items[i.id].calificacion = valor;
+    if (!state.items[i.id].observacion){
+      const obsEl = document.getElementById('item-obs');
+      state.items[i.id].observacion = obsEl ? obsEl.value : '';
+    }
+    this.renderItemActual();
+    actualizarAnillo();
+  },
+
+  navegarItem(delta){
+    const obsEl = document.getElementById('item-obs');
+    const i = ITEMS_FLAT[state.itemIndex];
+    if (obsEl){
+      state.items[i.id] = state.items[i.id] || {calificacion:null, observacion:'', fotos:[]};
+      state.items[i.id].observacion = obsEl.value;
+    }
+    if (delta > 0){
+      const ev = state.items[i.id];
+      if (!ev || !ev.calificacion){
+        toast('Selecciona una calificación antes de continuar');
+        return;
+      }
+      if (ev.calificacion === 'no_cumple' && (!ev.observacion || !ev.observacion.trim())){
+        toast('Escribe la observación: ¿por qué no cumple?');
+        if (obsEl) obsEl.focus();
+        return;
+      }
+    }
+    const nuevo = state.itemIndex + delta;
+    if (nuevo < 0) return;
+    if (nuevo >= ITEMS_FLAT.length){ this.irATab(2); return; }
+    state.itemIndex = nuevo;
+    this.renderItemActual();
+    this.guardarProgreso(false);
+  },
+
+  actualizarScoreBar(){
+    const s = calcularScoreGlobal();
+    document.getElementById('score-acumulado').textContent = `${s.obtenido.toFixed(1)} / ${s.max.toFixed(1)}`;
+  },
+
+  renderEvidencias(){
+    const wrap = document.getElementById('evidencias-wrap');
+    wrap.innerHTML = '';
+    let huboFotos = false;
+    SCHEMA.categorias.forEach(cat=>{
+      const itemsConFoto = cat.items.filter(i => state.items[i.id] && state.items[i.id].fotos && state.items[i.id].fotos.length);
+      if (!itemsConFoto.length) return;
+      huboFotos = true;
+      const titulo = document.createElement('div');
+      titulo.className = 'evidencia-cat-title';
+      titulo.textContent = cat.nombre;
+      wrap.appendChild(titulo);
+      const grid = document.createElement('div');
+      grid.className = 'evidencia-grid';
+      wrap.appendChild(grid);
+      itemsConFoto.forEach(async i=>{
+        for (const key of state.items[i.id].fotos){
+          const dataUrl = await leerFoto(key);
+          if (!dataUrl) continue;
+          const img = document.createElement('img');
+          img.src = dataUrl;
+          img.title = i.nombre;
+          grid.appendChild(img);
+        }
+      });
+    });
+    if (!huboFotos) wrap.innerHTML = '<div class="empty-note">Aún no hay fotos de evidencia. Agrégalas desde cada ítem en la pestaña Auditoría.</div>';
+  },
+
+  // ── Hallazgos / Recomendaciones ──
+  categoriasConHallazgo(){
+    return SCHEMA.categorias.map(cat=>{
+      const itemsCat = cat.items;
+      const conFalla = itemsCat.filter(i=>{
+        const ev = state.items[i.id];
+        return ev && ev.calificacion==='no_cumple';
+      });
+      const conRecomendacion = itemsCat.filter(i=>{
+        const ev = state.items[i.id];
+        return ev && ev.calificacion==='no_aplica' && ev.observacion && ev.observacion.trim();
+      });
+      return {cat, conFalla, conRecomendacion};
+    });
+  },
+
+  renderHallazgos(){
+    const wrap = document.getElementById('hallazgos-wrap');
+    wrap.innerHTML = '';
+    const data = this.categoriasConHallazgo();
+    data.forEach(({cat, conFalla, conRecomendacion})=>{
+      if (!conFalla.length && !conRecomendacion.length){
+        const div = document.createElement('div');
+        div.className = 'categoria-vacia';
+        div.textContent = cat.nombre + ' — sin hallazgos';
+        wrap.appendChild(div);
+        return;
+      }
+      if (conFalla.length){
+        wrap.appendChild(this.crearHallazgoCard(cat, conFalla, 'HALLAZGO'));
+      }
+      if (conRecomendacion.length){
+        wrap.appendChild(this.crearHallazgoCard(cat, conRecomendacion, 'RECOMENDACIÓN'));
+      }
+    });
+  },
+
+  crearHallazgoCard(cat, items, tipo){
+    const key = cat.id + '|' + tipo;
+    const criticidad = tipo==='RECOMENDACIÓN' ? 'BAJA' : (items.some(i=>i.pts>=5) ? 'ALTA' : 'MEDIA');
+    const compPrevio = state.compromisos[key] || {};
+    const descAuto = items.map(i=>{
+      const ev = state.items[i.id];
+      return `${i.nombre}: ${ev.observacion || '(sin observación)'}`;
+    }).join('\n');
+
+    const div = document.createElement('div');
+    div.className = 'card hallazgo-card' + (tipo==='RECOMENDACIÓN' ? ' recomendacion' : '');
+    div.innerHTML = `
+      <div class="card-header">
+        <span>${cat.nombre} — ${tipo}</span>
+        <span class="badge-tag">Criticidad ${criticidad}</span>
+      </div>
+      <div class="card-body">
+        <div class="obs-label">Descripción</div>
+        <textarea class="obs-input" data-key="${key}" data-field="descripcion">${compPrevio.descripcion || descAuto}</textarea>
+        <div class="form-grid" style="margin-top:12px">
+          <div class="form-group">
+            <label>Responsable de acción</label>
+            <input data-key="${key}" data-field="responsable" value="${compPrevio.responsable || state.datos.jefeCocina || ''}">
+          </div>
+          <div class="form-group">
+            <label>Responsable de seguimiento</label>
+            <input data-key="${key}" data-field="responsableSeguimiento" value="${compPrevio.responsableSeguimiento || ''}">
+          </div>
+          <div class="form-group">
+            <label>Área ejecutora</label>
+            <select data-key="${key}" data-field="areaEjecutora">
+              ${['PDV / Punto de venta','Mantenimiento','Compras','Operaciones','Calidad','Otro'].map(o=>`<option ${compPrevio.areaEjecutora===o?'selected':''}>${o}</option>`).join('')}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Fecha compromiso *</label>
+            <input type="date" data-key="${key}" data-field="fechaCompromiso" value="${compPrevio.fechaCompromiso || ''}" required>
+          </div>
+        </div>
+      </div>
+    `;
+    div.querySelectorAll('[data-key]').forEach(el=>{
+      el.addEventListener('input', ()=>{
+        state.compromisos[key] = state.compromisos[key] || {categoriaId:cat.id, tipo};
+        state.compromisos[key][el.dataset.field] = el.value;
+        state.compromisos[key].criticidad = criticidad;
+      });
+    });
+    if (!state.compromisos[key]){
+      state.compromisos[key] = {categoriaId:cat.id, tipo, descripcion:descAuto, responsable:state.datos.jefeCocina||'', responsableSeguimiento:'', areaEjecutora:'PDV / Punto de venta', fechaCompromiso:'', criticidad};
+    }
+    return div;
+  },
+
+  // ── Resumen ──
+  renderResumen(){
+    const wrap = document.getElementById('resumen-wrap');
+    const g = calcularScoreGlobal();
+    const clas = clasificar(g.pct);
+    let html = `
+      <div class="card">
+        <div class="score-global">
+          <div class="num">${g.pct.toFixed(1)}%</div>
+          <div class="clas ${clas.css}">${clas.label}</div>
+          <div style="margin-top:8px;color:var(--gray);font-size:12px">${g.obtenido.toFixed(1)} / ${g.max.toFixed(1)} puntos aplicables</div>
+        </div>
+      </div>
+      <div class="card"><div class="card-header">Resultado por categoría</div>`;
+    SCHEMA.categorias.forEach(cat=>{
+      const s = calcularScorePorCategoria(cat.id);
+      let texto;
+      if (s.estado === 'pendiente') texto = 'Pendiente por calificar';
+      else if (s.estado === 'no_aplica') texto = 'No aplica (todos los ítems)';
+      else texto = s.pct.toFixed(1)+'% · '+clasificar(s.pct).label;
+      html += `<div class="mod-row"><span>${cat.nombre}</span><span class="pct">${texto}</span></div>`;
+    });
+    html += `</div>`;
+
+    const hallazgos = Object.values(state.compromisos).filter(c=>c.tipo==='HALLAZGO');
+    const recos = Object.values(state.compromisos).filter(c=>c.tipo==='RECOMENDACIÓN');
+    html += `<div class="card"><div class="card-header">Hallazgos (${hallazgos.length})</div><div class="card-body">`;
+    html += hallazgos.length ? hallazgos.map(h=>`<div class="mod-row"><span>${h.descripcion.split('\n')[0]}</span><span>${h.responsable||'—'} · ${h.fechaCompromiso||'sin fecha'}</span></div>`).join('') : '<div class="empty-note">Sin hallazgos</div>';
+    html += `</div></div>`;
+    html += `<div class="card"><div class="card-header">Recomendaciones (${recos.length})</div><div class="card-body">`;
+    html += recos.length ? recos.map(h=>`<div class="mod-row"><span>${h.descripcion.split('\n')[0]}</span><span>${h.responsable||'—'} · ${h.fechaCompromiso||'sin fecha'}</span></div>`).join('') : '<div class="empty-note">Sin recomendaciones</div>';
+    html += `</div></div>`;
+    wrap.innerHTML = html;
+  },
+
+  // ── Informe ejecutivo / Acta de Compromisos ──
+  async construirActaHTML(){
+    const g = calcularScoreGlobal();
+    const clas = clasificar(g.pct);
+    const d = state.datos;
+
+    let filasItems = '';
+    SCHEMA.categorias.forEach(cat=>{
+      cat.items.forEach(i=>{
+        const ev = state.items[i.id] || {};
+        const labelCal = {cumple:'Cumple', no_cumple:'No cumple', no_aplica:'No aplica'}[ev.calificacion] || '—';
+        const ptsObt = ev.calificacion==='cumple' ? i.pts : 0;
+        filasItems += `<tr><td>${cat.nombre}</td><td>${i.nombre}</td><td>${labelCal}</td><td>${ev.calificacion==='no_aplica'?'—':ptsObt}</td><td>${i.pts}</td><td>${ev.observacion||''}</td></tr>`;
+      });
+    });
+
+    const compromisos = Object.values(state.compromisos).filter(c=>c.fechaCompromiso || c.descripcion);
+    let filasCompromisos = compromisos.map(c=>
+      `<tr><td>${c.tipo}</td><td>${c.descripcion.split('\n')[0]}</td><td>${c.responsable||''}</td><td>${c.responsableSeguimiento||''}</td><td>${c.areaEjecutora||''}</td><td>${c.fechaCompromiso||''}</td></tr>`
+    ).join('');
+
+    let fotosHtml = '';
+    for (const cat of SCHEMA.categorias){
+      const itemsConFoto = cat.items.filter(i => state.items[i.id] && state.items[i.id].fotos && state.items[i.id].fotos.length);
+      if (!itemsConFoto.length) continue;
+      let imgsCat = '';
+      for (const i of itemsConFoto){
+        for (const key of state.items[i.id].fotos){
+          const dataUrl = await leerFoto(key);
+          if (!dataUrl) continue;
+          imgsCat += `<img src="${dataUrl}" style="width:140px;height:140px;object-fit:cover;border-radius:6px;border:1px solid #ccc;margin:4px" title="${i.nombre}">`;
+        }
+      }
+      if (imgsCat) fotosHtml += `<p style="font-weight:700;margin-top:10px">${cat.nombre}</p><div>${imgsCat}</div>`;
+    }
+
+    return `
+      <div style="text-align:center;border-bottom:3px solid #F59E0B;padding-bottom:12px;margin-bottom:16px">
+        <h2 style="color:#c9790a">🍺 BBC Colombia · Temple Colombia</h2>
+        <h3>Acta de Compromisos — Auditoría de Calidad (HACCP)</h3>
+      </div>
+      <table class="acta-tabla">
+        <tr><th>PDV</th><td>${d.pdv}</td><th>Fecha</th><td>${d.fecha} ${d.hora}</td></tr>
+        <tr><th>Tipo PDV</th><td>${d.tipoPdv}</td><th>Modalidad</th><td>${d.modalidad}</td></tr>
+        <tr><th>Auditor</th><td>${d.auditor}</td><th>Manager</th><td>${d.manager}</td></tr>
+        <tr><th>Jefe de Cocina</th><td>${d.jefeCocina}</td><th>Coordinador Zona</th><td>${d.coordinadorZona}</td></tr>
+        <tr><th>Recibe</th><td colspan="3">${d.receptor}</td></tr>
+      </table>
+
+      <h3 style="margin-top:20px">Resultado global: ${g.pct.toFixed(1)}% — ${clas.label}</h3>
+
+      <table class="acta-tabla">
+        <thead><tr><th>Categoría</th><th>Ítem</th><th>Calificación</th><th>Pts obtenidos</th><th>Pts máx</th><th>Observación</th></tr></thead>
+        <tbody>${filasItems}</tbody>
+      </table>
+
+      <h3 style="margin-top:20px">Compromisos</h3>
+      <table class="acta-tabla">
+        <thead><tr><th>Tipo</th><th>Descripción</th><th>Responsable</th><th>Seguimiento</th><th>Área ejecutora</th><th>Fecha compromiso</th></tr></thead>
+        <tbody>${filasCompromisos || '<tr><td colspan="6">Sin compromisos registrados</td></tr>'}</tbody>
+      </table>
+
+      <h3 style="margin-top:20px">Evidencias fotográficas</h3>
+      ${fotosHtml || '<p style="color:#666">Sin fotos de evidencia registradas</p>'}
+
+      <div class="firma-box">
+        <div class="firma-linea">Firma Auditor<br>${d.auditor}</div>
+        <div class="firma-linea">Firma Manager / Receptor<br>${d.receptor || d.manager}</div>
+      </div>
+    `;
+  },
+
+  async renderInforme(){
+    document.getElementById('informe-preview').innerHTML = `<div class="card"><div class="card-body">Generando informe…</div></div>`;
+    const html = await this.construirActaHTML();
+    document.getElementById('informe-preview').innerHTML = `<div class="card"><div class="card-body">${html}</div></div>`;
+    document.getElementById('acta-print').innerHTML = html;
+  },
+
+  async enviarCorreo(){
+    const d = state.datos;
+    const asunto = `Auditoría HACCP — ${d.pdv} — ${d.fecha}`;
+
+    const destinatarios = prompt('¿A qué correo(s) enviar el Acta de Compromisos? (separa varios con coma)', '');
+    if (!destinatarios) return;
+
+    if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf('PEGAR_AQUI') >= 0){
+      toast('⚠ Falta configurar la URL del Apps Script');
+      return;
+    }
+
+    toast('Enviando correo con el PDF adjunto…');
+    const actaHtml = await this.construirActaHTML();
+    const g = calcularScoreGlobal();
+    const clas = clasificar(g.pct);
+    const responsables = [...new Set(Object.values(state.compromisos).map(c=>c.responsableSeguimiento||c.responsable).filter(Boolean))].join(', ');
+    try{
+      await fetch(APPS_SCRIPT_URL, {
+        method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({token: APPS_TOKEN, action:'enviar_acta_pdf', actaHtml, destinatarios, asunto,
+          pdv: d.pdv, fecha: d.fecha, coord: d.auditor, estadoTexto: `${g.pct.toFixed(1)}% (${clas.label})`,
+          linkCompromisos: PANEL_COMPROMISOS_URL, responsables})
+      });
+      toast('✓ Enviado — revisa la bandeja de ' + destinatarios + ' en unos segundos');
+    }catch(e){
+      toast('⚠ Error de conexión al enviar el correo');
+    }
+  },
+
+  // ── Guardar progreso / Cargar / Nueva ──
+  guardarProgreso(mostrarToast){
+    this.leerDatosGenerales();
+    if (!state.id) state.id = uid();
+    if (!state.creadoEn) state.creadoEn = new Date().toISOString();
+    const db = leerDB();
+    const idx = db.findIndex(r=>r.id===state.id);
+    const registro = {...JSON.parse(JSON.stringify(state)), estadoLocal:'borrador', actualizadoEn:new Date().toISOString()};
+    if (idx>=0) db[idx] = registro; else db.push(registro);
+    guardarDB(db);
+    localStorage.setItem(LS_DRAFT_ACTIVO, state.id);
+    if (mostrarToast) toast('✓ Progreso guardado localmente');
+  },
+
+  cargarBorradorActivo(){
+    const activoId = localStorage.getItem(LS_DRAFT_ACTIVO);
+    if (!activoId) return;
+    const db = leerDB();
+    const registro = db.find(r=>r.id===activoId && r.estadoLocal==='borrador');
+    if (registro) this.cargarRegistro(registro);
+  },
+
+  cargarRegistro(registro){
+    state = JSON.parse(JSON.stringify(registro));
+    Object.keys(state.datos).forEach(k=>{
+      const el = document.getElementById('g-'+k);
+      if (el) el.value = state.datos[k] || '';
+    });
+    if (Object.keys(state.items).length){
+      document.getElementById('evaluacion-wrap').style.display = 'block';
+      this.renderItemActual();
+    }
+    actualizarAnillo();
+    this.cerrarModal();
+    toast('Auditoría cargada: ' + (state.datos.pdv || 'sin PDV'));
+  },
+
+  abrirModalCargar(){
+    const db = leerDB().filter(r=>r.estadoLocal==='borrador');
+    const wrap = document.getElementById('lista-borradores');
+    wrap.innerHTML = db.length ? db.map(r=>`
+      <div class="draft-item" onclick='AppUI.cargarRegistroPorId("${r.id}")'>
+        <div class="pdv">${r.datos.pdv || 'Sin PDV'}</div>
+        <div class="meta">${r.datos.fecha||''} · Actualizado ${new Date(r.actualizadoEn).toLocaleString('es-CO')}</div>
+      </div>
+    `).join('') : '<div class="empty-note">No hay auditorías guardadas</div>';
+    document.getElementById('modal-cargar').classList.add('show');
+  },
+
+  cargarRegistroPorId(id){
+    const registro = leerDB().find(r=>r.id===id);
+    if (registro) this.cargarRegistro(registro);
+  },
+
+  cerrarModal(){ document.getElementById('modal-cargar').classList.remove('show'); },
+
+  confirmarNueva(){
+    if (state.id && Object.keys(state.items).length){
+      if (!confirm('¿Descartar la auditoría actual y empezar una nueva? (lo ya guardado como progreso se conserva en "Cargar auditoría")')) return;
+    }
+    this.guardarProgreso(false);
+    localStorage.removeItem(LS_DRAFT_ACTIVO);
+    location.reload();
+  },
+
+  // ── Guardado final: envía a Apps Script ──
+  async guardarYFinalizar(){
+    this.leerDatosGenerales();
+    if (!state.datos.pdv || !state.datos.auditor){ toast('Completa PDV y Auditor antes de guardar'); this.irATab(1); return; }
+    if (avanceItems()<100){ toast('Debes calificar el 100% de los ítems antes de finalizar'); this.irATab(1); return; }
+
+    const g = calcularScoreGlobal();
+    const clas = clasificar(g.pct);
+
+    const auditoria = {
+      id: state.id, tipo:'haccp', pdv: state.datos.pdv, zona:'', modalidad: state.datos.modalidad,
+      tipoPdv: state.datos.tipoPdv, fecha: state.datos.fecha, hora: state.datos.hora,
+      auditor: state.datos.auditor, manager: state.datos.manager, coordinadorZona: state.datos.coordinadorZona,
+      receptor: state.datos.receptor,
+      camposAdicionales: JSON.stringify({jefeCocina: state.datos.jefeCocina}),
+      scoreTotal: g.obtenido, scoreMax: g.max, scorePct: g.pct.toFixed(1),
+      clasificacion: clas.label, itemsEvaluados: JSON.stringify(state.items),
+      creadoEn: state.creadoEn || new Date().toISOString()
+    };
+
+    const hallazgos = [];
+    const compromisosPayload = [];
+    Object.entries(state.compromisos).forEach(([key, c])=>{
+      if (!c.descripcion) return;
+      const hallazgoId = uid();
+      hallazgos.push({
+        id: hallazgoId, auditId: state.id, auditTipo:'haccp', pdv: state.datos.pdv, zona:'',
+        coordinador: state.datos.coordinadorZona, categoriaId: c.categoriaId,
+        categoriaNombre: (SCHEMA.categorias.find(cat=>cat.id===c.categoriaId)||{}).nombre || c.categoriaId,
+        descripcion: c.descripcion, criticidad: c.criticidad, tipo: c.tipo,
+        creadoEn: new Date().toISOString()
+      });
+      compromisosPayload.push({
+        id: uid(), hallazgoId, auditId: state.id, pdv: state.datos.pdv, zona:'',
+        coordinador: state.datos.coordinadorZona, auditTipo:'haccp', categoriaId: c.categoriaId,
+        descripcionAccion: c.descripcion, responsable: c.responsable, areaEjecutora: c.areaEjecutora,
+        fechaCompromiso: c.fechaCompromiso, estado: c.tipo==='RECOMENDACIÓN' ? 'RECOMENDACIÓN' : 'ABIERTO',
+        evidencias: JSON.stringify([]), reincidenciaCount: 0, fechaCierre:'', evidenciaCierre:'',
+        validadoPor:'', pdfEnviado:false, tipo:'COMPROMISO', creadoEn: new Date().toISOString(),
+        responsableSeguimiento: c.responsableSeguimiento||''
+      });
+    });
+
+    if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf('PEGAR_AQUI') >= 0){
+      toast('⚠ Falta configurar la URL del Apps Script — guardado solo localmente');
+    } else {
+      try{
+        await fetch(APPS_SCRIPT_URL, {
+          method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({token: APPS_TOKEN, action:'save_auditoria', auditoria, hallazgos, compromisos: compromisosPayload})
+        });
+        toast('✓ Auditoría enviada a Google Sheets');
+      }catch(e){ toast('⚠ Error de conexión — quedó guardada localmente'); }
+    }
+
+    // Marcar como guardado localmente (deja de ser borrador)
+    const db = leerDB();
+    const idx = db.findIndex(r=>r.id===state.id);
+    const registroFinal = {...JSON.parse(JSON.stringify(state)), estadoLocal:'guardado', actualizadoEn:new Date().toISOString()};
+    if (idx>=0) db[idx] = registroFinal; else db.push(registroFinal);
+    guardarDB(db);
+    localStorage.removeItem(LS_DRAFT_ACTIVO);
+  }
+};
+
+window.addEventListener('DOMContentLoaded', ()=>AppUI.init());
+</script>
+</body>
+</html>
