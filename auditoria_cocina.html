@@ -315,6 +315,9 @@ table.acta-tabla th{background:var(--accent);color:#fff}
 // ── Config de conexión (reemplaza esta URL tras desplegar el Apps Script) ──
 const APPS_SCRIPT_URL = 'https://script.google.com/a/macros/templecolombia.com/s/AKfycbzu9-M_2kSDKSQqCPxgbrnwAjU5OSMmUGs1YxnnmeUoOpFPhEooYUBnNtvQz0bvnQFUeA/exec';
 const APPS_TOKEN = 'temple2026';
+// Link directo a la pestaña Compromisos del panel — se incluye en el correo del Acta para que
+// el responsable de seguimiento pueda actualizar el estado sin tener que buscar la página.
+const PANEL_COMPROMISOS_URL = 'https://templecolombia.github.io/bbc-auditorias/panel.html?tab=compromisos';
 
 // ── Schema — único lugar donde viven los ítems de esta auditoría ──
 const AUDIT_SCHEMAS = {
@@ -1045,10 +1048,15 @@ const AppUI = {
 
     toast('Enviando correo con el PDF adjunto…');
     const actaHtml = await this.construirActaHTML();
+    const g = calcularScoreGlobal();
+    const clas = clasificar(g.pct);
+    const responsables = [...new Set(Object.values(state.compromisos).map(c=>c.responsableSeguimiento||c.responsable).filter(Boolean))].join(', ');
     try{
       await fetch(APPS_SCRIPT_URL, {
         method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({token: APPS_TOKEN, action:'enviar_acta_pdf', actaHtml, destinatarios, asunto})
+        body: JSON.stringify({token: APPS_TOKEN, action:'enviar_acta_pdf', actaHtml, destinatarios, asunto,
+          pdv: d.pdv, fecha: d.fecha, coord: d.auditor, estadoTexto: `${g.pct.toFixed(1)}% (${clas.label})`,
+          linkCompromisos: PANEL_COMPROMISOS_URL, responsables})
       });
       toast('✓ Enviado — revisa la bandeja de ' + destinatarios + ' en unos segundos');
     }catch(e){
