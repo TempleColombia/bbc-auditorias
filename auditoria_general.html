@@ -561,6 +561,30 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15
 
   <div id="hor_modulos-container"></div>
 
+  <!-- Fotos -->
+  <div class="section">
+    <div class="sec-hdr" onclick="hor_toggleSec(this)">
+      <div class="sec-left"><div class="sec-icon icf">📸</div><div><div class="sec-name">Fotos del punto</div><div style="font-size:11px;color:var(--muted)">Máximo 5 fotos</div></div></div>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="sec-body">
+      <div style="font-size:12px;color:var(--muted);margin-top:8px;margin-bottom:8px">Toca cada cuadro para abrir la cámara.</div>
+      <div class="photo-grid">
+        <div class="photo-slot" onclick="hor_abrirFoto(0)" id="hor_slot0"><span class="add-icon">+</span></div>
+        <div class="photo-slot" onclick="hor_abrirFoto(1)" id="hor_slot1"><span class="add-icon">+</span></div>
+        <div class="photo-slot" onclick="hor_abrirFoto(2)" id="hor_slot2"><span class="add-icon">+</span></div>
+        <div class="photo-slot" onclick="hor_abrirFoto(3)" id="hor_slot3"><span class="add-icon">+</span></div>
+        <div class="photo-slot" onclick="hor_abrirFoto(4)" id="hor_slot4"><span class="add-icon">+</span></div>
+      </div>
+      <input type="file" accept="image/*" capture="environment" class="photo-input" id="hor_pi0" onchange="hor_procesarFoto(0,this)">
+      <input type="file" accept="image/*" capture="environment" class="photo-input" id="hor_pi1" onchange="hor_procesarFoto(1,this)">
+      <input type="file" accept="image/*" capture="environment" class="photo-input" id="hor_pi2" onchange="hor_procesarFoto(2,this)">
+      <input type="file" accept="image/*" capture="environment" class="photo-input" id="hor_pi3" onchange="hor_procesarFoto(3,this)">
+      <input type="file" accept="image/*" capture="environment" class="photo-input" id="hor_pi4" onchange="hor_procesarFoto(4,this)">
+      <div class="photo-count" id="hor_photo-count">0 / 5 fotos</div>
+    </div>
+  </div>
+
   <!-- Hallazgos -->
   <div class="section">
     <div class="sec-hdr" onclick="hor_toggleSec(this)">
@@ -2392,6 +2416,7 @@ let hor_gpsData={lat:'',lng:'',address:'Sin GPS'};
 let hor_tsInicio='';
 let hor_respuestas={};
 let hor_scores=[];
+let hor_fotos=[null,null,null,null,null];
 
 // Init
 function hor_init(){
@@ -2499,6 +2524,60 @@ function hor_toggleSec(hdr){
   body.classList.toggle('open');
   chev.classList.toggle('open');
 }
+
+function hor_abrirFoto(i){document.getElementById('hor_pi'+i).click();}
+
+async function hor_procesarFoto(i,input){
+  const file=input.files[0];
+  input.value='';
+  if(!file)return;
+  const max=800;
+  try{
+    let bitmap;
+    if(window.createImageBitmap){
+      try{
+        const probe=await createImageBitmap(file);
+        const scale=Math.min(1,max/Math.max(probe.width,probe.height));
+        bitmap=await createImageBitmap(file,{resizeWidth:Math.round(probe.width*scale),resizeHeight:Math.round(probe.height*scale),resizeQuality:'medium'});
+        probe.close&&probe.close();
+      }catch(_){bitmap=null;}
+    }
+    let w,h;
+    const canvas=document.createElement('canvas');
+    if(bitmap){
+      w=bitmap.width;h=bitmap.height;
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(bitmap,0,0,w,h);
+      bitmap.close&&bitmap.close();
+    }else{
+      const dataUrl=await new Promise((res,rej)=>{
+        const reader=new FileReader();
+        reader.onload=e=>res(e.target.result);
+        reader.onerror=()=>rej(new Error('No se pudo leer el archivo'));
+        reader.readAsDataURL(file);
+      });
+      const img=await new Promise((res,rej)=>{
+        const im=new Image();
+        im.onload=()=>res(im);
+        im.onerror=()=>rej(new Error('No se pudo procesar la imagen'));
+        im.src=dataUrl;
+      });
+      w=img.width;h=img.height;
+      if(w>max){h=h*max/w;w=max;}if(h>max){w=w*max/h;h=max;}
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+    }
+    const b64=canvas.toDataURL('image/jpeg',0.7);
+    hor_fotos[i]=b64;
+    const slot=document.getElementById('hor_slot'+i);
+    slot.innerHTML=`<img src="${b64}"><div class="rm" onclick="event.stopPropagation();hor_eliminarFoto(${i})">✕</div>`;
+    hor_conteoFotos();
+  }catch(err){
+    hor_mostrarToast('⚠ No se pudo cargar la foto (memoria insuficiente) — intenta con una foto más liviana o desde la galería','#ef4444');
+  }
+}
+function hor_eliminarFoto(i){hor_fotos[i]=null;const s=document.getElementById('hor_slot'+i);s.innerHTML='<span class="add-icon">+</span>';s.onclick=()=>hor_abrirFoto(i);document.getElementById('hor_pi'+i).value='';hor_conteoFotos();}
+function hor_conteoFotos(){document.getElementById('hor_photo-count').textContent=hor_fotos.filter(f=>f!==null).length+' / 5 fotos';}
 
 function hor_calcTotal(){
   let total=0;
@@ -2640,6 +2719,8 @@ function hor_construirActaHorarioHTML(pdv,zona,coord,total,maxTotal,estado){
     </table>
     <h3 style="margin-top:20px">Notas adicionales</h3>
     <p>${hor_txt('hor_notas')||'—'}</p>
+    <h3 style="margin-top:20px">Evidencias fotográficas</h3>
+    ${hor_fotos.filter(f=>f).length ? `<div>${hor_fotos.filter(f=>f).map(f=>`<img src="${f}" style="width:140px;height:140px;object-fit:cover;border-radius:6px;border:1px solid #ccc;margin:4px">`).join('')}</div>` : '<p style="color:#888">Sin fotos de evidencia registradas</p>'}
     <div style="display:flex;gap:24px;margin-top:40px">
       <div style="flex:1;border-top:1px solid #333;padding-top:6px;text-align:center;font-size:12px">Firma Auditor<br>${coord}</div>
       <div style="flex:1;border-top:1px solid #333;padding-top:6px;text-align:center;font-size:12px">Firma Manager / Receptor</div>
@@ -2701,6 +2782,8 @@ async function hor_enviar(){
     hor_respuestas['h_campana_pop']||'',hor_txt('n_h_campana_pop')||'',
     hor_respuestas['h_campana_mecanica']||'',hor_txt('n_h_campana_mecanica')||''
   );
+  // Cantidad de fotos adjuntas — columna nueva, agregada al final para no correr las existentes
+  fila.push(hor_fotos.filter(f=>f).length);
 
   try{
     const r=await fetch(hor_SCRIPT_URL,{method:'POST',body:JSON.stringify({tipo:hor_TIPO_AUDITORIA,row:fila})});
