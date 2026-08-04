@@ -746,6 +746,7 @@ const MODULOS = [
   { id:4, nombre:'Inventario', icon:'📦', cls:'ic4', max:15, items:[
     {id:'m4_cerv', label:'Cervezas BBC (%)', tipo:'pct'},
     {id:'m4_lic', label:'Licores (%)', tipo:'pct'},
+    {id:'m4_etiq_lic', label:'Botellas de licor con etiqueta interna de inventario Temple', tipo:'yn'},
     {id:'m4_bsa', label:'Bebidas sin alcohol (%)', tipo:'pct'},
     {id:'m4_alim', label:'Alimentos (%)', tipo:'pct'},
     {id:'m4_merch', label:'Merchandising completo', tipo:'yn'},
@@ -1518,7 +1519,9 @@ async function enviar(){
     ...LEGALES_IDS.flatMap(id=>[respuestas[id]||'',txt('n_'+id)||'']),
     // Checklist de categorías de menú (reemplaza el % libre de "Menú disponible") — también
     // agregado al final por la misma razón.
-    ...MENU_CAT_IDS.flatMap(id=>[respuestas[id]||'',txt('n_'+id)||''])
+    ...MENU_CAT_IDS.flatMap(id=>[respuestas[id]||'',txt('n_'+id)||'']),
+    // Etiqueta interna de inventario Temple en botellas de licor — agregado al final igual que arriba.
+    respuestas['m4_etiq_lic']||'',txt('n_m4_etiq_lic')||''
   ];
 
   const btn=document.getElementById('btn-enviar');
