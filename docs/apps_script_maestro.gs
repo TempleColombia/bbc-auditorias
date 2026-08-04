@@ -190,6 +190,26 @@ function updateCompromiso_(payload) {
   return {status: 'updated', id: payload.id};
 }
 
+// Carpetas de Drive por categoría — dentro de "Temple Colombia > 02. Auditorias" — para que
+// las fotos/documentos de evidencia de compromisos queden organizadas por auditoría en vez de
+// caer sueltas en la raíz de "Mi unidad" del dueño del script.
+const CARPETAS_DRIVE_POR_TIPO = {
+  'cocina': '1KYvSBEbrk1ILXk3CdpWo8yXYYcLV3r48',           // Auditoria cocina
+  'haccp': '1nr3R9rmnwN_QD9CqMVNF2e_BgXMZ_LYP',             // Auditorias Calidad
+  'general': '1hh7Uw_2dHHwYi0ZzZ6f3mOAZrs6eZFc4',           // Auditorias generales
+  'visita-virtual': '1hh7Uw_2dHHwYi0ZzZ6f3mOAZrs6eZFc4',    // Auditorias generales
+  'hora-servicio': '1hh7Uw_2dHHwYi0ZzZ6f3mOAZrs6eZFc4',     // Auditorias generales
+  'puntos-propios': '1VBOk_Knkn6wZG4R2tCwzut8Sc0BE91R6',    // Auditorias puntos propios
+  'mantenimiento': '1Oc-KSO8ziQNY49PmH6iVfB39Vf7gGe3T'      // Auditorias mantenimiento
+};
+// Respaldo para tipos sin carpeta propia todavía (ej. Capacitaciones) — carpeta genérica
+// "BBC Auditorías — Fotos" que ya existía dentro de 02. Auditorias.
+const CARPETA_DRIVE_DEFAULT = '14du5oEpEapWqBjbuUkMPJQ33ahwXAcE6';
+
+function carpetaDriveParaTipo_(tipo) {
+  return CARPETAS_DRIVE_POR_TIPO[tipo] || CARPETA_DRIVE_DEFAULT;
+}
+
 // ── Bitácora de evidencia (fotos/documentos/comentario) al actualizar un compromiso ──
 // Requiere el mismo servicio avanzado "Drive API" ya habilitado para enviarActaPdf_.
 function agregarEvidenciaCompromiso_(payload) {
@@ -198,10 +218,13 @@ function agregarEvidenciaCompromiso_(payload) {
   const row = findRowById_(sheet, payload.id);
   if (row === -1) return {error: 'Compromiso no encontrado: ' + payload.id};
 
+  const auditTipo = sheet.getRange(row, headers.indexOf('auditTipo') + 1).getValue();
+  const carpetaId = carpetaDriveParaTipo_(auditTipo);
+
   const archivosSubidos = (payload.archivos || []).map(a => {
     const bytes = Utilities.base64Decode(a.contenidoBase64);
     const blob = Utilities.newBlob(bytes, a.mimeType, a.nombre);
-    const creado = Drive.Files.create({name: a.nombre}, blob); // archivo nativo, no se convierte a Google Doc
+    const creado = Drive.Files.create({name: a.nombre, parents: [carpetaId]}, blob); // archivo nativo, no se convierte a Google Doc
     DriveApp.getFileById(creado.id).setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
     return {nombre: a.nombre, mimeType: a.mimeType, url: DriveApp.getFileById(creado.id).getUrl()};
   });
